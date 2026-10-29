@@ -10,6 +10,7 @@
 #include "Foundation/Range/RangeStandaloneTests.h"
 #include "Foundation/Decimal/DecimalStandaloneTests.h"
 #include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
+#include "CoreFoundation/Number/BigNumStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
 
 #include <dlfcn.h>
@@ -48,6 +49,10 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationUnicodePlaneStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationBigNumStandaloneTests();
     if (status != 0) {
         return status;
     }

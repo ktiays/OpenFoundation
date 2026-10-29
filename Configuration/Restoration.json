@@ -4971,6 +4971,222 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumInitWithInt8",
+      "native_symbol": "_CFBigNumInitWithInt8",
+      "kind": "function",
+      "address": "0x1c02e4428",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumInitWithInt8",
+        "address": "0x1807ac9a4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumInitWithInt16",
+      "native_symbol": "_CFBigNumInitWithInt16",
+      "kind": "function",
+      "address": "0x1c02e4450",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumInitWithInt16",
+        "address": "0x1807ac9cc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumInitWithInt32",
+      "native_symbol": "_CFBigNumInitWithInt32",
+      "kind": "function",
+      "address": "0x1c02e4478",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumInitWithInt32",
+        "address": "0x180723988",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumInitWithInt64",
+      "native_symbol": "_CFBigNumInitWithInt64",
+      "kind": "function",
+      "address": "0x1c02e44bc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumInitWithInt64",
+        "address": "0x1806f4ca4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The negative-sign block is placed after the return; stores and arithmetic agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumInitWithInt128",
+      "native_symbol": "_CFBigNumInitWithInt128",
+      "kind": "function",
+      "address": "0x1c02e4534",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumInitWithInt128",
+        "address": "0x1806f2440",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions apart from PACIBSP/RETAB."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFBigNumber.c",
+      "symbol": "_OCFBigNumToCString",
+      "native_symbol": "_CFBigNumToCString",
+      "kind": "function",
+      "address": "0x1c02e51f4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBigNumToCString",
+        "address": "0x1806f2c64",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The minus and leading-zero blocks are placed after the return; calls, arguments, order and the format literal agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFNumber.c",
+      "symbol": "emit128",
+      "native_symbol": "emit128",
+      "kind": "function",
+      "address": "0x1c01ac500",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "emit128",
+        "address": "0x18069c78c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The negation block is placed after the return and scratch registers differ; comparisons, table reads and stores agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFNumber.c",
+      "symbol": "powersOf10",
+      "native_symbol": "powersOf10",
+      "kind": "data",
+      "address": "0x1c03752c0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "powersOf10",
+        "address": "0x1808314e0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 624 table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Number/OCFNumber.c",
+      "symbol": "neg_powersOf10",
+      "native_symbol": "neg_powersOf10",
+      "kind": "data",
+      "address": "0x1c0375530",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBigNum.md",
+      "tests": [
+        "Tests/CoreFoundation/Number/BigNumTests.c",
+        "StandaloneTests/CoreFoundation/Number/BigNumStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "neg_powersOf10",
+        "address": "0x180831750",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 624 table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

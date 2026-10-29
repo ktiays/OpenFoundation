@@ -4,6 +4,7 @@
     "Source/CoreFoundation/StringEncoding/OCFUTF8.c",
     "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
     "Source/CoreFoundation/Unicode/OCFUniChar.c",
-    "Source/CoreFoundation/Unicode/OCFUniCharData.c"
+    "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+    "Source/CoreFoundation/Number/OCFNumber.c"
   ]
 }

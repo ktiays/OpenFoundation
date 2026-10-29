@@ -502,6 +502,7 @@
                 Base/OCFHashBytes.c,
                 Bootstrap.c,
                 Date/OCFDate.c,
+                Number/OCFBigNumber.c,
             );
         };
         D6FBB04F97A3F636FCF54562 = {
@@ -638,6 +639,7 @@
                 Base/OCFHashBytes.c,
                 Bootstrap.c,
                 Date/OCFDate.c,
+                Number/OCFBigNumber.c,
             );
         };
         5375D868972B5DF0CC423165 = {

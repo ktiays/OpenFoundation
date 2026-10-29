@@ -12,6 +12,7 @@
 | [CoreFoundation base](Reference/Research/CoreFoundationBase.md) | Range construction, byte hashing and exact length/arithmetic behavior |
 | [Raw Decimal arithmetic](Reference/Research/FoundationDecimal.md) | Native C/Swift arithmetic boundaries, exact rounding/errors and established defect fixes |
 | [Unicode primitives](Reference/Research/CoreFoundationUnicode.md) | Bitmap membership, raw decomposition and destination-buffer behavior |
+| [BigNum initialization and text](Reference/Research/CoreFoundationBigNum.md) | Signed BigNum initializers, C-string formatting, `emit128` and its power tables |
 | [Encoding kernels](Reference/Research/CoreFoundationStringEncoding.md) | Complete UTF-8 encoder and six single-byte codec pairs, hidden-source tests |
 | [Date scalar validation](Reference/Research/CoreFoundationScalar.md) | Gregorian flags, NaNs and floating state |
 | [Foundation ranges](Reference/Research/FoundationRange.md) | Unsigned union/intersection and wraparound |

@@ -69,17 +69,18 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 12 |
+| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 19 |
 | Foundation | 3,375 | 575,568 | 26 | 1,298 | 2,051 | 26 |
 
 The scope is about 49% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 646 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
-Thirty-nine of the 81 restored function definitions (38 native addresses) fall
+Forty-six of the 88 restored function definitions (45 native addresses) fall
 inside the scope: the
 UTF-8 encoder, Unicode membership/decomposition, the Unicode plane/property/priority
-group (the first group below the core), `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are
+group (the first group below the core), the BigNum initializer/text group with
+`emit128`, `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are
 outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
