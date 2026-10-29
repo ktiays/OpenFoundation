@@ -5,6 +5,9 @@
 
 #include <OpenFoundation/OpenFoundation.h>
 
+#include "CoreFoundation/Base/OCFBaseTests.h"
+#include "CoreFoundation/Date/ScalarTests.h"
+#include "Foundation/Range/RangeDifferentialTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
 
@@ -22,7 +25,19 @@ int main(int argc, const char *argv[]) {
         return status;
     }
     if (!capture) {
-        puts("Reference image checks passed. Restored API comparisons: 0 (bootstrap only).");
+        status = runCoreFoundationBaseDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationScalarDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runFoundationRangeDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        puts("All registered differential suites passed; coverage is limited to their finite cases.");
     }
     return 0;
 }

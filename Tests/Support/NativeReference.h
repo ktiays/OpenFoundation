@@ -6,3 +6,9 @@
 #pragma once
 
 int checkNativeReference(const char *framework, const char *expectedUUID, int capture);
+
+int resolveReferenceFunction(
+    const char *framework, const char *expectedUUID, const char *symbol, void **function
+);
+
+int resolveReplacementFunction(const char *framework, const char *symbol, void **function);

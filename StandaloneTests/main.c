@@ -5,6 +5,10 @@
 
 #include <OpenFoundation/OpenFoundation.h>
 
+#include "CoreFoundation/Base/OCFBaseStandaloneTests.h"
+#include "CoreFoundation/Date/ScalarStandaloneTests.h"
+#include "Foundation/Range/RangeStandaloneTests.h"
+
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
 #include <stdio.h>
@@ -20,6 +24,18 @@ int main(void) {
         }
     }
     puts("Standalone framework load passed without system Foundation or CoreFoundation.");
-    puts("Restored API assertions: 0 (bootstrap only).");
+    int status = runCoreFoundationBaseStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationScalarStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runFoundationRangeStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    puts("All registered standalone suites passed; coverage is limited to their finite cases.");
     return 0;
 }

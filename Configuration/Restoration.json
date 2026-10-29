@@ -1,6 +1,149 @@
 {
   "schema_version": 1,
-  "definitions": [],
+  "definitions": [
+    {
+      "path": "Source/CoreFoundation/Base/OCFBase.c",
+      "symbol": "__OCFRangeMake",
+      "native_symbol": "__CFRangeMake",
+      "kind": "function",
+      "address": "0x1c0150dec",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBase.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/OCFBaseTests.c",
+        "StandaloneTests/CoreFoundation/Base/OCFBaseStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFRangeMake",
+        "address": "0x18072d198",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same register-preserving RET; no observed emitted behavior difference."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFHashBytes.c",
+      "symbol": "OCFHashBytes",
+      "native_symbol": "CFHashBytes",
+      "kind": "function",
+      "address": "0x1c02561ec",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBase.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/OCFBaseTests.c",
+        "StandaloneTests/CoreFoundation/Base/OCFBaseStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFHashBytes",
+        "address": "0x180665d1c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device computes block addresses from length minus remainder; simulator advances a cursor. Byte reads, arithmetic and results agree; device execution unvalidated."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Date/OCFDate.c",
+      "symbol": "OCFGregorianDateIsValid",
+      "native_symbol": "CFGregorianDateIsValid",
+      "address": "0x1c018dca8",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationScalar.md",
+      "tests": [
+        "StandaloneTests/CoreFoundation/Date/ScalarStandaloneTests.c",
+        "Tests/CoreFoundation/Date/ScalarTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFGregorianDateIsValid",
+        "address": "0x1807427bc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Reachable scalar behavior agrees; arm64e adds pointer authentication and outlines the unreachable logging boundary differently."
+      },
+      "kind": "function",
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Date/OCFDate.c",
+      "symbol": "daysInMonth",
+      "native_symbol": "daysInMonth",
+      "address": "0x1c0373524",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationScalar.md",
+      "tests": [
+        "StandaloneTests/CoreFoundation/Date/ScalarStandaloneTests.c",
+        "Tests/CoreFoundation/Date/ScalarTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "daysInMonth",
+        "address": "0x18082f754",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "All sixteen table bytes agree."
+      },
+      "kind": "data",
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/Foundation/Range/ONSRange.c",
+      "symbol": "ONSUnionRange",
+      "native_symbol": "NSUnionRange",
+      "address": "0x1c05bd644",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationRange.md",
+      "tests": [
+        "StandaloneTests/Foundation/Range/RangeTests.c",
+        "Tests/Foundation/Range/RangeTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSUnionRange",
+        "address": "0x180f67520",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Complete native function body bytes are identical; no iOS Device behavior test or build is claimed."
+      },
+      "exported": true,
+      "product": "OpenFoundation"
+    },
+    {
+      "path": "Source/Foundation/Range/ONSRange.c",
+      "symbol": "ONSIntersectionRange",
+      "native_symbol": "NSIntersectionRange",
+      "address": "0x1c05bd664",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationRange.md",
+      "tests": [
+        "StandaloneTests/Foundation/Range/RangeTests.c",
+        "Tests/Foundation/Range/RangeTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSIntersectionRange",
+        "address": "0x180e02318",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Complete native function body bytes are identical; no iOS Device behavior test or build is claimed."
+      },
+      "exported": true,
+      "product": "OpenFoundation"
+    }
+  ],
   "exclusions": [
     {
       "path": "Source/CoreFoundation/Bootstrap.c",

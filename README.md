@@ -5,10 +5,11 @@ one to one, from their pinned binaries. The intended consumers are
 OpenCoreGraphics and OpenCoreAnimation, which currently use the system libraries.
 Native implementation boundaries and observable behavior define the restoration.
 
-**Status:** initialized build and research infrastructure; **zero restored APIs**.
-The framework bundles contain no implementation of Foundation or CoreFoundation
-yet and cannot replace either consumer's system dependency. Successful bootstrap
-checks are not evidence of functional equivalence.
+**Status:** the first scalar groups restore **five functions and one private table**:
+CoreFoundation range construction, byte hashing and Gregorian field validation,
+and Foundation range union/intersection. Each has independent iOS Simulator and
+iOS Device readings. Object runtime, strings, collections and consumer replacement
+remain incomplete; these frameworks cannot replace either consumer's system dependency.
 
 Stage 1 matches iOS 27.0 Simulator (24A434), arm64. Stage 2 compares and restores
 iOS Device 27.0.1 (24A446), using arm64e reference images. Other TARGET/MATCH pairs
@@ -42,7 +43,7 @@ make CONFIGURATION=Release
 make xcode
 make CONFIGURATION=Release xcode
 
-# Bootstrap tests, packaging/dependency checks and infrastructure regressions.
+# Isolated/differential tests, packaging/dependency checks and infrastructure regressions.
 make test validate coexistence
 
 # Native names in an independent output directory; isolated execution only.
@@ -52,7 +53,7 @@ make OF_SYSTEM_NAMES=YES test validate
 make format
 make check
 
-# Complete Make/Xcode, Debug/Release and naming-mode bootstrap matrix.
+# Complete Make/Xcode, Debug/Release and naming-mode verification matrix.
 make verify
 ```
 
@@ -75,4 +76,4 @@ python3 Tools/build.py --products .build/Xcode/Debug-NO/Build/Products/Debug-iph
 
 The reference and validation workflow is in [Documentation/Method.md](Documentation/Method.md).
 The restoration order is in [Documentation/Roadmap.md](Documentation/Roadmap.md).
-The consumer projects are not modified by this initialization.
+The consumer projects remain unchanged. Active subsystem scopes are recorded in the work ledger.

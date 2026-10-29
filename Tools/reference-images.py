@@ -74,7 +74,7 @@ def main():
                     raise SystemExit("Runtime image differs from the existing identity pin: " + name)
                 manifest["iphone-simulator"]["images"][name] = {**previous,
                     "uuid": identity, "provenance": "LC_UUID of the loaded image in iOS Simulator 24A434",
-                    "binary_reading": "unread"
+                    "binary_reading": previous.get("binary_reading", "unread")
                 }
         if set(manifest["iphone-simulator"]["images"]) != {"Foundation", "CoreFoundation"}:
             raise SystemExit("Incomplete simulator identity capture.")
@@ -96,8 +96,8 @@ def main():
             if hashlib.sha256(destination.read_bytes()).hexdigest() != metadata["sha256"]:
                 raise SystemExit("Canonical reference copy differs: " + str(destination))
             metadata.update({"local_path": str(destination.relative_to(ROOT)),
-                             "provenance": str(source), "binary_reading": "unread"})
-            row["images"][name] = metadata
+                             "provenance": str(source), "binary_reading": previous.get("binary_reading", "unread")})
+            row["images"][name] = {**previous, **metadata}
     write_changed(MANIFEST, json.dumps(manifest, indent=2) + "\n")
     print("Reference image identities recorded; framework behavior remains unread.")
 

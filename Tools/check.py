@@ -30,9 +30,20 @@ def self_test(prefix):
         root = Path(directory)
         header = root / "Example.h"
         header.write_text("typedef long OCFIndex;\nextern OCFIndex OCFExample(OCFIndex value);\n"
-                          "@interface ONSString\n@end\nextern const int kOCFExample;\n")
+                          "@interface ONSString\n@end\nextern const int kOCFExample;\n"
+                          "typedef struct { OCFIndex location; OCFIndex length; } OCFRange;\n"
+                          "typedef struct _ONSRange { unsigned long location; unsigned long length; } ONSRange;\n"
+                          "typedef union { struct { int value; } nested; int raw; } OCFNested;\n"
+                          "typedef enum { OCFExampleZero = 0 } OCFExampleEnum;\n"
+                          "typedef unsigned long (*OCFHashCallBack)(const void *value);\n"
+                          "typedef void (*ONSCallback)(void (*callback)(int));\n"
+                          "extern const OCFIndex kOCFArray[4];\n")
         mapping = prefix.discover(root)
-        expected = {"OCFIndex": "CFIndex", "OCFExample": "CFExample", "ONSString": "NSString", "kOCFExample": "kCFExample"}
+        expected = {"OCFIndex": "CFIndex", "OCFExample": "CFExample", "ONSString": "NSString", "kOCFExample": "kCFExample",
+                    "OCFRange": "CFRange", "_ONSRange": "_NSRange", "ONSRange": "NSRange",
+                    "OCFNested": "CFNested", "OCFExampleZero": "CFExampleZero",
+                    "OCFExampleEnum": "CFExampleEnum", "OCFHashCallBack": "CFHashCallBack",
+                    "ONSCallback": "NSCallback", "kOCFArray": "kCFArray"}
         if mapping != expected:
             raise SystemExit("Declaration-derived prefix mapping regression.")
         translated = prefix.translate('OCFExample(); /* OCFExample */ "OCFExample";', mapping)
@@ -92,6 +103,7 @@ def main():
             raise SystemExit("Production code imports a system replacement framework: " + str(path))
     if args.self_test:
         self_test(prefix)
+        progress.self_test()
     print("Source policy checks passed.")
 
 

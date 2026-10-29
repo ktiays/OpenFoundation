@@ -53,4 +53,4 @@ clean:
 help:
 	@echo 'make [framework|test|validate|coexistence|check|format|project|xcode|verify|clean]'
 	@echo 'TARGET=iphonesimulator MATCH=iphonesimulator CONFIGURATION=Debug|Release OF_SYSTEM_NAMES=NO|YES'
-	@echo 'The bootstrap exports zero restored APIs. See Documentation/Method.md.'
+	@echo 'See Configuration/Restoration.json for restored definitions and Documentation/Method.md for limits.'

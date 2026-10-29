@@ -7,4 +7,6 @@
 
 #include <OpenCoreFoundation/OCFBuild.h>
 
-// Restored headers are added only after their binary reading and validation.
+#include <OpenCoreFoundation/Base/OCFBase.h>
+
+#include <OpenCoreFoundation/Date/OCFDate.h>

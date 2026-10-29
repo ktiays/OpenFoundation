@@ -20,7 +20,7 @@
 #endif
 
 #if !TARGET_OS_SIMULATOR || !TARGET_OS_IOS
-#error "Only the iOS Simulator bootstrap is available; the iOS Device stage is not restored."
+#error "Only iOS Simulator restoration is admitted; the iOS Device stage is not restored."
 #endif
 
 #define OF_STRINGIFY_IMPL(value) #value

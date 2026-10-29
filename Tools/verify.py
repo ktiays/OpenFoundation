@@ -4,7 +4,7 @@
 #  Copyright (c) 2026 ktiays. All rights reserved.
 #
 
-"""Verify the complete bootstrap matrix; retain logs outside version control."""
+"""Verify the complete admitted-platform matrix; retain logs outside version control."""
 
 import sys
 from common import ROOT, build_directory, run
@@ -34,8 +34,8 @@ def main():
                 run([*arguments, "--products", products, "validate"], stdout=log, stderr=log)
                 if mode == "NO":
                     run([*arguments, "--products", products, "coexistence"], stdout=log, stderr=log)
-    print("Bootstrap matrix passed: Make/Xcode x Debug/Release x prefixed/system names.")
-    print("Restored API coverage remains zero.")
+    print("Verification matrix passed: Make/Xcode x Debug/Release x prefixed/system names.")
+    print("Behavioral coverage is limited to the restored definitions and finite cases in each test log.")
 
 
 if __name__ == "__main__":

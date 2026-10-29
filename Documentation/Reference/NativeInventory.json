@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "scope": "IDA export/import and Objective-C symbol inventory. Counts are not API or behavioral coverage; method ownership, class clusters, reexport traversal and runtime layouts remain unread.",
+  "images": [
+    {
+      "platform": "iphone-simulator",
+      "framework": "CoreFoundation",
+      "os_version": "27.0",
+      "os_build": "24A434",
+      "architecture": "arm64",
+      "uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "sha256": "e3598ca3b1ed3649c1ff8aadce058e98aa2d7be5385036a5ebb6ab986a5cc829",
+      "evidence": "Local/Evidence/cf-runtime-reference/iphone-simulator-CoreFoundation-inventory.json",
+      "exported_entries": 2554,
+      "imported_entries": 917,
+      "objc_symbol_entries": 330,
+      "selected_class_symbol_boundaries": {
+        "NSObject": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSObject",
+              "module": "/usr/lib/libobjc.A.dylib"
+            }
+          ]
+        },
+        "NSDate": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDate",
+              "address": "0x22e6cdce8"
+            }
+          ],
+          "imports": []
+        },
+        "NSDateComponents": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDateComponents",
+              "address": "0x22e6cde00"
+            }
+          ],
+          "imports": []
+        },
+        "NSValue": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSValue",
+              "module": "/System/Library/Frameworks/Foundation.framework/Foundation"
+            }
+          ]
+        },
+        "NSString": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSString",
+              "module": "/System/Library/Frameworks/Foundation.framework/Foundation"
+            }
+          ]
+        },
+        "__NSCFString": {
+          "exports": [],
+          "imports": []
+        }
+      }
+    },
+    {
+      "platform": "iphone-simulator",
+      "framework": "Foundation",
+      "os_version": "27.0",
+      "os_build": "24A434",
+      "architecture": "arm64",
+      "uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "sha256": "bc7e0a5f693ffc75ae7c3311b817716e86d149fda2f8c45669a976727322cb18",
+      "evidence": "Local/Evidence/cf-runtime-reference/iphone-simulator-Foundation-inventory.json",
+      "exported_entries": 12986,
+      "imported_entries": 4432,
+      "objc_symbol_entries": 3714,
+      "selected_class_symbol_boundaries": {
+        "NSObject": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSObject",
+              "module": "/usr/lib/libobjc.A.dylib"
+            }
+          ]
+        },
+        "NSDate": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDate",
+              "module": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+            }
+          ]
+        },
+        "NSDateComponents": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDateComponents",
+              "module": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+            }
+          ]
+        },
+        "NSValue": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSValue",
+              "address": "0x22e6de478"
+            }
+          ],
+          "imports": []
+        },
+        "NSString": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSString",
+              "address": "0x22e6dd528"
+            }
+          ],
+          "imports": []
+        },
+        "__NSCFString": {
+          "exports": [],
+          "imports": []
+        }
+      }
+    },
+    {
+      "platform": "iphone-device",
+      "framework": "CoreFoundation",
+      "os_version": "27.0.1",
+      "os_build": "24A446",
+      "architecture": "arm64e",
+      "uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+      "sha256": "ba22deb3759f56d32e5847fec0a5e675837e189d9a000b87ffdefe88a7942166",
+      "evidence": "Local/Evidence/cf-runtime-reference/iphone-device-CoreFoundation-inventory.json",
+      "exported_entries": 2481,
+      "imported_entries": 885,
+      "objc_symbol_entries": 304,
+      "selected_class_symbol_boundaries": {
+        "NSObject": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSObject",
+              "module": "/usr/lib/libobjc.A.dylib"
+            }
+          ]
+        },
+        "NSDate": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDate",
+              "address": "0x1e6f097a0"
+            }
+          ],
+          "imports": []
+        },
+        "NSDateComponents": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDateComponents",
+              "address": "0x1e6f07fb8"
+            }
+          ],
+          "imports": []
+        },
+        "NSValue": {
+          "exports": [],
+          "imports": []
+        },
+        "NSString": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSString",
+              "module": "/System/Library/Frameworks/Foundation.framework/Foundation"
+            }
+          ]
+        },
+        "__NSCFString": {
+          "exports": [],
+          "imports": []
+        }
+      }
+    },
+    {
+      "platform": "iphone-device",
+      "framework": "Foundation",
+      "os_version": "27.0.1",
+      "os_build": "24A446",
+      "architecture": "arm64e",
+      "uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+      "sha256": "c54c72935c506e8b3348e20aa758a8a97e95051506ffc2afb9b186726a369348",
+      "evidence": "Local/Evidence/cf-runtime-reference/iphone-device-Foundation-inventory.json",
+      "exported_entries": 12972,
+      "imported_entries": 4419,
+      "objc_symbol_entries": 2762,
+      "selected_class_symbol_boundaries": {
+        "NSObject": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSObject",
+              "module": "/usr/lib/libobjc.A.dylib"
+            }
+          ]
+        },
+        "NSDate": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDate",
+              "module": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+            }
+          ]
+        },
+        "NSDateComponents": {
+          "exports": [],
+          "imports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSDateComponents",
+              "module": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+            }
+          ]
+        },
+        "NSValue": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSValue",
+              "address": "0x1e6ef9b88"
+            }
+          ],
+          "imports": []
+        },
+        "NSString": {
+          "exports": [
+            {
+              "symbol": "_OBJC_CLASS_$_NSString",
+              "address": "0x1e6ef9ca0"
+            }
+          ],
+          "imports": []
+        },
+        "__NSCFString": {
+          "exports": [],
+          "imports": []
+        }
+      }
+    }
+  ]
+}

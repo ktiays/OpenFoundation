@@ -24,6 +24,30 @@ def code_only(text):
     return re.sub(r'//[^\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"', " ", text)
 
 
+def typedef_names(code):
+    """Read aliases after a complete typedef, including aggregate field semicolons."""
+    names = set()
+    for start in re.finditer(r"\btypedef\b", code):
+        depth = 0
+        for index in range(start.end(), len(code)):
+            token = code[index]
+            if token in "{([":
+                depth += 1
+            elif token in "})]":
+                depth -= 1
+            elif token == ";" and depth == 0:
+                declaration = code[start.end():index]
+                alias = re.search(r"\b((?:_+)?(?:OCF|ONS)[A-Z]\w*)\s*$", declaration)
+                if not alias:
+                    alias = re.search(
+                        r"\(\s*\*\s*((?:_+)?(?:OCF|ONS)[A-Z]\w*)\s*\)\s*\(", declaration
+                    )
+                if alias:
+                    names.add(alias[1])
+                break
+    return names
+
+
 def discover(root):
     paths = sorted(path for path in root.rglob("*") if path.suffix in FORMAT_SUFFIXES)
     declarations = set()
@@ -32,12 +56,12 @@ def discover(root):
         if path.suffix not in {".h", ".hpp"}:
             continue
         code = code_only(text)
+        declarations.update(typedef_names(code))
         for pattern in (
             r"\b(?:struct|union|enum|class)\s+((?:_+)?(?:OCF|ONS)[A-Z]\w*)",
             r"@(?:interface|protocol|class)\s+((?:_+)?(?:OCF|ONS)[A-Z]\w*)",
-            r"\btypedef\b[^;]*?\b((?:_+)?(?:OCF|ONS)[A-Z]\w*)\s*;",
             r"\b((?:_+)?(?:OCF|ONS)[A-Z]\w*)\s*\([^;{}]*\)\s*;",
-            r"\b(?:extern|OF_EXPORT|OF_EXTERN)\b[^;{}]*?\b((?:_+)?k?(?:OCF|ONS)[A-Z]\w*)\s*;",
+            r"\b(?:extern|OF_EXPORT|OF_EXTERN)\b[^;{}]*?\b((?:_+)?k?(?:OCF|ONS)[A-Z]\w*)(?:\s*\[[^\]]*\])*\s*;",
             r"\b((?:_+)?k?(?:OCF|ONS)[A-Z]\w*)\s*=",
         ):
             declarations.update(re.findall(pattern, code))

@@ -6,14 +6,34 @@
     "architecture": "arm64",
     "images": {
       "CoreFoundation": {
+        "sha256": "e3598ca3b1ed3649c1ff8aadce058e98aa2d7be5385036a5ebb6ab986a5cc829",
+        "bytes": 8306688,
+        "architecture": "arm64",
         "uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
-        "provenance": "LC_UUID of the loaded image in iOS Simulator 24A434",
-        "binary_reading": "unread"
+        "macho_platform": 7,
+        "local_path": "Local/Databases/iphone-simulator/CoreFoundation",
+        "provenance": "Local/Scratch/cf-runtime-reference/Extraction/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "binary_reading": "partial",
+        "ida_database": "Local/Databases/iphone-simulator/CoreFoundation.i64",
+        "readings": [
+          "Documentation/Reference/Research/CoreFoundationBase.md",
+          "Documentation/Reference/Research/CoreFoundationScalar.md",
+          "Documentation/Reference/Research/RuntimePrerequisites.md"
+        ]
       },
       "Foundation": {
+        "sha256": "bc7e0a5f693ffc75ae7c3311b817716e86d149fda2f8c45669a976727322cb18",
+        "bytes": 29454336,
+        "architecture": "arm64",
         "uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
-        "provenance": "LC_UUID of the loaded image in iOS Simulator 24A434",
-        "binary_reading": "unread"
+        "macho_platform": 7,
+        "local_path": "Local/Databases/iphone-simulator/Foundation",
+        "provenance": "Local/Scratch/cf-runtime-reference/Extraction/System/Library/Frameworks/Foundation.framework/Foundation",
+        "binary_reading": "partial",
+        "ida_database": "Local/Databases/iphone-simulator/Foundation.i64",
+        "readings": [
+          "Documentation/Reference/Research/FoundationRange.md"
+        ]
       }
     }
   },
@@ -30,7 +50,13 @@
         "macho_platform": 2,
         "local_path": "Local/Databases/iphone-device/CoreFoundation",
         "provenance": "/Users/ktiays/Library/Developer/Xcode/iOS DeviceSupport/iPhone18,1 27.0.1 (24A446)/arm64e/Symbols/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
-        "binary_reading": "unread"
+        "binary_reading": "partial",
+        "ida_database": "Local/Databases/iphone-device/CoreFoundation.i64",
+        "readings": [
+          "Documentation/Reference/Research/CoreFoundationBase.md",
+          "Documentation/Reference/Research/CoreFoundationScalar.md",
+          "Documentation/Reference/Research/RuntimePrerequisites.md"
+        ]
       },
       "Foundation": {
         "sha256": "c54c72935c506e8b3348e20aa758a8a97e95051506ffc2afb9b186726a369348",
@@ -40,7 +66,11 @@
         "macho_platform": 2,
         "local_path": "Local/Databases/iphone-device/Foundation",
         "provenance": "/Users/ktiays/Library/Developer/Xcode/iOS DeviceSupport/iPhone18,1 27.0.1 (24A446)/arm64e/Symbols/System/Library/Frameworks/Foundation.framework/Foundation",
-        "binary_reading": "unread"
+        "binary_reading": "partial",
+        "ida_database": "Local/Databases/iphone-device/Foundation.i64",
+        "readings": [
+          "Documentation/Reference/Research/FoundationRange.md"
+        ]
       }
     }
   }

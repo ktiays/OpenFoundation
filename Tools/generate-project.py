@@ -93,7 +93,7 @@ def generate():
     shared = {
         "OF_SYSTEM_NAMES_VALUE_NO": "0", "OF_SYSTEM_NAMES_VALUE_YES": "1",
         "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))",
-        "HEADER_SEARCH_PATHS": '"$(SRCROOT)/Source" "$(SRCROOT)/Tests" "$(BUILT_PRODUCTS_DIR)/Generated"',
+        "HEADER_SEARCH_PATHS": '"$(SRCROOT)/Source" "$(SRCROOT)/Tests" "$(SRCROOT)/StandaloneTests" "$(BUILT_PRODUCTS_DIR)/Generated"',
         "FRAMEWORK_SEARCH_PATHS": '"$(BUILT_PRODUCTS_DIR)"',
         "OTHER_CFLAGS": '$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include "$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h"',
         "LD_RUNPATH_SEARCH_PATHS": "@executable_path @loader_path/..",

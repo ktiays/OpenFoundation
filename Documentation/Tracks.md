@@ -1,20 +1,27 @@
 # Work tracks
 
-The initial bootstrap is the sole exception to implementation-track worktrees:
-it initializes the unborn main branch. Subsequent tracks use isolated
-`codex/<track>` branches and build directories. Shared build/header changes are
-coordinated here before independent implementation work begins.
+Implementation tracks use isolated `codex/<track>` branches and build directories.
+The coordinating session owns shared build policy, public-header registration,
+restoration records, test entry points and squash integration into linear main.
 
 | Track | Scope and owned paths | Depends on | State |
 | --- | --- | --- | --- |
-| INIT | Root engineering files, Configuration, Tools, Xcode project, Resources, bootstrap Source/Tests, documentation | None | Complete: Make/Xcode, Debug/Release, both naming modes, isolated execution, identity guards, packaging and coexistence checks passed |
-| REF | Extract simulator images; inventory both images' exports, imports, class ownership and language boundaries; establish IDA databases under Local | INIT | Not started |
-| RUNTIME | Read the allocator/type/ownership and CF/NS bridging dependency group; declare its ABI and verification corpus | REF | Not started |
-| CG-DEPS | Restore the complete dependency groups required by OpenCoreGraphics; exact source scope follows RUNTIME readings | RUNTIME | Not started |
-| CA-DEPS | Restore the complete Foundation/CoreFoundation groups required by OpenCoreAnimation; exact source scope follows RUNTIME readings | RUNTIME | Not started |
+| INIT | Root engineering files, Configuration, Tools, Xcode project, Resources, bootstrap Source/Tests | None | Complete; empty bootstrap is not behavior coverage |
+| REF | Four canonical images/databases, identity-guarded IDA symbol inventories, `Documentation/Reference` | INIT | Image inventory complete; full class-cluster/ABI/reexport graph still in progress |
+| CF-BASE | `codex/cf-base`; `Source/CoreFoundation/Base`, mirror tests, base reading | REF scalar closure | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
+| NS-RANGE | `codex/ns-range`; `Source/Foundation/Range`, mirror tests, range reading | REF scalar closure | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
+| CF-SCALAR | `codex/cf-scalar`; `Source/CoreFoundation/Date/OCFDate`, mirror tests, scalar reading | CF-BASE types | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
+| RUNTIME | `codex/cf-runtime`; allocator/type/ownership/initialization group under `Source/CoreFoundation/Runtime` and `Allocator`, mirror tests/readings | REF and verified CFString/number/date callbacks | In progress; full native class-table and process-global state dependency readings; no placeholder slots admitted |
+| NS-DECIMAL | `codex/ns-decimal`; complete raw decimal arithmetic under `Source/Foundation/Decimal`, mirrors/reading | REF; any native raw helper closure | In progress; eleven-entry interface inventory and complete arithmetic closure reading |
+| CF-ENCODING | `codex/cf-encoding`; complete raw converter/registry/backend groups under `Source/CoreFoundation/StringEncoding`, mirrors/reading | REF, Unicode and verified allocator/string boundaries | In progress; conversion kernels, all reachable flags and exact ICU boundaries |
+| CF-UNICODE | `codex/cf-unicode`; complete normalization/property/table group under `Source/CoreFoundation/Unicode`, mirrors/reading | REF; exact native table/resource boundary | In progress; owns CFUniChar closure required by encoding and string objects |
+| CF-STRING | `codex/cf-string`; complete string objects/core/formatting under `Source/CoreFoundation/String`, mirrors/reading | Runtime ABI, encoding and Unicode | In progress; owns runtime-description string dependencies and native ObjC bridge boundary |
+| CF-NUMBER-DATE | Independent worktree; complete number/boolean/date object callback group in coordinated new source paths, mirrors/readings | Runtime ABI and exact native dependencies | In progress; separate from the completed date-field scalar unit |
+| CG-DEPS | Complete dependency groups required by OpenCoreGraphics | Runtime/storage groups | Not started |
+| CA-DEPS | Complete Foundation/CoreFoundation groups required by OpenCoreAnimation | Runtime/storage groups | Not started |
 | INTEGRATION | Explicit replacement builds and dependency audits in the consumers | CG-DEPS, CA-DEPS | Not started |
-| IOS-DEVICE | Restore and validate iOS Device divergences | Validated simulator dependency groups | Deferred |
+| IOS-DEVICE | Device execution and admitted replacement build | Validated complete simulator groups and device ABI | Deferred; scalar image comparison is not device equivalence |
 
-`Configuration/Restoration.json` is the definition ledger, not a second work
-status document. It currently contains zero restored definitions. New tracks
-state their exact files and dependency interfaces before implementation.
+`Configuration/Restoration.json` records six definitions: five functions and one
+private table. Active subsystem readings and implementation work never increase
+that count until their complete dependency group has independently passed tests.

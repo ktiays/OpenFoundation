@@ -1,5 +1,5 @@
 {
-  "stage": "bootstrap",
+  "stage": "ios-simulator-scalar-restoration",
   "pairs": [
     {
       "target": "iphonesimulator",
@@ -7,7 +7,7 @@
       "architecture": "arm64",
       "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
       "runtime_build": "24A434",
-      "status": "bootstrap"
+      "status": "partial-restoration"
     }
   ],
   "deferred": {

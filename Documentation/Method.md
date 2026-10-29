@@ -55,12 +55,12 @@ when runtime identity checks pass.
    complete track with its reading and tests. Update the track ledger and remove
    obsolete local clones/builds. Keep evidence cited by a reading.
 
-The bootstrap progress check enforces translation-unit accounting and the
-emptiness of the two exempt Bootstrap.c files. Packaging also checks all dynamic
-exports against the ledger. Before the first non-bootstrap unit is accepted,
-extend progress verification to match every native definition in that unit,
-including hidden and Objective-C definitions; file-level accounting alone does
-not prove function coverage. Likewise, extend declaration parsing for any new
+The progress check uses Clang ASTs to match each source function and data
+definition, including hidden functions, header definitions and Objective-C
+classes/methods, against the ledger. It also checks translation-unit accounting
+and the emptiness of the two exempt Bootstrap.c files. Packaging matches every
+dynamic export to the ledger. The infrastructure regressions reject missing and
+extra rows; file-level accounting alone does not establish function coverage. Likewise, extend declaration parsing for any new
 grammar before introducing its public names. The initialization does not claim
 a complete Foundation parser or a native symbol inventory.
 
@@ -120,8 +120,9 @@ regressions. Internal behavioral cases start at zero. `make coexistence`
 checks both header orders and both linker orders in C, C++, Objective-C and
 Objective-C++. C/C++ clients use CoreFoundation headers; Objective-C/Objective-C++
 clients additionally exercise Foundation headers, which require Objective-C syntax.
-This currently validates an empty public API; add owning-image and object
-interoperability checks as actual APIs are restored.
+The current scalar suites independently resolve native and replacement symbols,
+verify owning images and native UUIDs, and reject identical function addresses.
+Object interoperability remains unbuilt.
 
 Use `python3 Tools/build.py --configuration Release --system-names YES
 --products /absolute/path/to/Xcode/products test` to execute existing native
@@ -134,8 +135,8 @@ tools. Execute them with the simulator runner above.
 
 `make verify` runs the complete matrix above, including execution of the native
 Xcode test tools and header/link coexistence in prefixed mode. Its unversioned
-logs are under `Local/Scratch/verification`. It reports bootstrap verification
-separately from restored API coverage.
+logs are under `Local/Scratch/verification`. Its logs report actual per-suite cases and exported definition counts; finite
+scalar tests do not establish framework equivalence.
 
 Native-reference setup failures return 77, incompatibilities return 1 and
 success returns 0. Missing pins, unexpected owners, wrong OS builds, absent

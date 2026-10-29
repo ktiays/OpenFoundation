@@ -8,3 +8,5 @@
 #include <OpenCoreFoundation/OpenCoreFoundation.h>
 
 // Foundation and CoreFoundation remain separate ownership and ABI boundaries.
+
+#include <OpenFoundation/Range/ONSRange.h>

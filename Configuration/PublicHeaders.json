@@ -1,9 +1,12 @@
 {
   "OpenCoreFoundation": [
     "OpenCoreFoundation.h",
-    "OCFBuild.h"
+    "OCFBuild.h",
+    "Base/OCFBase.h",
+    "Date/OCFDate.h"
   ],
   "OpenFoundation": [
-    "OpenFoundation.h"
+    "OpenFoundation.h",
+    "Range/ONSRange.h"
   ]
 }

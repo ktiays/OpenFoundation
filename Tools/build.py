@@ -46,7 +46,8 @@ def flags(directory, configuration, mode):
     sdk = output(["xcrun", "--sdk", "iphonesimulator", "--show-sdk-path"])
     return ["-target", "arm64-apple-ios" + config["IPHONEOS_DEPLOYMENT_TARGET"] + "-simulator",
             "-isysroot", sdk, "-F", str(directory), "-I", str(ROOT / "Source"),
-            "-I", str(ROOT / "Tests"), "-I", str(directory / "Generated"),
+            "-I", str(ROOT / "Tests"), "-I", str(ROOT / "StandaloneTests"),
+            "-I", str(directory / "Generated"),
             "-include", str(directory / "Generated/OFPrefixMapping.h"),
             "-DOF_SYSTEM_NAMES=" + str(int(mode == "YES")), "-fvisibility=hidden", "-fblocks",
             "-ffp-contract=off", "-Wall", "-Wextra", "-Werror", "-g",
@@ -107,6 +108,7 @@ def build_tests(directory, configuration, mode):
 
 
 def validate(directory, mode):
+    ledger = json.loads((ROOT / "Configuration/Restoration.json").read_text())
     for product in PRODUCTS:
         framework = directory / (product + ".framework")
         executable = framework / product
@@ -117,7 +119,6 @@ def validate(directory, mode):
         if any(name in libraries for name in forbidden):
             raise SystemExit(product + " forwards to system Foundation/CoreFoundation.")
         symbols = output(["xcrun", "nm", "-gUj", executable]).splitlines()
-        ledger = json.loads((ROOT / "Configuration/Restoration.json").read_text())
         expected = {"_" + (row["native_symbol"] if mode == "YES" else row["symbol"]) for row in ledger["definitions"]
                     if row.get("product") == product and row.get("exported")}
         if set(symbols) != expected:
@@ -137,7 +138,8 @@ def validate(directory, mode):
                               capture_output=True, text=True)
     if conflict.returncode == 0 or "Consumer naming mode does not match" not in conflict.stderr:
         raise SystemExit("Packaged headers did not reject an incompatible consumer naming mode.")
-    print("Packaging and dependency checks passed. Exported restored APIs: 0.")
+    exported = sum(bool(row.get("exported")) for row in ledger["definitions"])
+    print(f"Packaging and dependency checks passed. Exported restored functions/data: {exported}.")
 
 
 def run_tests(directory, mode):
@@ -206,7 +208,7 @@ def main():
         run_tests(directory, args.system_names)
     elif args.action == "validate":
         tool("check.py", "--self-test")
-        print("Internal behavioral regression cases: 0 (no restored internals).")
+        print("Internal definition and naming infrastructure regressions passed; behavioral cases run in the test tools.")
     elif args.action == "coexistence":
         coexistence(directory, args.configuration, args.system_names)
 
