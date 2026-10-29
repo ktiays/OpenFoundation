@@ -65,13 +65,19 @@ def prepare_sources(product, directory, mode, root=ROOT):
         modulemap = target.parent / "Modules"
         if modulemap.exists():
             shutil.rmtree(modulemap)
+    private_headers = directory / "Generated/SwiftHeaders"
+    for source_header in sorted((root / "Source").rglob("*")):
+        if source_header.suffix in {".h", ".hpp"}:
+            destination = private_headers / source_header.relative_to(root / "Source")
+            write_changed(destination, prefix.translate(source_header.read_text(), selected))
     bridge = imports / (product + "Bridge.h")
     headers = []
     for name in config["bridge_headers"]:
         path = root / "Source" / name
         if not path.is_file() or (root / "Source").resolve() not in path.resolve().parents:
             raise SystemExit("Invalid private Swift bridge header: " + name)
-        headers.append('#include "' + str(path) + '"')
+        selected_header = private_headers / path.relative_to(root / "Source")
+        headers.append('#include "' + str(selected_header) + '"')
     write_changed(bridge, "// Generated private textual bridge; never installed.\n" + "\n".join(headers) + "\n")
     return paths, bridge
 
@@ -84,13 +90,14 @@ def compiler_arguments(product, directory, configuration, mode, root=ROOT):
     shared = defaults()
     sdk = output(["xcrun", "--sdk", "iphonesimulator", "--show-sdk-path"])
     arguments = ["xcrun", "swiftc", "-parse-as-library", "-whole-module-optimization",
-                 "-module-name", config["module_names"][mode], "-swift-version", "6",
+                 "-module-name", config["module_names"][mode], "-swift-version", shared["SWIFT_VERSION"],
                  "-target", "arm64-apple-ios" + shared["IPHONEOS_DEPLOYMENT_TARGET"] + "-simulator",
-                 "-sdk", sdk, "-F", directory / "Generated/SwiftImports", "-I", root / "Source",
+                 "-sdk", sdk, "-F", directory / "Generated/SwiftImports",
+                 "-I", directory / "Generated/SwiftHeaders", "-I", root / "Source",
                  "-import-objc-header", bridge, "-Xcc", "-include", "-Xcc",
                  directory / "Generated/OFPrefixMapping.h", "-Xcc", "-DOF_SYSTEM_NAMES=" + str(int(mode == "YES")),
                  "-module-cache-path", directory / "Generated/SwiftModuleCache",
-                 "-g", "-warnings-as-errors", "-Onone" if configuration == "Debug" else "-O"]
+                 "-g", "-warnings-as-errors", shared["OF_SWIFT_OPTIMIZATION_" + configuration.upper()]]
     if configuration == "Release":
         arguments.append("-lto=llvm-full")
     return [str(value) for value in arguments], sources
@@ -102,7 +109,9 @@ def compile_swift(product, directory, configuration, mode, root=ROOT):
         return []
     destination = directory / "Objects/Swift" / (product + ".o")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    run([*arguments, "-emit-object", *sources, "-o", destination], cwd=directory)
+    pch = directory / "Generated/SwiftPCH"
+    pch.mkdir(parents=True, exist_ok=True)
+    run([*arguments, "-pch-output-dir", pch, "-emit-object", *sources, "-o", destination], cwd=directory)
     return [destination]
 
 

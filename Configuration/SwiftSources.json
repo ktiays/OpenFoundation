@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "products": {
+    "OpenFoundation": {
+      "bridge_headers": [
+        "Foundation/Decimal/ONSDecimalInternal.h"
+      ],
+      "module_names": {
+        "NO": "OpenFoundation",
+        "YES": "Foundation"
+      }
+    }
+  }
+}

@@ -18,6 +18,8 @@
         "readings": [
           "Documentation/Reference/Research/CoreFoundationBase.md",
           "Documentation/Reference/Research/CoreFoundationScalar.md",
+          "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+          "Documentation/Reference/Research/CoreFoundationUnicode.md",
           "Documentation/Reference/Research/RuntimePrerequisites.md"
         ]
       },
@@ -32,7 +34,8 @@
         "binary_reading": "partial",
         "ida_database": "Local/Databases/iphone-simulator/Foundation.i64",
         "readings": [
-          "Documentation/Reference/Research/FoundationRange.md"
+          "Documentation/Reference/Research/FoundationRange.md",
+          "Documentation/Reference/Research/FoundationDecimal.md"
         ]
       }
     }
@@ -55,6 +58,8 @@
         "readings": [
           "Documentation/Reference/Research/CoreFoundationBase.md",
           "Documentation/Reference/Research/CoreFoundationScalar.md",
+          "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+          "Documentation/Reference/Research/CoreFoundationUnicode.md",
           "Documentation/Reference/Research/RuntimePrerequisites.md"
         ]
       },
@@ -69,7 +74,8 @@
         "binary_reading": "partial",
         "ida_database": "Local/Databases/iphone-device/Foundation.i64",
         "readings": [
-          "Documentation/Reference/Research/FoundationRange.md"
+          "Documentation/Reference/Research/FoundationRange.md",
+          "Documentation/Reference/Research/FoundationDecimal.md"
         ]
       }
     }

@@ -82,7 +82,8 @@ def generate():
 
     def script(name, action):
         return phase(name, "PBXShellScriptBuildPhase", name=action.title() + " Framework Policy", alwaysOutOfDate="1",
-                     inputPaths=[], outputPaths=[], shellPath="/bin/sh",
+                     inputPaths=[], outputPaths=(["$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o"]
+                                                if action == "swift" else []), shellPath="/bin/sh",
                      shellScript='set -eu\n/usr/bin/python3 "$SRCROOT/Tools/xcode-phase.py" ' + action + "\n")
 
     def dependency(name, target):
@@ -120,10 +121,9 @@ def generate():
                              "MODULEMAP_FILE": "Resources/" + name + ".modulemap"})
         phases.append(phase(name + "-sources", "PBXSourcesBuildPhase"))
         if swift_sources:
-            phases.append(script(name + "-swift", "swift"))
             settings["OTHER_LDFLAGS"] = ('$(inherited) "$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o" '
                                          '-L"$(SDKROOT)/usr/lib/swift" '
-                                         '-L"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)" '
+                                         '-L"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)" '
                                          '-Wl,-rpath,/usr/lib/swift')
         dependencies = []
         links = []

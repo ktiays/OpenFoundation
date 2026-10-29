@@ -5,14 +5,17 @@ one to one, from their pinned binaries. The intended consumers are
 OpenCoreGraphics and OpenCoreAnimation, which currently use the system libraries.
 Native implementation boundaries and observable behavior define the restoration.
 
-**Status:** the first scalar groups restore **twenty-four functions and ninety-two data definitions**:
+**Status:** the first scalar groups restore **seventy-eight function definitions, ninety-three data definitions and two Swift support types**:
 CoreFoundation range construction, byte hashing and Gregorian field validation,
 and Foundation range union/intersection, plus fourteen hidden UTF-8 and single-byte
-conversion kernels. Nine functions are dynamically exported; the hidden kernels
+conversion kernels. Twenty C functions are dynamically exported; the hidden kernels
 are verified through the same implementation sources in the internal test tools.
 Unicode bitmap membership, raw character decomposition and destination formatting
-are also restored. Each has independent iOS Simulator and iOS Device readings;
-twenty-three iOS Device descriptor/vector pointer bindings remain explicitly unread. Object runtime, strings, collections and consumer replacement
+are also restored. The complete eleven-entry raw NSDecimal arithmetic group preserves
+its native C-to-Swift boundary, with ten compiler-generated C bridges counted
+separately in the ledger. Each has independent iOS Simulator and iOS Device readings;
+twenty-three iOS Device descriptor/vector pointer bindings and seven Swift
+value-witness bindings remain explicitly unread. Object runtime, strings, collections and consumer replacement
 remain incomplete; these frameworks cannot replace either consumer's system dependency.
 
 Stage 1 matches iOS 27.0 Simulator (24A434), arm64. Stage 2 compares and restores

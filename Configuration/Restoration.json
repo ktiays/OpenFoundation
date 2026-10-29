@@ -2782,6 +2782,1787 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalCopy",
+      "native_symbol": "NSDecimalCopy",
+      "kind": "function",
+      "address": "0x1c04f90d0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalCopy",
+        "address": "0x180c9dab8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalCompact",
+      "native_symbol": "NSDecimalCompact",
+      "kind": "function",
+      "address": "0x1c04f9214",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalCompact",
+        "address": "0x180eff4a0",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalCompare",
+      "native_symbol": "NSDecimalCompare",
+      "kind": "function",
+      "address": "0x1c04f9208",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalCompare",
+        "address": "0x180eff494",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalRound",
+      "native_symbol": "NSDecimalRound",
+      "kind": "function",
+      "address": "0x1c04f920c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalRound",
+        "address": "0x180eff498",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalNormalize",
+      "native_symbol": "NSDecimalNormalize",
+      "kind": "function",
+      "address": "0x1c04f9210",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalNormalize",
+        "address": "0x180eff49c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalAdd",
+      "native_symbol": "NSDecimalAdd",
+      "kind": "function",
+      "address": "0x1c04f91f0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalAdd",
+        "address": "0x180eff47c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalSubtract",
+      "native_symbol": "NSDecimalSubtract",
+      "kind": "function",
+      "address": "0x1c04f91f4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalSubtract",
+        "address": "0x180eff480",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalMultiply",
+      "native_symbol": "NSDecimalMultiply",
+      "kind": "function",
+      "address": "0x1c04f91f8",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalMultiply",
+        "address": "0x180eff484",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalDivide",
+      "native_symbol": "NSDecimalDivide",
+      "kind": "function",
+      "address": "0x1c04f91fc",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalDivide",
+        "address": "0x180eff488",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalPower",
+      "native_symbol": "NSDecimalPower",
+      "kind": "function",
+      "address": "0x1c04f9200",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalPower",
+        "address": "0x180eff48c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/ONSDecimal.c",
+      "symbol": "ONSDecimalMultiplyByPowerOf10",
+      "native_symbol": "NSDecimalMultiplyByPowerOf10",
+      "kind": "function",
+      "address": "0x1c04f9204",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": true,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimalMultiplyByPowerOf10",
+        "address": "0x180eff490",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Same C tail-branch boundary to Swift; Copy retains the same field mutation order but the device loop uses indexed limb transfers. No device execution is claimed."
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal.asVariableLengthInteger()",
+      "native_symbol": "$sSo9NSDecimala10FoundationE23asVariableLengthInteger33_B2543549B445362EFCE21E0716D38713LLAbCE0deF0VyF",
+      "kind": "function",
+      "address": "0x1c08cdf20",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE23asVariableLengthInteger33_B2543549B445362EFCE21E0716D38713LLAbCE0deF0VyF",
+        "address": "0x180c9f6d4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE23asVariableLengthIntegerAbCE0efG0VyF",
+      "source_range": {
+        "start": 1052,
+        "end": 1701
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal.copyVariableLengthInteger(_:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE25copyVariableLengthIntegeryyAbCE0deF0VKF",
+      "kind": "function",
+      "address": "0x1c08ce05c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE25copyVariableLengthIntegeryyAbCE0deF0VKF",
+        "address": "0x180c9f82c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE25copyVariableLengthIntegeryyAbCE0efG0VKF",
+      "source_range": {
+        "start": 2210,
+        "end": 2911
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerCompare(lhs:rhs:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE15_integerCompare33_B2543549B445362EFCE21E0716D38713LL3lhs3rhsSo18NSComparisonResultVAbCE21VariableLengthIntegerV_AKtFZTf4nnd_n",
+      "kind": "function",
+      "address": "0x1c08cf5cc",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE15_integerCompare33_B2543549B445362EFCE21E0716D38713LL3lhs3rhsSo18NSComparisonResultVAbCE21VariableLengthIntegerV_AKtFZTf4nnd_n",
+        "address": "0x18119c1d0",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE15_integerCompare3lhs3rhsSo19ONSComparisonResultVAbCE21VariableLengthIntegerV_AJtFZ",
+      "source_range": {
+        "start": 3404,
+        "end": 4200
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerAdd(lhs:rhs:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE11_integerAdd33_B2543549B445362EFCE21E0716D38713LL3lhs3rhs15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08cf2d4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE11_integerAdd33_B2543549B445362EFCE21E0716D38713LL3lhs3rhs15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+        "address": "0x180cc42b8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE11_integerAdd3lhs3rhs15maxResultLengthAbCE08VariableJ7IntegerVAI_AISitKFZ",
+      "source_range": {
+        "start": 4701,
+        "end": 6499
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerSubtract(term:subtrahend:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE16_integerSubtract33_B2543549B445362EFCE21E0716D38713LL4term10subtrahend15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08cfd84",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE16_integerSubtract33_B2543549B445362EFCE21E0716D38713LL4term10subtrahend15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+        "address": "0x18119c454",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE16_integerSubtract4term10subtrahend15maxResultLengthAbCE08VariableJ7IntegerVAI_AISitKFZ",
+      "source_range": {
+        "start": 7021,
+        "end": 8708
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerMultiply(lhs:rhs:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE16_integerMultiply33_B2543549B445362EFCE21E0716D38713LL3lhs3rhs15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08ce208",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE16_integerMultiply33_B2543549B445362EFCE21E0716D38713LL3lhs3rhs15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+        "address": "0x180e59da8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE16_integerMultiply3lhs3rhs15maxResultLengthAbCE08VariableJ7IntegerVAI_AISitKFZ",
+      "source_range": {
+        "start": 9226,
+        "end": 10938
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerMultiplyByShort(lhs:mulplicand:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE23_integerMultiplyByShort33_B2543549B445362EFCE21E0716D38713LL3lhs10mulplicand15maxResultLengthAbCE08VariableP7IntegerVAJ_s6UInt32VSitKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08ce4d8",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE23_integerMultiplyByShort33_B2543549B445362EFCE21E0716D38713LL3lhs10mulplicand15maxResultLengthAbCE08VariableP7IntegerVAJ_s6UInt32VSitKFZTf4nnnd_n",
+        "address": "0x18119c010",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE23_integerMultiplyByShort3lhs10mulplicand15maxResultLengthAbCE08VariableL7IntegerVAI_s6UInt32VSitKFZ",
+      "source_range": {
+        "start": 11473,
+        "end": 12529
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerDivideByShort(_:_:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE21_integerDivideByShort33_B2543549B445362EFCE21E0716D38713LLyAbCE21VariableLengthIntegerV8quotient_s6UInt32V9remaindertAG_AJtKFZTf4nnd_n",
+      "kind": "function",
+      "address": "0x1c08cf6c8",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE21_integerDivideByShort33_B2543549B445362EFCE21E0716D38713LLyAbCE21VariableLengthIntegerV8quotient_s6UInt32V9remaindertAG_AJtKFZTf4nnd_n",
+        "address": "0x180ed3c6c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE21_integerDivideByShortyAbCE21VariableLengthIntegerV8quotient_s6UInt32V9remaindertAF_AItKFZ",
+      "source_range": {
+        "start": 13030,
+        "end": 13903
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerAddShort(_:rhs:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE16_integerAddShort33_B2543549B445362EFCE21E0716D38713LL_3rhs15maxResultLengthAbCE08VariableN7IntegerVAI_s6UInt32VSiSgtKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08cf87c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE16_integerAddShort33_B2543549B445362EFCE21E0716D38713LL_3rhs15maxResultLengthAbCE08VariableN7IntegerVAI_s6UInt32VSiSgtKFZTf4nnnd_n",
+        "address": "0x18119c2d4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE16_integerAddShort_3rhs15maxResultLengthAbCE08VariableJ7IntegerVAH_s6UInt32VSiSgtKFZ",
+      "source_range": {
+        "start": 14419,
+        "end": 15207
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerMultiplyByPowerOfTen(lhs:power:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE28_integerMultiplyByPowerOfTen33_B2543549B445362EFCE21E0716D38713LL3lhs5power15maxResultLengthAbCE08VariableR7IntegerVAJ_S2itKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08ced24",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE28_integerMultiplyByPowerOfTen33_B2543549B445362EFCE21E0716D38713LL3lhs5power15maxResultLengthAbCE08VariableR7IntegerVAJ_S2itKFZTf4nnnd_n",
+        "address": "0x180e5a080",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE28_integerMultiplyByPowerOfTen3lhs5power15maxResultLengthAbCE08VariableN7IntegerVAI_S2itKFZ",
+      "source_range": {
+        "start": 15747,
+        "end": 16966
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._fitMantissa(_:roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE12_fitMantissa33_B2543549B445362EFCE21E0716D38713LL_12roundingModeAbCE21VariableLengthIntegerV6result_Si8exponentSb15lossOfPrecisiontAH_So010NSRoundingK0VtKFZTf4nnd_n",
+      "kind": "function",
+      "address": "0x1c08cf9f0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE12_fitMantissa33_B2543549B445362EFCE21E0716D38713LL_12roundingModeAbCE21VariableLengthIntegerV6result_Si8exponentSb15lossOfPrecisiontAH_So010NSRoundingK0VtKFZTf4nnd_n",
+        "address": "0x180ebfdd8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE12_fitMantissa_12roundingModeAbCE21VariableLengthIntegerV6result_Si8exponentSb15lossOfPrecisiontAG_So011ONSRoundingG0VtKFZ",
+      "source_range": {
+        "start": 17460,
+        "end": 19390
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal._integerDivide(dividend:divisor:maxResultLength:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE14_integerDivide33_B2543549B445362EFCE21E0716D38713LL8dividend7divisor15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08ce694",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE14_integerDivide33_B2543549B445362EFCE21E0716D38713LL8dividend7divisor15maxResultLengthAbCE08VariableN7IntegerVAJ_AJSitKFZTf4nnnd_n",
+        "address": "0x180ebf090",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE14_integerDivide8dividend7divisor15maxResultLengthAbCE08VariableJ7IntegerVAI_AISitKFZ",
+      "source_range": {
+        "start": 19986,
+        "end": 25122
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._divide(by: UInt16)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE7_divide2byAB6result_s6UInt16V9remaindertAH_tKF",
+      "kind": "function",
+      "address": "0x1c08cba50",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE7_divide2byAB6result_s6UInt16V9remaindertAH_tKF",
+        "address": "0x180c9f494",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE7_divide2byAB6result_s6UInt16V9remaindertAH_tKF",
+      "source_range": {
+        "start": 663,
+        "end": 1614
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._multiply(byShort:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+      "kind": "function",
+      "address": "0x1c08cbc94",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+        "address": "0x180c9ec68",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE9_multiply7byShortABs6UInt16V_tKF",
+      "source_range": {
+        "start": 2161,
+        "end": 3011
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._add(UInt16)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE4_addyABs6UInt16VKF",
+      "kind": "function",
+      "address": "0x1c08cbff4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE4_addyABs6UInt16VKF",
+        "address": "0x180c9efec",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE4_addyABs6UInt16VKF",
+      "source_range": {
+        "start": 3551,
+        "end": 4227
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._round(scale:roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE6_round5scale12roundingModeABSi_So010NSRoundingF0VtKF",
+      "kind": "function",
+      "address": "0x1c08cd000",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE6_round5scale12roundingModeABSi_So010NSRoundingF0VtKF",
+        "address": "0x18119b668",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE6_round5scale12roundingModeABSi_So011ONSRoundingG0VtKF",
+      "source_range": {
+        "start": 4782,
+        "end": 8526
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._normalize(a:b:roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE10_normalize1a1b12roundingModeSbABz_ABzSo010NSRoundingE0VtKFZTf4nndd_n",
+      "kind": "function",
+      "address": "0x1c08cef54",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE10_normalize1a1b12roundingModeSbABz_ABzSo010NSRoundingE0VtKFZTf4nndd_n",
+        "address": "0x180cc3f40",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE10_normalize1a1b12roundingModeSbABz_ABzSo011ONSRoundingF0VtKFZ",
+      "source_range": {
+        "start": 9083,
+        "end": 11805
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._multiply(by:roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply2by12roundingModeA2B_So010NSRoundingF0VtKF",
+      "kind": "function",
+      "address": "0x1c08cc898",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply2by12roundingModeA2B_So010NSRoundingF0VtKF",
+        "address": "0x18119aef8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE9_multiply2by12roundingModeA2B_So011ONSRoundingG0VtKF",
+      "source_range": {
+        "start": 12360,
+        "end": 15231
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._divide(by: ONSDecimal, roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE7_divide2by12roundingModeA2B_So010NSRoundingF0VtKFTf4ndn_n",
+      "kind": "function",
+      "address": "0x1c08d0038",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE7_divide2by12roundingModeA2B_So010NSRoundingF0VtKFTf4ndn_n",
+        "address": "0x180ebdf74",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE7_divide2by12roundingModeA2B_So011ONSRoundingG0VtKF",
+      "source_range": {
+        "start": 15784,
+        "end": 19688
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "ONSDecimal._multiplyByPowerOfTen(power:roundingMode:)",
+      "native_symbol": "$sSo9NSDecimala10FoundationE21_multiplyByPowerOfTen5power12roundingModeABSi_So010NSRoundingJ0VtKFTf4ndn_n",
+      "kind": "function",
+      "address": "0x1c08d0778",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE21_multiplyByPowerOfTen5power12roundingModeABSi_So010NSRoundingJ0VtKFTf4ndn_n",
+        "address": "0x180e5981c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE21_multiplyByPowerOfTen5power12roundingModeABSi_So011ONSRoundingK0VtKF",
+      "source_range": {
+        "start": 20258,
+        "end": 20850
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "_ONSDecimalCompact(_:)",
+      "native_symbol": "$s10Foundation17_NSDecimalCompactyySpySo0B0aGFTm",
+      "kind": "function",
+      "address": "0x1c08c1388",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation17_NSDecimalCompactyySpySo0B0aGFTm",
+        "address": "0x180c9e7f0",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalCompact:",
+      "source_range": {
+        "start": 21424,
+        "end": 22988
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalCompare (Swift body)",
+      "native_symbol": "$s10Foundation17_NSDecimalCompareySo18NSComparisonResultVSPySo0B0aG_AGtFTm",
+      "kind": "function",
+      "address": "0x1c08c11c4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation17_NSDecimalCompareySo18NSComparisonResultVSPySo0B0aG_AGtFTm",
+        "address": "0x180ec05bc",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalCompare::",
+      "source_range": {
+        "start": 1017,
+        "end": 2652
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalRound (Swift body)",
+      "native_symbol": "_NSDecimalRound",
+      "kind": "function",
+      "address": "0x1c08be858",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalRound",
+        "address": "0x18118ed48",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalRound::::",
+      "source_range": {
+        "start": 3099,
+        "end": 3481
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalNormalize (Swift body)",
+      "native_symbol": "$s10Foundation20__NSDecimalNormalize33_69C387F73590B9C7228D7F7731ABB734LLySo18NSCalculationErrorVSpySo0B0aG_AHSo14NSRoundingModeVtFTf4nnd_n",
+      "kind": "function",
+      "address": "0x1c08c1920",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation20__NSDecimalNormalize33_69C387F73590B9C7228D7F7731ABB734LLySo18NSCalculationErrorVSpySo0B0aG_AHSo14NSRoundingModeVtFTf4nnd_n",
+        "address": "0x1811910a8",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalNormalize:::",
+      "source_range": {
+        "start": 3935,
+        "end": 4880
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "ONSDecimalAdd (Swift body)",
+      "native_symbol": "$s10Foundation12NSDecimalAddySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+      "kind": "function",
+      "address": "0x1c08bf4cc",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation12NSDecimalAddySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+        "address": "0x180c988dc",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)ONSDecimalAdd::::",
+      "source_range": {
+        "start": 5370,
+        "end": 11061
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "ONSDecimalSubtract (Swift body)",
+      "native_symbol": "$s10Foundation17NSDecimalSubtractySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+      "kind": "function",
+      "address": "0x1c08bfd24",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation17NSDecimalSubtractySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+        "address": "0x18118faa4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)ONSDecimalSubtract::::",
+      "source_range": {
+        "start": 11561,
+        "end": 17262
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "ONSDecimalMultiply (Swift body)",
+      "native_symbol": "$s10Foundation17NSDecimalMultiplyySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+      "kind": "function",
+      "address": "0x1c08c059c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation17NSDecimalMultiplyySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtF",
+        "address": "0x18119031c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)ONSDecimalMultiply::::",
+      "source_range": {
+        "start": 17762,
+        "end": 18981
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalDivide (Swift body)",
+      "native_symbol": "$s10Foundation16_NSDecimalDivideySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtFTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08c16a0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation16_NSDecimalDivideySo18NSCalculationErrorVSpySo0B0aG_SPyAFGAHSo14NSRoundingModeVtFTf4nnnd_n",
+        "address": "0x180ec038c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalDivide::::",
+      "source_range": {
+        "start": 19430,
+        "end": 20633
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalMultiplyByPowerOf10 (Swift body)",
+      "native_symbol": "$s10Foundation29_NSDecimalMultiplyByPowerOf10ySo18NSCalculationErrorVSpySo0B0aG_SPyAFGs5Int16VSo14NSRoundingModeVtFTf4nnnd_n",
+      "kind": "function",
+      "address": "0x1c08c17e0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation29_NSDecimalMultiplyByPowerOf10ySo18NSCalculationErrorVSpySo0B0aG_SPyAFGs5Int16VSo14NSRoundingModeVtFTf4nnnd_n",
+        "address": "0x180e59950",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)_ONSDecimalMultiplyByPowerOf10::::",
+      "source_range": {
+        "start": 21108,
+        "end": 22307
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "ONSDecimalPower (Swift body)",
+      "native_symbol": "$s10Foundation14NSDecimalPowerySo18NSCalculationErrorVSpySo0B0aG_SPyAFGSiSo14NSRoundingModeVtF",
+      "kind": "function",
+      "address": "0x1c08c081c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation14NSDecimalPowerySo18NSCalculationErrorVSpySo0B0aG_SPyAFGSiSo14NSRoundingModeVtF",
+        "address": "0x1811905a4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "c:(cm)ONSDecimalPower::::",
+      "source_range": {
+        "start": 23264,
+        "end": 25908
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Conformances.swift",
+      "symbol": "ONSDecimal.subscript(UInt32).getter",
+      "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+      "kind": "function",
+      "address": "0x1c08cbda4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+        "address": "0x180c9ec68",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Complete eight-case getter and invalid-index path are inlined in the containing primitive in both images; no emitted native getter exists.",
+        "native_container": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+        "instruction_range": {
+          "start": "0x180c9ec68",
+          "end": "0x180c9efc8"
+        }
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationEys6UInt16Vs6UInt32Vcig",
+      "source_range": {
+        "start": 720,
+        "end": 1424
+      },
+      "inlined_native": true,
+      "native_container": "$sSo9NSDecimala10FoundationE9_multiply7byShortABs6UInt16V_tKF",
+      "instruction_range": {
+        "start": "0x1c08cbc94",
+        "end": "0x1c08cbff4"
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Conformances.swift",
+      "symbol": "ONSDecimal.subscript(UInt32).setter",
+      "native_symbol": "$sSo9NSDecimala10FoundationEys6UInt16Vs6UInt32Vcis",
+      "kind": "function",
+      "address": "0x1c08c59c4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationEys6UInt16Vs6UInt32Vcis",
+        "address": "0x180dab138",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationEys6UInt16Vs6UInt32Vcis",
+      "source_range": {
+        "start": 1434,
+        "end": 2170
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal.swift",
+      "symbol": "ONSDecimal.init(UInt64)",
+      "native_symbol": "$sSo9NSDecimala10FoundationEyABs6UInt64VcfCTf4nd_n",
+      "kind": "function",
+      "address": "0x1c08c87d4",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationEyABs6UInt64VcfCTf4nd_n",
+        "address": "0x181198110",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationEyABs6UInt64Vcfc",
+      "source_range": {
+        "start": 1317,
+        "end": 1990
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "powerOfTen",
+      "native_symbol": "$s10Foundation10powerOfTen33_B2543549B445362EFCE21E0716D38713LLSaySo9NSDecimalaAAE21VariableLengthIntegerVGvp",
+      "kind": "data",
+      "address": "0x22e6e8bc0",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$s10Foundation10powerOfTen33_B2543549B445362EFCE21E0716D38713LLSaySo9NSDecimalaAAE21VariableLengthIntegerVGvp",
+        "address": "0x1e3f2cd30",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "All 39 literal rows independently reconstructed from device stores agree, including inactive words and 48-byte stride."
+      },
+      "source_usr": "s:14OpenFoundation10powerOfTenSaySo10ONSDecimalaAAE21VariableLengthIntegerVGvp",
+      "source_range": {
+        "start": 25669,
+        "end": 25669
+      },
+      "native_initializer": {
+        "native_symbol": "$s10Foundation10powerOfTen33_B2543549B445362EFCE21E0716D38713LL_WZ",
+        "address": "0x1c08cd960",
+        "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+        "emitted_symbol": "_$s14OpenFoundation10powerOfTen_WZ",
+        "ios_device_address": "0x180ebea80",
+        "ios_device_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56"
+      }
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+IntegerArithmetic.swift",
+      "symbol": "ONSDecimal.VariableLengthInteger",
+      "native_symbol": "NSDecimal.VariableLengthInteger",
+      "kind": "type",
+      "address": "0x1c08cdf20",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSDecimal.VariableLengthInteger",
+        "address": "0x180c9f6d4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Both native helper streams establish Int length at offset 0 and seventeen UInt16 elements at offset 8; 42-byte size, 8-byte alignment, 48-byte stride."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE21VariableLengthIntegerV",
+      "source_range": {
+        "start": 453,
+        "end": 558
+      },
+      "native_container": "$sSo9NSDecimala10FoundationE23asVariableLengthInteger33_B2543549B445362EFCE21E0716D38713LLAbCE0deF0VyF",
+      "compiler_support": [
+        {
+          "native_symbol": "$ss11InlineArrayV9repeatingAByxq_Gq__tcfC$16__s6UInt16VTt1g5",
+          "address": "0x1c08c1b14",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "purpose": "Specialized InlineArray<17, UInt16> repeating initializer; supplied by Swift compilation.",
+          "ios_device": {
+            "status": "compared",
+            "native_symbol": "$ss11InlineArrayV9repeatingAByxq_Gq__tcfC$16__s6UInt16VTt1g5",
+            "address": "0x180c9f81c",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "verified"
+          }
+        }
+      ]
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal.swift",
+      "symbol": "ONSDecimal._CalculationError",
+      "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorON",
+      "kind": "type",
+      "address": "0x2227e5a90",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorON",
+        "address": "0x1e8ea1870",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Three ordered case strings and tags agree. Seven arm64e encoded value-witness target bindings remain unread; no device equivalence is claimed."
+      },
+      "source_usr": "s:So10ONSDecimala14OpenFoundationE17_CalculationErrorO",
+      "source_range": {
+        "start": 688,
+        "end": 805
+      },
+      "compiler_support": [
+        {
+          "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOAEs0D0ACWl",
+          "address": "0x1c08c1660",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOAEs0E0ACWl",
+          "ios_device": {
+            "status": "compared",
+            "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOAEs0D0ACWl",
+            "address": "0x181191054",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "verified"
+          }
+        },
+        {
+          "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOMa",
+          "address": "0x1c08cb9fc",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOMa",
+          "ios_device": {
+            "status": "compared",
+            "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOMa",
+            "address": "0x18119ae90",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "verified"
+          }
+        },
+        {
+          "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOSHACSQWb",
+          "address": "0x1c08cba0c",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOSHACSQWb",
+          "ios_device": {
+            "status": "compared",
+            "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOSHACSQWb",
+            "address": "0x18119aea0",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "verified"
+          }
+        },
+        {
+          "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOAESQACWl",
+          "address": "0x1c08cba10",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOAESQACWl",
+          "ios_device": {
+            "status": "compared",
+            "native_symbol": "$sSo9NSDecimala10FoundationE17_CalculationErrorOAESQACWl",
+            "address": "0x18119aea4",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "verified"
+          }
+        },
+        {
+          "native_symbol": "__swift_noop_void_return",
+          "address": "0x1c06e93b0",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "___swift_noop_void_return",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "__swift_memcpy1_1",
+          "address": "0x1c07d520c",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "___swift_memcpy1_1",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "$s10Foundation8CalendarV7Current33_F3BDB2D973DC43C399EBDEAB6295AE62LLOwet",
+          "address": "0x1c0838910",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOwet",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "$s10Foundation8CalendarV7Current33_F3BDB2D973DC43C399EBDEAB6295AE62LLOwst",
+          "address": "0x1c08389a0",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOwst",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "$s10Foundation16AttributedStringV10CodingKeys33_628C17579E40660980A9932CDA4C6A74LLOwug",
+          "address": "0x1c07d5358",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOwug",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "_NSBundleDeallocatingImmortalBundle",
+          "address": "0x1c04cf210",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "___swift_noop_void_return",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        },
+        {
+          "native_symbol": "$s10Foundation16AttributedStringV10CodingKeys33_628C17579E40660980A9932CDA4C6A74LLOwui",
+          "address": "0x1c07d5360",
+          "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+          "confidence": "verified",
+          "emitted_symbol": "_$sSo10ONSDecimala14OpenFoundationE17_CalculationErrorOwui",
+          "purpose": "Compiler value-witness callback; native linker may pool its body under an unrelated function name.",
+          "ios_device": {
+            "status": "unread",
+            "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+            "confidence": "unread",
+            "differences": "Corresponding encoded/authenticated device witness-table target binding is not decoded; callback address remains unread."
+          }
+        }
+      ]
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Math.swift",
+      "symbol": "_ONSDecimalCompact",
+      "native_symbol": "_NSDecimalCompact",
+      "kind": "function",
+      "address": "0x1c08be900",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalCompact",
+        "address": "0x180c9eac4",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalCompact(_:)",
+      "emitted_symbol": "__ONSDecimalCompact",
+      "emitted_system_symbol": "__NSDecimalCompact"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalCompare",
+      "native_symbol": "_NSDecimalCompare",
+      "kind": "function",
+      "address": "0x1c08be844",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalCompare",
+        "address": "0x180ec0778",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalCompare (Swift body)",
+      "emitted_symbol": "__ONSDecimalCompare",
+      "emitted_system_symbol": "__NSDecimalCompare"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalRound",
+      "native_symbol": "_NSDecimalRound",
+      "kind": "function",
+      "address": "0x1c08be858",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalRound",
+        "address": "0x18118ed48",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalRound (Swift body)",
+      "emitted_symbol": "__ONSDecimalRound",
+      "emitted_system_symbol": "__NSDecimalRound",
+      "native_boundary_note": "The native hidden C bridge contains the Swift body; no separate mangled body exists. Compilation may emit both source entry and C thunk."
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalNormalize",
+      "native_symbol": "_NSDecimalNormalize",
+      "kind": "function",
+      "address": "0x1c08be8fc",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalNormalize",
+        "address": "0x18118ee00",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalNormalize (Swift body)",
+      "emitted_symbol": "__ONSDecimalNormalize",
+      "emitted_system_symbol": "__NSDecimalNormalize"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalAdd",
+      "native_symbol": "_NSDecimalAdd",
+      "kind": "function",
+      "address": "0x1c08be82c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalAdd",
+        "address": "0x180c99134",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "ONSDecimalAdd (Swift body)",
+      "emitted_symbol": "__ONSDecimalAdd",
+      "emitted_system_symbol": "__NSDecimalAdd"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalSubtract",
+      "native_symbol": "_NSDecimalSubtract",
+      "kind": "function",
+      "address": "0x1c08be830",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalSubtract",
+        "address": "0x18118ed3c",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "ONSDecimalSubtract (Swift body)",
+      "emitted_symbol": "__ONSDecimalSubtract",
+      "emitted_system_symbol": "__NSDecimalSubtract"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalMultiply",
+      "native_symbol": "_NSDecimalMultiply",
+      "kind": "function",
+      "address": "0x1c08be834",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalMultiply",
+        "address": "0x18118ed40",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "ONSDecimalMultiply (Swift body)",
+      "emitted_symbol": "__ONSDecimalMultiply",
+      "emitted_system_symbol": "__NSDecimalMultiply"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalDivide",
+      "native_symbol": "_NSDecimalDivide",
+      "kind": "function",
+      "address": "0x1c08be838",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalDivide",
+        "address": "0x180ec04d0",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalDivide (Swift body)",
+      "emitted_symbol": "__ONSDecimalDivide",
+      "emitted_system_symbol": "__NSDecimalDivide"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalPower",
+      "native_symbol": "_NSDecimalPower",
+      "kind": "function",
+      "address": "0x1c08be83c",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalPower",
+        "address": "0x18118ed44",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "ONSDecimalPower (Swift body)",
+      "emitted_symbol": "__ONSDecimalPower",
+      "emitted_system_symbol": "__NSDecimalPower"
+    },
+    {
+      "path": "Source/Foundation/Decimal/Decimal+Operations.swift",
+      "symbol": "_ONSDecimalMultiplyByPowerOf10",
+      "native_symbol": "_NSDecimalMultiplyByPowerOf10",
+      "kind": "function",
+      "address": "0x1c08be840",
+      "reference_uuid": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/FoundationDecimal.md",
+      "tests": [
+        "Tests/Foundation/Decimal/DecimalTests.c",
+        "StandaloneTests/Foundation/Decimal/DecimalTests.c"
+      ],
+      "product": "OpenFoundation",
+      "exported": false,
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_NSDecimalMultiplyByPowerOf10",
+        "address": "0x180e59a98",
+        "reference_uuid": "C041F1D0-5EF1-30A3-BF96-830976173B56",
+        "confidence": "verified",
+        "differences": "Arithmetic, branch conditions, errors and data widths independently agree; arm64e authenticates calls/returns. Device compilation/execution is unvalidated."
+      },
+      "compiler_generated": true,
+      "source_definition": "_ONSDecimalMultiplyByPowerOf10 (Swift body)",
+      "emitted_symbol": "__ONSDecimalMultiplyByPowerOf10",
+      "emitted_system_symbol": "__NSDecimalMultiplyByPowerOf10"
     }
   ],
   "exclusions": [

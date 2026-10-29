@@ -8,6 +8,7 @@
 #include "CoreFoundation/Base/OCFBaseStandaloneTests.h"
 #include "CoreFoundation/Date/ScalarStandaloneTests.h"
 #include "Foundation/Range/RangeStandaloneTests.h"
+#include "Foundation/Decimal/DecimalStandaloneTests.h"
 #include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
 
@@ -43,6 +44,10 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationUnicodeStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runFoundationDecimalStandaloneTests();
     if (status != 0) {
         return status;
     }

@@ -10,6 +10,7 @@
 #include "Foundation/Range/RangeDifferentialTests.h"
 #include "CoreFoundation/StringEncoding/KernelTests.h"
 #include "CoreFoundation/Unicode/UnicodeTests.h"
+#include "Foundation/Decimal/DecimalDifferentialTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
 
@@ -44,6 +45,10 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runCoreFoundationUnicodeDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runFoundationDecimalDifferentialTests();
         if (status != 0) {
             return status;
         }

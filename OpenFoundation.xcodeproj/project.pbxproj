@@ -300,8 +300,15 @@
                 OpenFoundation.h,
                 Base/ONSObjCRuntime.h,
                 Range/ONSRange.h,
+                Decimal/ONSDecimal.h,
             );
-            membershipExceptions = ();
+            membershipExceptions = (
+                "Decimal/Decimal+Conformances.swift",
+                "Decimal/Decimal+IntegerArithmetic.swift",
+                "Decimal/Decimal+Math.swift",
+                "Decimal/Decimal+Operations.swift",
+                Decimal/Decimal.swift,
+            );
         };
         A0F5FE790E1DA0D5F1974C53 = {
             isa = PBXHeadersBuildPhase;
@@ -369,6 +376,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
+                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -391,6 +399,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
+                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };

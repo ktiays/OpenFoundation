@@ -21,6 +21,9 @@ def main():
     directory = Path(os.environ["BUILT_PRODUCTS_DIR"])
     if sys.argv[1] == "prepare":
         prepare(directory, mode)
+        product = os.environ["PRODUCT_NAME"]
+        if product in {"OpenCoreFoundation", "OpenFoundation"}:
+            swift_build_module().compile_swift(product, directory, configuration, mode)
     elif sys.argv[1] == "swift":
         swift_build_module().compile_swift(os.environ["PRODUCT_NAME"], directory, configuration, mode)
     elif sys.argv[1] == "package":

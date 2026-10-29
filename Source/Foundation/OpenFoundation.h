@@ -11,3 +11,5 @@
 
 #include <OpenFoundation/Base/ONSObjCRuntime.h>
 #include <OpenFoundation/Range/ONSRange.h>
+
+#include <OpenFoundation/Decimal/ONSDecimal.h>

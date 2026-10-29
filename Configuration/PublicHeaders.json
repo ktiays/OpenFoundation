@@ -8,6 +8,7 @@
   "OpenFoundation": [
     "OpenFoundation.h",
     "Base/ONSObjCRuntime.h",
-    "Range/ONSRange.h"
+    "Range/ONSRange.h",
+    "Decimal/ONSDecimal.h"
   ]
 }

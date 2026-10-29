@@ -156,3 +156,28 @@ each API's eventual acceptance. State any justified tolerance in the reading;
 never change one merely to pass. Ownership changes also require static
 analysis, memory guards/leak checks and ASan. Performance claims require
 Release and an iOS Device.
+
+## Native Swift units
+
+The raw Decimal reading establishes the actual C wrappers, Swift arithmetic and
+throwing helpers, value layouts, generated C bridges and ordinary libswiftCore /
+weak libswift_Builtin_float dependencies. Swift is compiled only for units with
+an entry in `Configuration/SwiftSources.json`; source declarations use concrete
+ONS names and the same single naming switch selects both products.
+
+`Tools/swift-build.py` is shared by Make and the native Xcode target's Swift
+phase. It derives concrete selected-name Swift copies outside Source, maps only
+exact `_cdecl` / `_silgen_name` linkage annotations, and preserves ordinary
+literal data. Generated physical filenames carry an OF_ prefix so native virtual
+`#sourceLocation` filenames remain unambiguous. Private textual bridge headers
+have no module map and never import the system Foundation overlay. Swift helper
+names live in OpenFoundation for coexistence and isolated Foundation in system
+mode; no Swift public module is installed.
+
+The source audit queries every primary file through the Swift compiler's JSON
+AST. Explicit functions, accessors, constructors, support types and global
+storage are matched by actual source USR. Generated C entry rows must point to an
+authored function with the matching observed C binding; generated metadata and
+witness support attach to verified type rows. An inlined native accessor records
+its real containing instruction ranges rather than an invented entry address.
+These records do not turn compiler support into additional handwritten bodies.
