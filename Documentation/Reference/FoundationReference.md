@@ -1,7 +1,7 @@
 # Foundation and CoreFoundation reference
 
 The compatibility target is the pinned iOS implementation, not an API-compatible
-redesign, limited to the consumer-derived [scope](Scope.md). One hundred seven function definitions, one hundred twelve data definitions and two Swift support types have complete per-group readings and
+redesign, limited to the consumer-derived [scope](Scope.md). One hundred eleven function definitions, one hundred twenty-six data definitions and two Swift support types have complete per-group readings and
 tests. Initial object-runtime entry readings identify further dependencies; no
 complete object runtime, collection algorithm, constant-string representation,
 tagged-pointer encoding or bridge is restored.
@@ -14,7 +14,7 @@ tagged-pointer encoding or bridge is restored.
 | Consumer source requirements | [Consumer snapshot](Consumers.json) and [interpretation](ConsumerRequirements.md) | Lexical inventory; no native ownership claim |
 | Scalar base/date/range groups | [Base](Research/CoreFoundationBase.md), [date validation](Research/CoreFoundationScalar.md), [Foundation ranges](Research/FoundationRange.md) | Nineteen scalar/encoding functions and ten private tables; finite test coverage |
 | Raw NSDecimal arithmetic | [Decimal reading](Research/FoundationDecimal.md) | Eleven C APIs, native Swift helpers/error paths and ten C bridges; object Decimal/String APIs unbuilt |
-| Raw Unicode primitives | [Unicode reading](Research/CoreFoundationUnicode.md) | Ten functions and 94 data definitions, including the plane/property/priority group; case mapping and stream decomposition unbuilt; 23 Device pointer bindings unread |
+| Raw Unicode primitives | [Unicode reading](Research/CoreFoundationUnicode.md) | Fourteen functions and 108 data definitions, including the plane/property/priority and case-mapping/compatibility groups; stream decomposition unbuilt; 23 Device pointer bindings unread |
 | BigNum initialization and text | [BigNum reading](Research/CoreFoundationBigNum.md) | Seven functions (signed initializers, C-string formatting, `emit128`) and two power tables; unsigned initializers, arithmetic and parsing unbuilt |
 | String-encoding kernels | [Encoding reading](Research/CoreFoundationStringEncoding.md) | Fourteen hidden kernels and nine tables; seventeen wrapper/name/code-page functions and five tables; dispatcher/cache, concrete converters and the byte-conversion group with its unread character-table writer remain unbuilt |
 | Allocator and CF runtime | [Initial dependency boundary](Research/RuntimePrerequisites.md) | Full runtime group in progress; unbuilt |

@@ -195,3 +195,31 @@ extern const uint8_t *const __CFUniCharBidiProperty[15];
 extern const uint8_t *const __CFUniCharDecompositionCombiningPriorityTable[2];
 
 extern const UniCharBitmapData __CFUniCharUnicodePropertyTable[2];
+
+extern const uint32_t __CFUniCharToLowercaseMappingTable[2976];
+
+extern const uint32_t __CFUniCharToLowercaseMappingExtraTable[2];
+
+extern const uint32_t __CFUniCharToUppercaseMappingTable[3160];
+
+extern const uint32_t __CFUniCharToUppercaseMappingExtraTable[220];
+
+extern const uint32_t __CFUniCharToTitlecaseMappingTable[270];
+
+extern const uint32_t __CFUniCharToTitlecaseMappingExtraTable[51];
+
+extern const uint32_t __CFUniCharCaseFoldMappingTable[232];
+
+extern const uint32_t __CFUniCharCaseFoldMappingExtraTable[222];
+
+extern const uint32_t __CFUniCharCaseMappingTableCounts[4];
+
+extern const uint32_t *const __CFUniCharCaseMappingTable[4];
+
+extern const uint32_t *const __CFUniCharCaseMappingExtraTable[4];
+
+extern const uint32_t __CFUniCharCompatibilityDecompositionTable[7666];
+
+extern const uint32_t __CFUniCharCompatibilityMultipleDecompositionTable[2928];
+
+extern const uint8_t __CFUniCharDecompositionCanonicalDecomposableCharacterSetBitmapPlane0[8192];

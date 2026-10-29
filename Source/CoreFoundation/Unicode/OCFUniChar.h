@@ -29,8 +29,30 @@ OF_EXPORT const uint8_t *OCFUniCharGetUnicodePropertyDataForPlane(uint32_t prope
 
 OF_EXPORT void OCFUniCharPrioritySort(uint32_t *characters, OCFIndex length);
 
+OF_EXPORT OCFIndex OCFUniCharMapCaseTo(
+    uint32_t character,
+    uint16_t *converted,
+    OCFIndex maxLength,
+    uint32_t context,
+    uint32_t flags,
+    const uint8_t *langCode
+);
+
+OF_EXPORT OCFIndex
+OCFUniCharCompatibilityDecompose(uint32_t *convertedChars, OCFIndex length, OCFIndex maxBufferLength);
+
 // Original hidden names are preserved; no process-shared symbol is exported.
 OF_EXTERN uint32_t CFUniCharGetNumberOfPlanes(uint32_t characterSet);
 
 OF_EXTERN uint8_t
 CFUniCharGetBitmapForPlane(uint32_t characterSet, uint32_t plane, void *bitmap, bool isInverted);
+
+OF_EXTERN uint32_t CFUniCharGetConditionalCaseMappingFlags(
+    uint32_t character,
+    const uint16_t *buffer,
+    OCFIndex currentIndex,
+    OCFIndex length,
+    uint32_t type,
+    const uint8_t *langCode,
+    uint32_t lastFlags
+);

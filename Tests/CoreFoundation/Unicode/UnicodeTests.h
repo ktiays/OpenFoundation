@@ -8,3 +8,5 @@
 int runCoreFoundationUnicodeDifferentialTests(void);
 
 int runCoreFoundationUnicodePlaneDifferentialTests(void);
+
+int runCoreFoundationUnicodeCaseDifferentialTests(void);

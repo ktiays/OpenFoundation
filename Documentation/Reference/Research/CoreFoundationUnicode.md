@@ -5,9 +5,10 @@
 This reading restores the closed table-backed group needed by the raw UTF decoder:
 `CFUniCharIsMemberOf`, `CFUniCharGetBitmapPtrForPlane`,
 `CFUniCharDecomposeCharacter`, `CFUniCharFillDestinationBuffer`, and the native
-recursive character-decomposition helper. It is not a restoration of complete
-Unicode stream normalization, case conversion, bidirectional layout or CFString
-objects.
+recursive character-decomposition helper. Later sections add the plane/property/
+priority group and the scalar case-mapping/compatibility-decomposition group. It
+is not a restoration of complete Unicode stream normalization, CFString case
+conversion, bidirectional layout or CFString objects.
 
 | Reference | Identity |
 | --- | --- |
@@ -199,6 +200,139 @@ test tools (`Configuration/InternalTestSources.json`). It adds 206,237 cases:
 - 140 sets × 20 planes × both inversions of bitmap copies, with canaries;
 - 200,000 deterministic sort arrays of lengths -1..14.
 
+## Case mapping and compatibility group
+
+Added 2026-10-30. It depends only on the primitives and tables above and on
+the read tables below; it has no CF/NS objects, allocator or callbacks.
+Evidence: `Local/Evidence/below-core-capture/{iphone-simulator,iphone-device}.json`,
+group `unicode-case` (disassembly, pseudocode, callers with call-site context and
+referenced data, captured through IDA on scratch clones by the coordinating
+session). The data generator `GenerateUnicodeCaseData.py` and the ledger script
+`AppendRestorationRows.py` are kept in `Local/Evidence/cf-unicode-case`.
+
+| Native function | iOS Simulator | iOS Device | Linkage | Confidence |
+| --- | --- | --- | --- | --- |
+| CFUniCharMapCaseTo | 0x1c02518e0 | 0x1806cb400 | exported | Verified; Device outlines two cold bodies with the same behavior |
+| CFUniCharGetConditionalCaseMappingFlags | 0x1c0252064 | 0x180774138 | private external | Verified; scheduling differs |
+| CFUniCharCompatibilityDecompose | 0x1c0253068 | 0x180700fac | exported | Verified; tail-move loop shape differs |
+| __CFUniCharRecursivelyCompatibilityDecomposeCharacter | 0x1c0253188 | 0x180700d14 | non-external | Verified; block order differs |
+
+**ABI.** The callers (`CFStringLowercase`, `CFStringUppercase`,
+`CFStringCapitalize`, `__CFStringFoldCharacterClusterAtIndex`, `CFStringNormalize`,
+`CFUniCharMapTo` and the recursion) settle the widths: the case mapper returns a
+64-bit count that callers use whole; the conditional flags are a 32-bit value
+passed back as the mapper's `flags`. The language code is a pointer read with
+one 16-bit load and compared with `tr`, `az`, `lt` and `nl` (0x7274, 0x7a61,
+0x746c, 0x6c6e on the little-endian target).
+
+**Case mapping.** Contexts 0..3 select lowercase, uppercase, titlecase and case
+folding. In order:
+- With flag bit 0, U+03A3 maps to U+03C2 in context 0 and to itself otherwise.
+- With a language code and flag 0x10, U+0301 maps to nothing and U+0344 to
+  U+0308. A canonically decomposable character whose decomposition contains
+  U+0301 maps its base recursively (flags 0) and appends the other marks
+  without U+0301.
+- The language branches follow: Lithuanian i/j/Į with U+0307, and Ì, Í, Ĩ
+  with three units; Turkish/Azeri dotted and dotless I; Dutch IJ.
+- A character outside the context's "has non-self mapping" bitmap maps to
+  itself. Context 3 first retries as context 0.
+- Otherwise the table pair is binary-searched over
+  `__CFUniCharCaseMappingTableCounts`. A value has a five-bit count at bit 24,
+  an offset in the low 24 bits and a UTF-32 flag at bit 31. Count 1 is the
+  scalar itself; other counts copy that many extra-table units when maxLength
+  exceeds the count.
+- Titlecase without an entry falls back to a direct search of the uppercase
+  table through its pair at byte 0x3158 (1,580 pairs), from U+0061 to U+1E943.
+  It then reads the uppercase extra table.
+
+The language, self-mapping and decomposed-accent stores do not check maxLength;
+neither does the native code. A UTF-32 extra run that fits completely falls
+through to the self mapping, and one that stops before its last unit returns
+the units written. No pinned entry has that form: the 1,488/1,580/135/116 pairs
+use UTF-32 only with count 1. The context indexes the tables unchecked; the
+tests use the four read contexts.
+
+**Conditional flags.** U+03A3 in type 0 after index 0 answers 1 when the nearest
+non-case-ignorable scalar before it (set 109) is cased (sets 7 or 6) and none
+follows; scanning past the buffer start counts as cased. Without a language
+code every other character answers 0. With one:
+- Turkish/Azeri I followed by U+0307 answers 4; U+0307 answers
+  `(lastFlags >> 1) & 2`.
+- Dutch I or i before J or j in titlecase (type 2) answers 8, and with
+  `lastFlags` bit 3 a J or j answers 8.
+- Lithuanian scans: i/j (non-lowercase) and I/J/Į (lowercase) look forward
+  across combining marks (set 8) for priority 230 and answer 6 or 4. U+0307 with
+  `lastFlags & 6` looks back to the base, then decomposes it, and answers 2
+  unless a priority-230 mark intervenes.
+- Otherwise `lastFlags` 0x10 with a combining mark, or a Greek letter
+  (U+0370..U+03FF, U+1F00..U+1FFF, letter set 5) in the uppercase type (1),
+  answers 0x10.
+
+`CoreFoundation defect:` the two Lithuanian forward scans (0x1c0252344,
+0x1c0252454; Device 0x180774428, 0x18077453c; confidence verified) test the
+unit two places after a high surrogate for the low-surrogate range, then combine
+with the unit one place after it. With exactly two units left, the tested unit
+is `buffer[length]`, outside the caller's range. The restoration does not read
+it and treats it as not a low surrogate. Every in-range result, including the
+unusual unit choice, is preserved.
+
+**Compatibility decomposition.** The helper accepts U+00A0..U+1FBF9 by one
+wrapping subtraction. It binary-searches 3,833 pairs, through the inclusive
+bound at byte 0x77c0. It takes a five-bit count and a 24-bit offset into the
+2,928-unit multiple table; bits 30 and 31 of the value are ignored. Each element
+of the expansion is decomposed:
+- canonically, with capacity 33 - count + index, when its plane's canonical-
+  decomposable bitmap has it; a zero result drops the element;
+- compatibly, without a capacity, when it is in set 100;
+- otherwise it is copied.
+
+The plane-0 bitmap is a second non-external copy of
+`__CFUniCharCanonicalDecomposableCharacterSetBitmapPlane0` beside the
+compatibility tables, byte-identical to the first. Like the priority-table copy,
+it takes a recorded collision mapping:
+`__CFUniCharDecompositionCanonicalDecomposableCharacterSetBitmapPlane0`. The
+public function expands set-100 members in place through a 32-scalar stack
+buffer. It returns 0 when the new length would exceed the maximum and moves the
+tail before copying. The scan limit stays at the original end: expanded
+characters push later input past it, so those characters are not examined. An
+expansion of length zero would not advance; every set-100 member has a nonzero
+entry in the pinned tables (3,833 members, 3,833 keys).
+
+**Tables.** All four mapping tables, four extra tables (2, 220, 51 and 222
+units, each ending exactly at the next named symbol), the counts, the two
+compatibility tables and the bitmap copy are captured byte for byte. They agree
+with the Device image over the lengths the code reaches. Device pointer vectors
+are chained fixups whose targets decode by offset to the matching Device tables;
+their authentication/diversity bits remain unread.
+
+`iOS Device divergence:` `CFUniCharMapCaseTo` at 0x1806cb400 moves two pieces
+into outlined bodies, both read later through IDA
+(`Local/Evidence/below-core-capture/iphone-device-mapcase-cold.json`):
+- `CFUniCharMapCaseTo.cold.1` at 0x1807c7c18 holds the Lithuanian replacement
+  switch. It receives `(flags & 4) == 0`, the character, the destination and a
+  stack slot. It returns 1 to fall through to the bitmap test, or 0 after
+  storing the units and writing the count (2 or 3) to the slot, which the caller
+  returns. The flag-4 branch tests U+012E, J, Ì, Í, Ĩ, I in that order and the
+  other branch Ĩ, Í, Ì. The character sets and stores equal the simulator's.
+- `CFUniCharMapCaseTo.cold.2` at 0x1807c7cdc is the single-unit surrogate-pair
+  store, with the same formula.
+
+All branches, constants, table reads and stores agree; confidence verified.
+
+**Tests.** The standalone suite adds 26 fixed cases, including the defect fix.
+The differential suite adds 33,832,857 comparisons of results and complete
+canary buffers:
+- case mapping: 17,563,648 comparisons. These cover every scalar in four
+  contexts with and without the accent flag, capacities -1..4 through U+1FFFF,
+  and 2,048 scalars over all 32 flag combinations, seven language codes and
+  three capacities.
+- conditional flags: 14,870,771 comparisons. These cover every scalar in four
+  types in a fixed Lithuanian context with two flag sets, and 120,000 random
+  buffers of cased, case-ignorable, combining and surrogate units at every
+  index. A non-surrogate unit follows each logical end.
+- compatibility decomposition: 1,398,438 comparisons. These cover every scalar
+  alone, every set-100 member at capacities -1..20, and 200,000 mixed arrays.
+
 ## Verification and remaining work
 
 The standalone corpus has 20 fixed raw primitive cases and checks execution
@@ -225,7 +359,5 @@ under `Local/Scratch/cf-unicode`; products use
 The full stream functions `CFUniCharDecompose`/`WithErrorLocation` call
 CFAllocatorAllocateTyped and CFAllocatorDeallocate when a combining run grows
 past its 32-scalar stack buffer. They remain unbuilt until the real allocator
-closure lands. Case mapping and compatibility decomposition (`CFUniCharMapCaseTo`,
-`CFUniCharGetConditionalCaseMappingFlags`, `CFUniCharCompatibilityDecompose`)
-are not restored yet; they need the case-mapping tables. No placeholder allocator, partial
-stream flag branch, lifetime claim or performance claim is introduced.
+closure lands. No placeholder allocator, partial stream flag branch, lifetime
+claim or performance claim is introduced.

@@ -62,6 +62,10 @@ int main(int argc, const char *argv[]) {
         if (status != 0) {
             return status;
         }
+        status = runCoreFoundationUnicodeCaseDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
         status = runFoundationDecimalDifferentialTests();
         if (status != 0) {
             return status;
