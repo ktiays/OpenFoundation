@@ -112,7 +112,7 @@ def main():
         if not path.is_file():
             continue
         text = path.read_text()
-        if path.suffix in {".swift", ".S", ".s", ".metal"}:
+        if path.suffix in {".S", ".s", ".metal"}:
             raise SystemExit("Integrate this source language in both build systems and the ledger first: " + str(path))
         if re.search(r"#\s*(?:include|import)\s*<(?:Foundation|CoreFoundation)/", text):
             raise SystemExit("Production code imports a system replacement framework: " + str(path))

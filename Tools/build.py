@@ -75,18 +75,30 @@ def link_flags(directory, configuration):
             "-isysroot", sdk, "-F", directory, *( ["-flto"] if configuration == "Release" else [] )]
 
 
+def swift_build_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_swift", ROOT / "Tools/swift-build.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def build_frameworks(directory, configuration, mode):
     prepare(directory, mode)
     for product, module in zip(PRODUCTS, ("CoreFoundation", "Foundation")):
         sources = sorted(path for path in (ROOT / "Source" / module).rglob("*")
                          if path.suffix in SOURCE_SUFFIXES)
         objects = compile_sources(sources, directory, configuration, mode)
+        swift = swift_build_module()
+        swift_objects = swift.compile_swift(product, directory, configuration, mode)
+        objects.extend(swift_objects)
+        swift_flags = swift.link_flags() if swift_objects else []
         bundle = directory / (product + ".framework")
         executable = bundle / product
         dependency = ["-framework", "OpenCoreFoundation"] if product == "OpenFoundation" else []
         driver = "clang++" if any(path.suffix in {".cpp", ".mm"} for path in sources) else "clang"
         run(["xcrun", driver, *link_flags(directory, configuration), "-dynamiclib", *objects,
-             *dependency, "-Wl,-install_name,@rpath/" + product + ".framework/" + product,
+             *dependency, *swift_flags, "-Wl,-install_name,@rpath/" + product + ".framework/" + product,
              "-Wl,-rpath,@loader_path/..", "-o", executable])
         (bundle / "Info.plist").write_bytes(plistlib.dumps(framework_info(product)))
         run(["xcrun", "dsymutil", executable, "-o", directory / (product + ".framework.dSYM")])

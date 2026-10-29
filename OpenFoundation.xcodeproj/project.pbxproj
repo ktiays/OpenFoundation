@@ -176,6 +176,7 @@
                 Base/OCFBase.h,
                 Date/OCFDate.h,
             );
+            membershipExceptions = ();
         };
         5D13D67A5E3BF1A8205DBB7E = {
             isa = PBXHeadersBuildPhase;
@@ -300,6 +301,7 @@
                 Base/ONSObjCRuntime.h,
                 Range/ONSRange.h,
             );
+            membershipExceptions = ();
         };
         A0F5FE790E1DA0D5F1974C53 = {
             isa = PBXHeadersBuildPhase;
@@ -491,6 +493,8 @@
                 Base/OCFHashBytes.c,
                 Bootstrap.c,
                 Date/OCFDate.c,
+                Unicode/OCFUniChar.c,
+                Unicode/OCFUniCharData.c,
             );
         };
         D6FBB04F97A3F636FCF54562 = {
@@ -627,6 +631,8 @@
                 Base/OCFHashBytes.c,
                 Bootstrap.c,
                 Date/OCFDate.c,
+                Unicode/OCFUniChar.c,
+                Unicode/OCFUniCharData.c,
             );
         };
         5375D868972B5DF0CC423165 = {

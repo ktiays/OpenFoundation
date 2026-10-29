@@ -90,7 +90,7 @@ def compiler_arguments(product, directory, configuration, mode, root=ROOT):
                  "-import-objc-header", bridge, "-Xcc", "-include", "-Xcc",
                  directory / "Generated/OFPrefixMapping.h", "-Xcc", "-DOF_SYSTEM_NAMES=" + str(int(mode == "YES")),
                  "-module-cache-path", directory / "Generated/SwiftModuleCache",
-                 "-g", "-Onone" if configuration == "Debug" else "-O"]
+                 "-g", "-warnings-as-errors", "-Onone" if configuration == "Debug" else "-O"]
     if configuration == "Release":
         arguments.append("-lto=llvm-full")
     return [str(value) for value in arguments], sources
@@ -102,7 +102,7 @@ def compile_swift(product, directory, configuration, mode, root=ROOT):
         return []
     destination = directory / "Objects/Swift" / (product + ".o")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    run([*arguments, "-emit-object", *sources, "-o", destination])
+    run([*arguments, "-emit-object", *sources, "-o", destination], cwd=directory)
     return [destination]
 
 
@@ -116,21 +116,67 @@ def link_flags():
 def dump_ast(product, directory, mode="NO", root=ROOT):
     arguments, sources = compiler_arguments(product, directory, "Debug", mode, root)
     if not sources:
-        return None
+        return []
     arguments = [argument for argument in arguments if argument != "-whole-module-optimization"]
     arguments.insert(2, "-frontend")
-    process = subprocess.run([*arguments, "-dump-ast", "-dump-ast-format", "json", *map(str, sources)],
-                             capture_output=True, text=True)
-    if process.returncode:
-        raise SystemExit("Swift definition audit could not type-check sources:\n" + process.stderr)
-    for text in (process.stdout, process.stderr):
-        start = text.find("{")
-        if start >= 0:
-            try:
-                return json.loads(text[start:])
-            except json.JSONDecodeError:
-                pass
-    raise SystemExit("Swift compiler did not produce a readable JSON AST.")
+    trees = []
+    for primary in sources:
+        command = [*arguments, "-dump-ast", "-dump-ast-format", "json", "-primary-file", str(primary),
+                   *[str(path) for path in sources if path != primary]]
+        process = subprocess.run(command, capture_output=True, text=True)
+        if process.returncode:
+            raise SystemExit("Swift definition audit could not type-check sources:\n" + process.stderr)
+        for text in (process.stdout, process.stderr):
+            start = text.find("{")
+            if start >= 0:
+                try:
+                    trees.append(json.loads(text[start:]))
+                    break
+                except json.JSONDecodeError:
+                    pass
+        else:
+            raise SystemExit("Swift compiler did not produce a readable JSON AST.")
+    return trees
+
+
+def source_definitions(product, directory, root=ROOT):
+    definitions = {}
+    generated_root = directory / "Generated/Swift"
+    for tree in dump_ast(product, directory, root=root):
+        generated = Path(tree["filename"])
+        relative = generated.relative_to(generated_root)
+        name = relative.name.removeprefix("OF_") if hasattr(str, "removeprefix") else relative.name[3:]
+        path = str(relative.parent / name)
+
+        def visit(node, in_function=False, in_type=False):
+            if isinstance(node, list):
+                for child in node:
+                    visit(child, in_function, in_type)
+                return
+            if not isinstance(node, dict):
+                return
+            kind = node.get("_kind")
+            implicit = node.get("implicit", False)
+            usr = node.get("usr")
+            function = kind in {"func_decl", "accessor_decl", "constructor_decl", "destructor_decl"}
+            declared_type = kind in {"struct_decl", "enum_decl", "class_decl"}
+            if usr and not implicit:
+                definition_kind = None
+                if function and node.get("body"):
+                    definition_kind = "function"
+                elif declared_type:
+                    definition_kind = "type"
+                elif kind == "var_decl" and not in_function and not in_type and node.get("readImpl") == "stored":
+                    definition_kind = "data"
+                if definition_kind:
+                    definitions[(path, usr)] = {"kind": definition_kind, "range": node.get("range"),
+                                                "name": node.get("name"), "attrs": node.get("attrs", [])}
+            for value in node.values():
+                if isinstance(value, (dict, list)):
+                    visit(value, in_function or function, in_type or declared_type or kind == "extension_decl")
+
+        visit(tree)
+    return definitions
 
 
 def main():

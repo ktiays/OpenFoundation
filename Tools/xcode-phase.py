@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import sys
 from common import check_platform, xcode_environment, run, ROOT
-from build import prepare
+from build import prepare, swift_build_module
 
 
 def main():
@@ -21,6 +21,8 @@ def main():
     directory = Path(os.environ["BUILT_PRODUCTS_DIR"])
     if sys.argv[1] == "prepare":
         prepare(directory, mode)
+    elif sys.argv[1] == "swift":
+        swift_build_module().compile_swift(os.environ["PRODUCT_NAME"], directory, configuration, mode)
     elif sys.argv[1] == "package":
         product = os.environ["PRODUCT_NAME"]
         run([sys.executable, ROOT / "Tools/prefix-mapping.py", "headers", directory / (product + ".framework"),

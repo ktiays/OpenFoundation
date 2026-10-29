@@ -102,12 +102,16 @@ def generate():
     for name, group in (("OpenCoreFoundation", core_source), ("OpenFoundation", foundation_source),
                          ("StandaloneTests", standalone), ("DifferentialTests", tests)):
         framework = name.startswith("Open")
+        source_module = "CoreFoundation" if name == "OpenCoreFoundation" else "Foundation"
+        swift_sources = sorted((ROOT / "Source" / source_module).rglob("*.swift")) if framework else []
         settings = {"PRODUCT_NAME": name, **shared}
         phases = [script(name + "-prepare", "prepare")]
         if framework:
             public = json.loads((ROOT / "Configuration/PublicHeaders.json").read_text())[name]
             exception = add(name + "-headers", "PBXFileSystemSynchronizedBuildFileExceptionSet",
-                            target=ident(name), publicHeaders=public)
+                            target=ident(name), publicHeaders=public,
+                            membershipExceptions=[str(path.relative_to(ROOT / "Source" / source_module))
+                                                  for path in swift_sources])
             objects[group]["exceptions"] = [exception]
             phases.append(phase(name + "-header-phase", "PBXHeadersBuildPhase"))
             settings.update({"PRODUCT_BUNDLE_IDENTIFIER": "me.ktiays." + name,
@@ -115,6 +119,12 @@ def generate():
                              "DYLIB_INSTALL_NAME_BASE": "@rpath", "DEFINES_MODULE": "YES",
                              "MODULEMAP_FILE": "Resources/" + name + ".modulemap"})
         phases.append(phase(name + "-sources", "PBXSourcesBuildPhase"))
+        if swift_sources:
+            phases.append(script(name + "-swift", "swift"))
+            settings["OTHER_LDFLAGS"] = ('$(inherited) "$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o" '
+                                         '-L"$(SDKROOT)/usr/lib/swift" '
+                                         '-L"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)" '
+                                         '-Wl,-rpath,/usr/lib/swift')
         dependencies = []
         links = []
         if name != "OpenCoreFoundation":

@@ -14,7 +14,7 @@ restoration records, test entry points and squash integration into linear main.
 | RUNTIME | `codex/cf-runtime`; allocator/type/ownership/initialization group under `Source/CoreFoundation/Runtime` and `Allocator`, mirror tests/readings | REF and verified CFString/number/date callbacks | Evidence preserved in Local/Evidence/cf-runtime/Handoff.md; implementation deferred while raw groups land; no placeholder slots admitted |
 | NS-DECIMAL | `codex/ns-decimal`; complete raw decimal arithmetic under `Source/Foundation/Decimal`, mirrors/reading | REF; any native raw helper closure | In progress; eleven-entry interface inventory and complete arithmetic closure reading |
 | CF-ENCODING | `codex/cf-encoding`; complete raw converter/registry/backend groups under `Source/CoreFoundation/StringEncoding`, mirrors/reading | REF, Unicode and verified allocator/string boundaries | Complete kernel batch: 14 functions and 9 tables, 7,911,208 differential cases per prefixed run; full Make/Xcode matrix passed. Public dispatch/cache and additional backends remain unbuilt |
-| CF-UNICODE | `codex/cf-unicode`; complete normalization/property/table group under `Source/CoreFoundation/Unicode`, mirrors/reading | REF; exact native table/resource boundary | In progress; owns CFUniChar closure required by encoding and string objects |
+| CF-UNICODE | `codex/cf-unicode`; complete normalization/property/table group under `Source/CoreFoundation/Unicode`, mirrors/reading | REF; exact native table/resource boundary | Complete raw primitive batch: 5 functions and 82 data definitions; 14,980,800 differential cases per prefixed configuration and full Make/Xcode matrix passed. Stream decomposition waits on allocator; 23 Device pointer bindings unread |
 | CF-STRING | `codex/cf-string`; complete string objects/core/formatting under `Source/CoreFoundation/String`, mirrors/reading | Runtime ABI, encoding and Unicode | Evidence preserved; implementation deferred with its exact class/bridge dependencies |
 | CF-NUMBER-DATE | Independent worktree; complete number/boolean/date object callback group in coordinated new source paths, mirrors/readings | Runtime ABI and exact native dependencies | Evidence preserved; implementation deferred; separate from completed date-field scalar unit |
 | CG-DEPS | Complete dependency groups required by OpenCoreGraphics | Runtime/storage groups | Not started |
@@ -22,6 +22,6 @@ restoration records, test entry points and squash integration into linear main.
 | INTEGRATION | Explicit replacement builds and dependency audits in the consumers | CG-DEPS, CA-DEPS | Not started |
 | IOS-DEVICE | Device execution and admitted replacement build | Validated complete simulator groups and device ABI | Deferred; scalar image comparison is not device equivalence |
 
-`Configuration/Restoration.json` records 29 definitions: nineteen functions and ten
-private tables. Active subsystem readings and implementation work never increase
+`Configuration/Restoration.json` records 116 definitions: twenty-four functions and ninety-two
+data definitions. Active subsystem readings and implementation work never increase
 that count until their complete dependency group has independently passed tests.

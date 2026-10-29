@@ -1,7 +1,7 @@
 # Foundation and CoreFoundation reference
 
 The compatibility target is the pinned iOS implementation, not an API-compatible
-redesign. Nineteen raw functions and ten private tables have complete per-group readings and
+redesign. Twenty-four raw functions and ninety-two data definitions have complete per-group readings and
 tests. Initial object-runtime entry readings identify further dependencies; no
 complete object runtime, collection algorithm, constant-string representation,
 tagged-pointer encoding or bridge is restored.
@@ -11,7 +11,8 @@ tagged-pointer encoding or bridge is restored.
 | Four-image native symbol inventory | [IDA inventories](NativeInventory.md) | Symbol boundaries established; class clusters/layouts remain unread |
 | OS/image identity | [Identity manifest](../../Configuration/ReferenceImages.json), LC_UUID and extracted-image hashes | Metadata only |
 | Consumer source requirements | [Consumer snapshot](Consumers.json) and [interpretation](ConsumerRequirements.md) | Lexical inventory; no native ownership claim |
-| Scalar base/date/range groups | [Base](Research/CoreFoundationBase.md), [date validation](Research/CoreFoundationScalar.md), [Foundation ranges](Research/FoundationRange.md) | Nineteen restored functions and ten private tables; finite test coverage |
+| Scalar base/date/range groups | [Base](Research/CoreFoundationBase.md), [date validation](Research/CoreFoundationScalar.md), [Foundation ranges](Research/FoundationRange.md) | Nineteen scalar/encoding functions and ten private tables; finite test coverage |
+| Raw Unicode primitives | [Unicode reading](Research/CoreFoundationUnicode.md) | Five functions and 82 data definitions; stream decomposition unbuilt; 23 Device pointer bindings unread |
 | String-encoding kernels | [Encoding reading](Research/CoreFoundationStringEncoding.md) | Fourteen hidden functions, nine tables; dispatcher/cache remains unbuilt |
 | Allocator and CF runtime | [Initial dependency boundary](Research/RuntimePrerequisites.md) | Full runtime group in progress; unbuilt |
 | NSObject/NS classes, runtime ownership and CF bridge | No implementation reading | Unread |

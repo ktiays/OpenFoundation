@@ -97,6 +97,47 @@ def collect_definitions(paths, source_root=None):
     return {(str(Path(path).relative_to(ROOT)), symbol) for path, symbol in result}
 
 
+def collect_swift_definitions():
+    if not list((ROOT / "Source").rglob("*.swift")):
+        return {}
+    spec = importlib.util.spec_from_file_location("progress_swift", ROOT / "Tools/swift-build.py")
+    swift = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(swift)
+    prefix = swift.prefix_module()
+    mapping = prefix.discover(ROOT / "Source")
+    parent = ROOT / ".build/Progress"
+    parent.mkdir(parents=True, exist_ok=True)
+    result = {}
+    with tempfile.TemporaryDirectory(dir=parent) as directory:
+        directory = Path(directory)
+        for product in PRODUCTS:
+            prefix.package(product, directory / (product + ".framework"), "NO", mapping)
+        generated = directory / "Generated"
+        generated.mkdir(exist_ok=True)
+        (generated / "OFPrefixMapping.h").write_text(prefix.mapping_header(mapping))
+        for product in PRODUCTS:
+            result.update(swift.source_definitions(product, directory))
+    return result
+
+
+def check_swift_records(rows, actual):
+    explicit = [row for row in rows if not row.get("compiler_generated")]
+    recorded = {(row["path"], row.get("source_usr")) for row in explicit}
+    check_definition_records(set(actual), recorded)
+    by_symbol = {(row["path"], row["symbol"]): row for row in explicit}
+    for row in rows:
+        if not row.get("compiler_generated"):
+            continue
+        source = by_symbol.get((row["path"], row.get("source_definition")))
+        if not source or not row.get("emitted_symbol"):
+            raise SystemExit("Generated Swift entry has no verified authored source: " + row["symbol"])
+        node = actual[(source["path"], source["source_usr"])]
+        bindings = {"_" + attribute["name"] for attribute in node["attrs"]
+                    if attribute.get("_kind") == "cdecl_attr"}
+        if row["emitted_symbol"] not in bindings:
+            raise SystemExit("Generated Swift entry is not its source's actual C binding: " + row["symbol"])
+
+
 def check_definition_records(actual, recorded):
     if actual != recorded:
         missing = sorted(actual - recorded)
@@ -142,7 +183,7 @@ def self_test():
 
 def check():
     ledger = json.loads((ROOT / "Configuration/Restoration.json").read_text())
-    paths = {path for path in (ROOT / "Source").rglob("*") if path.suffix in SOURCE_SUFFIXES}
+    paths = {path for path in (ROOT / "Source").rglob("*") if path.suffix in SOURCE_SUFFIXES | {".swift"}}
     exclusions = {row["path"] for row in ledger["exclusions"]}
     expected_bootstrap = {"Source/CoreFoundation/Bootstrap.c", "Source/Foundation/Bootstrap.c"}
     if exclusions != expected_bootstrap:
@@ -176,11 +217,16 @@ def check():
             if not (ROOT / name).is_file():
                 raise SystemExit("Missing reading or test: " + name)
     translation_units = {str(path.relative_to(ROOT)) for path in paths}
-    recorded_units = {path for path in restored_paths if Path(path).suffix in SOURCE_SUFFIXES}
+    recorded_units = {path for path in restored_paths if Path(path).suffix in SOURCE_SUFFIXES | {".swift"}}
     if translation_units != recorded_units | exclusions:
         mismatch = translation_units ^ (recorded_units | exclusions)
         raise SystemExit("Production source/ledger mismatch: " + repr(mismatch))
-    check_definition_records(collect_definitions(paths), definitions)
+    c_paths = {path for path in paths if path.suffix in SOURCE_SUFFIXES}
+    c_records = {(row["path"], row["symbol"]) for row in ledger["definitions"]
+                 if Path(row["path"]).suffix != ".swift"}
+    check_definition_records(collect_definitions(c_paths), c_records)
+    swift_rows = [row for row in ledger["definitions"] if Path(row["path"]).suffix == ".swift"]
+    check_swift_records(swift_rows, collect_swift_definitions())
     functions = sum(row.get("kind", "function") == "function" for row in ledger["definitions"])
     print(f"Restoration ledger passed: {len(definitions)} definitions ({functions} functions). "
           "Bootstrap is not API coverage.")

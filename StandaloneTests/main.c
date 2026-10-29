@@ -9,6 +9,7 @@
 #include "CoreFoundation/Date/ScalarStandaloneTests.h"
 #include "Foundation/Range/RangeStandaloneTests.h"
 #include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
+#include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
 
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
@@ -38,6 +39,10 @@ int main(void) {
         return status;
     }
     status = runStringEncodingKernelStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationUnicodeStandaloneTests();
     if (status != 0) {
         return status;
     }
