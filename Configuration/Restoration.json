@@ -6147,6 +6147,222 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "localeStringPrefixToCanonical",
+      "native_symbol": "localeStringPrefixToCanonical",
+      "kind": "data",
+      "address": "0x2227a0b98",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "localeStringPrefixToCanonical",
+        "address": "0x1e04ead30",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Chained-fixup targets decode to the same 304 key/value strings; fixup metadata bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "specialCases",
+      "native_symbol": "specialCases",
+      "kind": "data",
+      "address": "0x2227a1e98",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "specialCases",
+        "address": "0x1e04ec030",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Chained-fixup targets decode to the same seven records and NULL terminator; fixup metadata bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_CompareTestEntryToTableEntryKey",
+      "native_symbol": "_CompareTestEntryToTableEntryKey",
+      "kind": "function",
+      "address": "0x1c01a0324",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CompareTestEntryToTableEntryKey",
+        "address": "0x1806a63f0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions (two key loads and a strcmp tail call)."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_UpdateFullLocaleString",
+      "native_symbol": "_UpdateFullLocaleString",
+      "kind": "function",
+      "address": "0x1c01a0330",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_UpdateFullLocaleString",
+        "address": "0x1806a6a84",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "One language-tag _CheckForTag is inlined and the lower-case special-case path is outlined into __UpdateFullLocaleString.cold.1 (0x1807bd6b0: !isalnum of the fourth byte) and .cold.2 (0x1807bd6f0: alternate-tag tests and alternateReplacement copy); table search, scan, canonicalization step (with the same unbounded '_' walk), both special-case paths and test order agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_CompareTestEntryPrefixToTableEntryKey",
+      "native_symbol": "_CompareTestEntryPrefixToTableEntryKey",
+      "kind": "function",
+      "address": "0x1c01a0888",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CompareTestEntryPrefixToTableEntryKey",
+        "address": "0x1806a7388",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Rotated loop with pre-indexed loads; comparisons and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_RemoveSubstringsIfPresent",
+      "native_symbol": "_RemoveSubstringsIfPresent",
+      "kind": "function",
+      "address": "0x1c01a08e4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_RemoveSubstringsIfPresent",
+        "address": "0x1806ca710",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "One counter serves as index and removal length and the space skip starts at the byte after the run; copies, searches and removals agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_AppendKeyValueString",
+      "native_symbol": "_AppendKeyValueString",
+      "kind": "function",
+      "address": "0x1c01a0a14",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_AppendKeyValueString",
+        "address": "0x1806a751c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The early return is placed first and the loop rotated; calls, arguments, capacities and status tests agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_CompareLowerTestEntryPrefixToTableEntryKey",
+      "native_symbol": "_CompareLowerTestEntryPrefixToTableEntryKey",
+      "kind": "function",
+      "address": "0x1c01a1810",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CompareLowerTestEntryPrefixToTableEntryKey",
+        "address": "0x1806a6fbc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Pre-indexed loads and a shared exit; comparisons and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+      "symbol": "_CheckForTag",
+      "native_symbol": "_CheckForTag",
+      "kind": "function",
+      "address": "0x1c01a18fc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLocaleIdentifier.md",
+      "tests": [
+        "Tests/CoreFoundation/Locale/LocaleIdentifierTests.c",
+        "StandaloneTests/CoreFoundation/Locale/LocaleIdentifierStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CheckForTag",
+        "address": "0x1806a7118",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The non-negative __runetype & 0x500 lookup is the shared _OUTLINED_FUNCTION_0_21 (0x18065c6b0) through the same rune-locale GOT slot; strncmp, sign test and __maskrune path agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

@@ -11,6 +11,7 @@
 #include "CoreFoundation/StringEncoding/EncodingNameTests.h"
 #include "CoreFoundation/StringEncoding/KernelTests.h"
 #include "CoreFoundation/Number/BigNumTests.h"
+#include "CoreFoundation/Locale/LocaleIdentifierTests.h"
 #include "CoreFoundation/Unicode/UnicodeTests.h"
 #include "Foundation/Decimal/DecimalDifferentialTests.h"
 #include "ReferencePins.h"
@@ -63,6 +64,10 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runCoreFoundationUnicodeCaseDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationLocaleIdentifierDifferentialTests();
         if (status != 0) {
             return status;
         }

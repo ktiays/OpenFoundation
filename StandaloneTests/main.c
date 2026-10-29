@@ -12,6 +12,7 @@
 #include "CoreFoundation/StringEncoding/EncodingNameStandaloneTests.h"
 #include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
 #include "CoreFoundation/Number/BigNumStandaloneTests.h"
+#include "CoreFoundation/Locale/LocaleIdentifierStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
 
 #include <dlfcn.h>
@@ -62,6 +63,10 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationUnicodeCaseStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationLocaleIdentifierStandaloneTests();
     if (status != 0) {
         return status;
     }
