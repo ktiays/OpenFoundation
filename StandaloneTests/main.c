@@ -14,6 +14,7 @@
 #include "CoreFoundation/Number/BigNumStandaloneTests.h"
 #include "CoreFoundation/Locale/LocaleIdentifierStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
+#include "CoreFoundation/PlugIn/BundleGrokStandaloneTests.h"
 
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
@@ -67,6 +68,10 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationLocaleIdentifierStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationBundleGrokStandaloneTests();
     if (status != 0) {
         return status;
     }

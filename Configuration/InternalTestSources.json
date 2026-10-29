@@ -9,6 +9,7 @@
     "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
     "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
     "Source/CoreFoundation/StringEncoding/OCFPlatformConverter.c",
-    "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c"
+    "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
+    "Source/CoreFoundation/PlugIn/OCFBundleGrok.c"
   ]
 }

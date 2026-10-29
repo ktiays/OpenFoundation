@@ -6363,6 +6363,174 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "kSunExtensions",
+      "native_symbol": "unnamed table at 0x1c0456de5",
+      "kind": "data",
+      "address": "0x1c0456de5",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "unnamed table at 0x1809654e5",
+        "address": "0x1809654e5",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 30 table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "kOpenDocumentExtensions",
+      "native_symbol": "unnamed table at 0x1c0456e04",
+      "kind": "data",
+      "address": "0x1c0456e04",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "unnamed table at 0x180965504",
+        "address": "0x180965504",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 45 table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "_CFBundleGrokFileTypeForZipFile",
+      "native_symbol": "_CFBundleGrokFileTypeForZipFile",
+      "kind": "function",
+      "address": "0x1c025d7c4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleGrokFileTypeForZipFile",
+        "address": "0x18077acd4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The MANIFEST.MF flag lives in a stack slot, signature bytes are indexed from the buffer base and blocks are placed differently; comparisons, bounds, calls, arguments and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "_CFBundleGrokFileTypeForOLEFile",
+      "native_symbol": "_CFBundleGrokFileTypeForOLEFile",
+      "kind": "function",
+      "address": "0x1c025e57c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleGrokFileTypeForOLEFile",
+        "address": "0x18077bb0c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The entry address is formed with BFI and the character count starts at one; reads, comparisons and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "_CFBundleGrokX11FromFile",
+      "native_symbol": "_CFBundleGrokX11FromFile",
+      "kind": "function",
+      "address": "0x1c025e7cc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleGrokX11FromFile",
+        "address": "0x18077bd98",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Load-command offsets are compared instead of addresses and the offset advances before the result test; reads, bounds, calls and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "libX11name",
+      "native_symbol": "_CFBundleGrokX11FromFile.libX11name",
+      "kind": "data",
+      "address": "0x1c0456dd1",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleGrokX11FromFile.libX11name",
+        "address": "0x1809654d1",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 20 bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+      "symbol": "_CFBundleGrokObjcImageInfoFromFile",
+      "native_symbol": "_CFBundleGrokObjcImageInfoFromFile",
+      "kind": "function",
+      "address": "0x1c025eedc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationBundleGrok.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleGrokTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleGrokStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleGrokObjcImageInfoFromFile",
+        "address": "0x18077c060",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Load-command and section offsets are compared instead of addresses and more state lives in stack slots; reads, bounds, calls, stores and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

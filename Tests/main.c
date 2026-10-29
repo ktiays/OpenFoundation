@@ -13,6 +13,7 @@
 #include "CoreFoundation/Number/BigNumTests.h"
 #include "CoreFoundation/Locale/LocaleIdentifierTests.h"
 #include "CoreFoundation/Unicode/UnicodeTests.h"
+#include "CoreFoundation/PlugIn/BundleGrokTests.h"
 #include "Foundation/Decimal/DecimalDifferentialTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
@@ -68,6 +69,10 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runCoreFoundationLocaleIdentifierDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationBundleGrokDifferentialTests();
         if (status != 0) {
             return status;
         }
