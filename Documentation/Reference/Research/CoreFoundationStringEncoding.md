@@ -140,3 +140,137 @@ must pass after shared integration before the track lands. Finite raw-kernel
 coverage is distinct from public API, CFString, registry, Unicode-normalization
 or framework replacement coverage. There are no object lifetime changes or
 performance claims in this group.
+
+## Encoding names, NSStringEncoding mapping and converter wrappers
+
+A second group restores seventeen functions and five tables: the nine converter
+wrappers `__CF{ToBytes,ToUnicode,ToCanonicalUnicode}{CheapEightBit,StandardEightBit,CheapMultiByte}Wrapper`,
+`__CFDefaultToUnicodeFallbackProc`, the three platform converter entry points,
+`CFStringConvertEncodingToNSStringEncoding` (exported as
+`OCFStringConvertEncodingToNSStringEncoding`), and
+`__CFStringEncodingGetWindowsCodePage`, `__CFStringEncodingGetCanonicalName` and
+`__CFStringEncodingGetICUName` with `__CFKnownEncodingList`, `__CFWindowsCPList`,
+`__CFCanonicalNameList` and two unnamed tables. Evidence is the `encoding-names`
+group of `Local/Evidence/below-core-capture/{iphone-simulator,iphone-device}.json`
+(disassembly, pseudocode, caller contexts, data bytes, decoded pointer slots).
+`Local/Evidence/cf-encoding-names/generate-tables.py` decodes every table from that
+capture, checks that both images agree entry for entry (565 entries, including the 257 of the open
+byte-conversion group below) and prints
+the initializers used in the source. Every definition carries **verified**
+iOS Simulator confidence; native addresses are at each definition and in the ledger.
+
+Placement is inferred from address adjacency, not from recovered paths:
+`OCFStringEncodingConverter.c` holds the contiguous wrappers and fallback; `OCFPlatformConverter.c` the platform entry
+points next to `__CFStringEncodingGetExternalConverter`;
+`OCFStringEncodingDatabase.c` the name/code-page functions and their sorted
+tables; `OCFStringEncodings.c` the NSStringEncoding mapping next to
+`CFStringConvertEncodingToIANACharSetName`. The existing kernel files are unchanged.
+
+**Converter record.** Each wrapper receives a pointer to the converter definition
+record in X0 and reads exactly two slots: offset 0, the to-bytes callback, and
+offset 8, the to-unicode callback. `StringEncodingConverterRecord` describes only
+those 16 bytes; the rest of the native record is not read here. Callback shapes
+follow the argument registers: cheap eight-bit `(flags, unit, uint8_t *)` and
+`(flags, byte, uint16_t *)`; standard eight-bit `(flags, units, count, uint8_t *)`
+and `(flags, byte, uint16_t buffer[])`; cheap multibyte `(flags, unit, uint8_t buffer[])`
+and `(flags, bytes, count, uint16_t *)`. Every callback result is tested or
+zero-extended as a whole 32-bit W0. No concrete converter is restored.
+
+**Wrapper behavior.** Cheap eight-bit wrappers process `min(maxLen, count)` (or the
+count when maxLen is zero), stop at the first failing callback and publish the
+processed count; the scalar scratch is zeroed once, so a callback that succeeds
+without writing repeats the previous value. Standard eight-bit to-bytes and cheap
+multibyte to-unicode return early only for a zero count (CBZ) and then advance by
+each callback's count until the remaining count reaches zero; the other wrappers
+reject counts below one. Standard eight-bit to-unicode copies from a 40-byte stack
+buffer with `memcpy` after a capacity check; cheap multibyte to-bytes copies from a
+20-byte uninitialized buffer, reloading the used count per byte. The canonical
+wrappers decompose units at or above U+0080 that are members of character set
+0x65 with `CFUniCharDecomposeCharacter(unit, buffer, 10)`, store the used count
+before the decomposition, and return at once without a final store when a
+decomposed value does not fit; with a zero capacity this ends the conversion at
+the first decomposable unit. Values at or above 0x10000 become surrogate pairs.
+`__CFToCanonicalUnicodeStandardEightBitWrapper` writes the callback's source unit
+(not the decomposed values) once per decomposed value, building its surrogate pair
+from that unit, and stores undecomposed units without a capacity check, so a
+callback returning several units can write past `maxCharLen`. Both are kept as
+native behavior: the image establishes them, and whether a native converter
+reaches the overrun is outside this evidence (no defect fix is applied).
+
+**Fallback and platform.** `__CFDefaultToUnicodeFallbackProc` writes `?`
+only for a nonzero capacity, publishes one used unit and returns one. The three
+platform functions ignore their arguments and return 3, 3 and 0; their parameter
+lists follow their only callers' argument registers.
+
+**Open group: byte-to-unit conversion and the character tables.**
+`__CFStrConvertBytesToUnicode` (0x1c022c2a4, external; iOS Device 0x180627fa0)
+loads `___CFCharToUniCharTable` once and maps each byte through it for a count of
+at least one; no caller reads X0. It is read but **not restored**, because its
+observable behavior depends on a run-time writer that is not in the evidence, so
+its dependency group is not whole. The tables (linkage from `nm -m`):
+`___CFCharToUniCharTable`, `__DATA,__data`, private external, 0x22e6cfbc8, an
+8-byte pointer whose static value is `___CFMutableCharToUniCharTable` (iOS Device
+0x1e6f09d18, chained fixup to 0x1e3f239f0); `___CFMutableCharToUniCharTable`,
+`__DATA,__data`, non-external, 0x22e6cf9c8, 256 uint16 entries whose static
+contents are the identity mapping in both images; and
+`___CFIdempotentCharToUniCharTable`, `__TEXT,__const`, external, 0x1c03a30d4, not
+referenced by any function of this group. In a test process with the native
+framework loaded, the native table differs from the static identity contents in
+123 of 256 entries (byte 0x80 maps to U+00C4, a MacRoman mapping), so it is
+rewritten at run time. The writer, and whether it also repoints
+`___CFCharToUniCharTable` (for example to the idempotent table), is **unread**; this
+group is reopened when that code is read.
+
+**Names and code pages.** `CFStringConvertEncodingToNSStringEncoding` maps the two
+exact values 0x8000100 and 0x600, then the low twelve bits (a zero field maps to
+30 for any upper bits, 0x100 only for the exact value), and otherwise returns
+`encoding | 0x80000000` zero-extended. `__CFStringEncodingGetWindowsCodePage`
+returns `28590 + (encoding & 0xff)` for group 0x200, a seven-entry table indexed by
+`(encoding - 0x100)` rotated right 26 bits for group 0x100, and otherwise the
+parallel `__CFWindowsCPList` entry found by a binary search of the 98 sorted
+`__CFKnownEncodingList` entries. `__CFStringEncodingGetCanonicalName` formats
+`cp%d`/`windows-%d` for groups 0x400/0x500, `iso-8859-%u` for 0x200, one of eight
+UTF names for 0x100, and otherwise `%s%s` with the `x-mac-` prefix for a nonzero
+group-0x000 encoding or 0xa04 and the parallel `__CFCanonicalNameList` name; it
+returns `bufferSize > snprintf(...)` compared as signed 64-bit values.
+`__CFStringEncodingGetICUName` returns the constant `IMAP-mailbox-name` for 0xa10,
+tries `ucnv_getAlias` on `windows-<code page>` outside group 0x100, then on the
+canonical name, in a 60-byte buffer; one error code zeroed on entry is shared by
+both ICU calls. ICU is an external cut: the native image carries an ordinary
+`LC_LOAD_DYLIB` load command (not weak, re-export or upward) for
+`/usr/lib/libicucore.A.dylib` (`otool -L`: compatibility 1.0.0, current 78.1.0),
+and `nm -m` lists `_ucnv_getAlias` as undefined from libicucore; the SDK's `libicucore.tbd` exports `ucnv_getAlias`,
+and `OF_CORE_FOUNDATION_LDFLAGS = -licucore` links it into OpenCoreFoundation and
+the test tools (Make and Xcode). The SDK has no `ucnv.h`; the one prototype is
+declared in the database source.
+
+**iOS Device comparison.** Tables agree entry for entry; Device pointer slots are
+chained fixups whose targets decode to the same strings (authentication bits
+unread). Every wrapper keeps its control flow and stack layout but calls the
+record's callbacks with `BLRAAZ`; this is recorded as an `iOS Device divergence:`
+at each wrapper. `__CFStringEncodingGetCanonicalName` (0x1806eb200) tests the ISO
+group first and outlines its binary-search steps, read from
+`Local/Evidence/below-core-capture/iphone-device-encoding-outlined.json`:
+`_OUTLINED_FUNCTION_1_48` (0x180613ec0) loads the list base, the last element
+(base + 0xc2) and the key `W0 & 0xfff`; `_OUTLINED_FUNCTION_0_65` (0x18065cb54)
+forms the midpoint `low + ((high - low) >> 2) * 2` with an arithmetic shift, loads
+its halfword and compares it with the key; `_OUTLINED_FUNCTION_2_30` (0x180613938)
+forms `mid - 2` and `mid + 2`, compares again and selects the low bound with
+`CSEL ... CC`, and the caller selects the high bound with the same flags (`RET`
+preserves them) before the unsigned bound test. This is the iOS Simulator search
+instruction for instruction, split across calls; its Device confidence is verified. `CFStringConvertEncodingToNSStringEncoding` orders its comparisons
+differently with the same mapping; the remaining functions match instruction for
+instruction or by indexing only.
+
+**Verification.** The differential suite resolves the exported native by name
+and the sixteen hidden ones by IDA offset, compiles the replacements into the test
+tool, and compares 3,491,806 cases per prefixed run: every encoding below
+0x100000 for the NSStringEncoding mapping; every value below 0x20000, every
+twelve-bit field under thirteen upper-bit patterns and all 64 Unicode rotations for
+code pages, canonical names (nine buffer sizes, canary buffers) and ICU names;
+fallback and platform functions; and 24,000 random cases per wrapper driven by a test converter
+record whose deterministic callbacks are shared by native and replacement (failure
+inputs, non-writing successes, nonzero results with zero low bits, multi-unit
+results, decompositions to one to four values and to supplementary values, ten
+capacities, negative counts where the native code rejects them). The standalone
+suite adds 46 hand-checked assertions in both naming modes.

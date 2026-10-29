@@ -226,6 +226,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
+                OTHER_LDFLAGS = "$(inherited) $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -248,6 +249,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
+                OTHER_LDFLAGS = "$(inherited) $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -503,6 +505,7 @@
                 Bootstrap.c,
                 Date/OCFDate.c,
                 Number/OCFBigNumber.c,
+                StringEncoding/OCFStringEncodings.c,
             );
         };
         D6FBB04F97A3F636FCF54562 = {
@@ -518,7 +521,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -536,7 +539,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -640,6 +643,7 @@
                 Bootstrap.c,
                 Date/OCFDate.c,
                 Number/OCFBigNumber.c,
+                StringEncoding/OCFStringEncodings.c,
             );
         };
         5375D868972B5DF0CC423165 = {
@@ -655,7 +659,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -673,7 +677,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };

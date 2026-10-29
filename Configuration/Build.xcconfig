@@ -14,6 +14,10 @@ SWIFT_VERSION = 6
 OF_SWIFT_OPTIMIZATION_DEBUG = -Onone
 OF_SWIFT_OPTIMIZATION_RELEASE = -O
 
+// Libraries the native CoreFoundation image links and the restored code calls (ucnv_getAlias).
+// Linked into OpenCoreFoundation and into the test tools that compile internal test sources.
+OF_CORE_FOUNDATION_LDFLAGS = -licucore
+
 SUPPORTED_PLATFORMS = iphonesimulator
 SDKROOT = iphonesimulator
 SUPPORTS_MACCATALYST = NO

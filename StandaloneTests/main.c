@@ -9,6 +9,7 @@
 #include "CoreFoundation/Date/ScalarStandaloneTests.h"
 #include "Foundation/Range/RangeStandaloneTests.h"
 #include "Foundation/Decimal/DecimalStandaloneTests.h"
+#include "CoreFoundation/StringEncoding/EncodingNameStandaloneTests.h"
 #include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
 #include "CoreFoundation/Number/BigNumStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
@@ -53,6 +54,10 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationBigNumStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runStringEncodingNameStandaloneTests();
     if (status != 0) {
         return status;
     }

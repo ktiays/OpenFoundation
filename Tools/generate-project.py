@@ -136,8 +136,11 @@ def generate():
         build_files = [add(name + "-link-" + library, "PBXBuildFile", fileRef=product_references[library]) for library in links]
         phases.append(phase(name + "-links", "PBXFrameworksBuildPhase", build_files))
         if not framework:
-            settings["OTHER_LDFLAGS"] = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation"
+            settings["OTHER_LDFLAGS"] = ("-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation "
+                                         "$(OF_CORE_FOUNDATION_LDFLAGS)")
         else:
+            if name == "OpenCoreFoundation":
+                settings["OTHER_LDFLAGS"] = settings.get("OTHER_LDFLAGS", "$(inherited)") + " $(OF_CORE_FOUNDATION_LDFLAGS)"
             phases.append(script(name + "-package", "package"))
         synchronized_groups = [group]
         if not framework:

@@ -95,7 +95,8 @@ def build_frameworks(directory, configuration, mode):
         swift_flags = swift.link_flags() if swift_objects else []
         bundle = directory / (product + ".framework")
         executable = bundle / product
-        dependency = ["-framework", "OpenCoreFoundation"] if product == "OpenFoundation" else []
+        dependency = (["-framework", "OpenCoreFoundation"] if product == "OpenFoundation"
+                      else defaults()["OF_CORE_FOUNDATION_LDFLAGS"].split())
         driver = "clang++" if any(path.suffix in {".cpp", ".mm"} for path in sources) else "clang"
         run(["xcrun", driver, *link_flags(directory, configuration), "-dynamiclib", *objects,
              *dependency, *swift_flags, "-Wl,-install_name,@rpath/" + product + ".framework/" + product,
@@ -116,6 +117,7 @@ def build_tests(directory, configuration, mode):
         objects = compile_sources(sources, directory, configuration, mode)
         run(["xcrun", "clang", *link_flags(directory, configuration), *objects,
              "-Wl,-needed_framework,OpenCoreFoundation", "-Wl,-needed_framework,OpenFoundation",
+             *defaults()["OF_CORE_FOUNDATION_LDFLAGS"].split(),
              "-Wl,-rpath,@executable_path", "-o", directory / name])
         run(["codesign", "--force", "--sign", "-", directory / name])
 

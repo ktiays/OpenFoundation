@@ -8,6 +8,7 @@
 #include "CoreFoundation/Base/OCFBaseTests.h"
 #include "CoreFoundation/Date/ScalarTests.h"
 #include "Foundation/Range/RangeDifferentialTests.h"
+#include "CoreFoundation/StringEncoding/EncodingNameTests.h"
 #include "CoreFoundation/StringEncoding/KernelTests.h"
 #include "CoreFoundation/Number/BigNumTests.h"
 #include "CoreFoundation/Unicode/UnicodeTests.h"
@@ -42,6 +43,10 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runStringEncodingKernelDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runStringEncodingNameDifferentialTests();
         if (status != 0) {
             return status;
         }

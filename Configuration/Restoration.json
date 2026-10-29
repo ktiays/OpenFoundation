@@ -5187,6 +5187,534 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToBytesCheapEightBitWrapper",
+      "native_symbol": "__CFToBytesCheapEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b484",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToBytesCheapEightBitWrapper",
+        "address": "0x1806bf188",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToUnicodeCheapEightBitWrapper",
+      "native_symbol": "__CFToUnicodeCheapEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b564",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToUnicodeCheapEightBitWrapper",
+        "address": "0x180769534",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToCanonicalUnicodeCheapEightBitWrapper",
+      "native_symbol": "__CFToCanonicalUnicodeCheapEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b644",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToCanonicalUnicodeCheapEightBitWrapper",
+        "address": "0x180769618",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR. The decomposition buffer is indexed."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToBytesStandardEightBitWrapper",
+      "native_symbol": "__CFToBytesStandardEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b7d0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToBytesStandardEightBitWrapper",
+        "address": "0x1807697ac",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToUnicodeStandardEightBitWrapper",
+      "native_symbol": "__CFToUnicodeStandardEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b8e8",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToUnicodeStandardEightBitWrapper",
+        "address": "0x1807698cc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToCanonicalUnicodeStandardEightBitWrapper",
+      "native_symbol": "__CFToCanonicalUnicodeStandardEightBitWrapper",
+      "kind": "function",
+      "address": "0x1c022b9f0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToCanonicalUnicodeStandardEightBitWrapper",
+        "address": "0x1807699d8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR. The decomposition buffer is indexed."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToBytesCheapMultiByteWrapper",
+      "native_symbol": "__CFToBytesCheapMultiByteWrapper",
+      "kind": "function",
+      "address": "0x1c022bba4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToBytesCheapMultiByteWrapper",
+        "address": "0x180769b98",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR. The copy loop indexes the scratch buffer."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToUnicodeCheapMultiByteWrapper",
+      "native_symbol": "__CFToUnicodeCheapMultiByteWrapper",
+      "kind": "function",
+      "address": "0x1c022bcc0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToUnicodeCheapMultiByteWrapper",
+        "address": "0x180769cc4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFToCanonicalUnicodeCheapMultiByteWrapper",
+      "native_symbol": "__CFToCanonicalUnicodeCheapMultiByteWrapper",
+      "kind": "function",
+      "address": "0x1c022bdd4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToCanonicalUnicodeCheapMultiByteWrapper",
+        "address": "0x180769de0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same control flow and stack layout; the record's callbacks are called with BLRAAZ (arm64e pointer authentication, zero discriminator) instead of BLR. usedCharLen is spilled to the stack and the decomposition buffer is indexed."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFDefaultToUnicodeFallbackProc",
+      "native_symbol": "__CFDefaultToUnicodeFallbackProc",
+      "kind": "function",
+      "address": "0x1c022c174",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFDefaultToUnicodeFallbackProc",
+        "address": "0x18076a198",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFPlatformConverter.c",
+      "symbol": "__CFStringEncodingPlatformUnicodeToBytes",
+      "native_symbol": "__CFStringEncodingPlatformUnicodeToBytes",
+      "kind": "function",
+      "address": "0x1c01cecc4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingPlatformUnicodeToBytes",
+        "address": "0x18074ef20",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFPlatformConverter.c",
+      "symbol": "__CFStringEncodingPlatformBytesToUnicode",
+      "native_symbol": "__CFStringEncodingPlatformBytesToUnicode",
+      "kind": "function",
+      "address": "0x1c01ceccc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingPlatformBytesToUnicode",
+        "address": "0x18074ef28",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFPlatformConverter.c",
+      "symbol": "__CFStringEncodingPlatformCharLengthForBytes",
+      "native_symbol": "__CFStringEncodingPlatformCharLengthForBytes",
+      "kind": "function",
+      "address": "0x1c01cecd4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingPlatformCharLengthForBytes",
+        "address": "0x18074ef30",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodings.c",
+      "symbol": "OCFStringConvertEncodingToNSStringEncoding",
+      "native_symbol": "CFStringConvertEncodingToNSStringEncoding",
+      "kind": "function",
+      "address": "0x1c02340fc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFStringConvertEncodingToNSStringEncoding",
+        "address": "0x18062dab0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The comparison tree is ordered differently; the mapping agrees for every value."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFKnownEncodingList",
+      "native_symbol": "__CFKnownEncodingList",
+      "kind": "data",
+      "address": "0x1c046ca44",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFKnownEncodingList",
+        "address": "0x18097afb4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 98 entries agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFWindowsCPList",
+      "native_symbol": "__CFWindowsCPList",
+      "kind": "data",
+      "address": "0x1c046c980",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFWindowsCPList",
+        "address": "0x18097aef0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 98 entries agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "kUnicodeWindowsCodePages",
+      "native_symbol": "unnamed table at 0x1c046cb08",
+      "kind": "data",
+      "address": "0x1c046cb08",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "unnamed table at 0x18097b078",
+        "address": "0x18097b078",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The seven read entries agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFCanonicalNameList",
+      "native_symbol": "__CFCanonicalNameList",
+      "kind": "data",
+      "address": "0x2227a8cd8",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "__CFCanonicalNameList",
+        "address": "0x1e053ab10",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode to the same 98 strings and null slots; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "kUnicodeCanonicalNames",
+      "native_symbol": "unnamed table at 0x2227a9018",
+      "kind": "data",
+      "address": "0x2227a9018",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "unnamed table at 0x1e053ae20",
+        "address": "0x1e053ae20",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode to the same eight strings; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFStringEncodingGetWindowsCodePage",
+      "native_symbol": "__CFStringEncodingGetWindowsCodePage",
+      "kind": "function",
+      "address": "0x1c02ae7c4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingGetWindowsCodePage",
+        "address": "0x1807999d4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFStringEncodingGetCanonicalName",
+      "native_symbol": "__CFStringEncodingGetCanonicalName",
+      "kind": "function",
+      "address": "0x1c02aea2c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingGetCanonicalName",
+        "address": "0x1806eb200",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The ISO 8859 group is tested first and the binary-search steps are outlined into _OUTLINED_FUNCTION_1_48 (0x180613ec0: list bounds and key), _OUTLINED_FUNCTION_0_65 (0x18065cb54: midpoint, halfword load and compare) and _OUTLINED_FUNCTION_2_30 (0x180613938: bound candidates and CSEL of the low bound); the caller selects the high bound on the helper's flags. The search, tables, prefix selection and formats agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
+      "symbol": "__CFStringEncodingGetICUName",
+      "native_symbol": "__CFStringEncodingGetICUName",
+      "kind": "function",
+      "address": "0x1c02ad994",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringEncodingGetICUName",
+        "address": "0x180798b1c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical control flow; ICU and libc calls go through stubs."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

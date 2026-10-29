@@ -1,7 +1,7 @@
 # Foundation and CoreFoundation reference
 
 The compatibility target is the pinned iOS implementation, not an API-compatible
-redesign, limited to the consumer-derived [scope](Scope.md). Ninety function definitions, one hundred seven data definitions and two Swift support types have complete per-group readings and
+redesign, limited to the consumer-derived [scope](Scope.md). One hundred seven function definitions, one hundred twelve data definitions and two Swift support types have complete per-group readings and
 tests. Initial object-runtime entry readings identify further dependencies; no
 complete object runtime, collection algorithm, constant-string representation,
 tagged-pointer encoding or bridge is restored.
@@ -16,7 +16,7 @@ tagged-pointer encoding or bridge is restored.
 | Raw NSDecimal arithmetic | [Decimal reading](Research/FoundationDecimal.md) | Eleven C APIs, native Swift helpers/error paths and ten C bridges; object Decimal/String APIs unbuilt |
 | Raw Unicode primitives | [Unicode reading](Research/CoreFoundationUnicode.md) | Ten functions and 94 data definitions, including the plane/property/priority group; case mapping and stream decomposition unbuilt; 23 Device pointer bindings unread |
 | BigNum initialization and text | [BigNum reading](Research/CoreFoundationBigNum.md) | Seven functions (signed initializers, C-string formatting, `emit128`) and two power tables; unsigned initializers, arithmetic and parsing unbuilt |
-| String-encoding kernels | [Encoding reading](Research/CoreFoundationStringEncoding.md) | Fourteen hidden functions, nine tables; dispatcher/cache remains unbuilt |
+| String-encoding kernels | [Encoding reading](Research/CoreFoundationStringEncoding.md) | Fourteen hidden kernels and nine tables; seventeen wrapper/name/code-page functions and five tables; dispatcher/cache, concrete converters and the byte-conversion group with its unread character-table writer remain unbuilt |
 | Allocator and CF runtime | [Initial dependency boundary](Research/RuntimePrerequisites.md) | Full runtime group in progress; unbuilt |
 | NSObject/NS classes, runtime ownership and CF bridge | No implementation reading | Unread |
 | Strings/data, numbers and collections | No implementation reading | Unread |
