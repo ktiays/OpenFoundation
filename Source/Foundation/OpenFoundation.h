@@ -9,4 +9,5 @@
 
 // Foundation and CoreFoundation remain separate ownership and ABI boundaries.
 
+#include <OpenFoundation/Base/ONSObjCRuntime.h>
 #include <OpenFoundation/Range/ONSRange.h>

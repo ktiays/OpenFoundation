@@ -122,7 +122,12 @@ Objective-C++. C/C++ clients use CoreFoundation headers; Objective-C/Objective-C
 clients additionally exercise Foundation headers, which require Objective-C syntax.
 The current scalar suites independently resolve native and replacement symbols,
 verify owning images and native UUIDs, and reject identical function addresses.
-Object interoperability remains unbuilt.
+Internal kernels retain their native hidden names. `Configuration/InternalTestSources.json`
+selects the same production source files for isolated/internal test-tool compilation
+in both build systems. Native counterparts are resolved from pinned image bases
+and IDA offsets, checked against executable segments and image ownership; the
+replacement must belong to the test executable. No test-only production export
+is added. Object interoperability remains unbuilt.
 
 Use `python3 Tools/build.py --configuration Release --system-names YES
 --products /absolute/path/to/Xcode/products test` to execute existing native

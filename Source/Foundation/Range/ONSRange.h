@@ -5,9 +5,7 @@
 
 #pragma once
 
-#include <OpenCoreFoundation/OCFBuild.h>
-
-typedef unsigned long ONSUInteger;
+#include <OpenFoundation/Base/ONSObjCRuntime.h>
 
 typedef struct _ONSRange {
     ONSUInteger location;

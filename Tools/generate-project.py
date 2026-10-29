@@ -10,7 +10,7 @@ import argparse
 import hashlib
 import json
 import re
-from common import ROOT, write_changed
+from common import ROOT, SOURCE_SUFFIXES, internal_test_sources, write_changed
 
 
 def ident(name):
@@ -129,9 +129,22 @@ def generate():
             settings["OTHER_LDFLAGS"] = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation"
         else:
             phases.append(script(name + "-package", "package"))
+        synchronized_groups = [group]
+        if not framework:
+            selected = set(internal_test_sources())
+            for source_group, module in ((core_source, "CoreFoundation"), (foundation_source, "Foundation")):
+                source_root = ROOT / "Source" / module
+                if not any(source_root in path.parents for path in selected):
+                    continue
+                excluded = sorted(str(path.relative_to(source_root)) for path in source_root.rglob("*")
+                                  if path.suffix in SOURCE_SUFFIXES and path not in selected)
+                exception = add(name + "-internal-" + module, "PBXFileSystemSynchronizedBuildFileExceptionSet",
+                                target=ident(name), membershipExceptions=excluded)
+                objects[source_group].setdefault("exceptions", []).append(exception)
+                synchronized_groups.append(source_group)
         target_ids.append(add(name, "PBXNativeTarget", name=name, productName=name, productReference=product_references[name],
                               productType="com.apple.product-type.framework" if framework else "com.apple.product-type.tool",
-                              fileSystemSynchronizedGroups=[group], buildConfigurationList=configs(name, settings),
+                              fileSystemSynchronizedGroups=synchronized_groups, buildConfigurationList=configs(name, settings),
                               buildPhases=phases, buildRules=[], dependencies=dependencies))
     project = add("project", "PBXProject", attributes={"LastUpgradeCheck": "2710"},
                   buildConfigurationList=configs("project", {}), compatibilityVersion="Xcode 16.0",

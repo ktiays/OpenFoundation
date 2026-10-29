@@ -49,10 +49,15 @@ def typedef_names(code):
 
 
 def discover(root):
-    paths = sorted(path for path in root.rglob("*") if path.suffix in FORMAT_SUFFIXES)
+    paths = sorted(path for path in root.rglob("*") if path.suffix in FORMAT_SUFFIXES | {".swift"})
     declarations = set()
     texts = {path: path.read_text() for path in paths}
     for path, text in texts.items():
+        if path.suffix == ".swift":
+            declarations.update(re.findall(
+                r"\b(?:func|struct|class|enum|protocol|typealias)\s+((?:_+)?(?:OCF|ONS)[A-Z]\w*)", code_only(text)
+            ))
+            continue
         if path.suffix not in {".h", ".hpp"}:
             continue
         code = code_only(text)
@@ -73,7 +78,10 @@ def discover(root):
             for name in re.findall(r"\b[A-Za-z_]\w*\b", code_only(line)):
                 if PREFIXED.fullmatch(name) and name not in declarations:
                     errors.append(f"{path}:{line_number}: undeclared prefixed identifier {name}")
-        for literal in re.findall(r'"(?:\\.|[^"\\])*"', re.sub(r"//[^\n]*|/\*[\s\S]*?\*/", "", text)):
+        literals = re.sub(r"//[^\n]*|/\*[\s\S]*?\*/", "", text)
+        if path.suffix == ".swift":
+            literals = re.sub(r'@_(?:cdecl|silgen_name)\(\s*"[^"\n]+"\s*\)', "", literals)
+        for literal in re.findall(r'"(?:\\.|[^"\\])*"', literals):
             if literal[1:-1] in declarations or literal[1:-1] in {native_name(name) for name in declarations}:
                 errors.append(f"{path}: use OF_NAME_STRING for a mapped runtime name: {literal}")
     if errors:

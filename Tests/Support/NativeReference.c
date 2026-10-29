@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
 #include <mach-o/loader.h>
+#include <mach/vm_prot.h>
 #include <stdio.h>
 #include <string.h>
 #include <uuid/uuid.h>
@@ -135,4 +136,74 @@ int resolveReplacementFunction(const char *framework, const char *symbol, void *
     snprintf(path, sizeof(path), "@rpath/%s.framework/%s", framework, framework);
     snprintf(owner, sizeof(owner), "/%s.framework/%s", framework, framework);
     return resolveFrameworkFunction(path, owner, NULL, symbol, function);
+}
+
+int resolveReferenceAddress(
+    const char *framework,
+    const char *expectedUUID,
+    uintptr_t nativeAddress,
+    uintptr_t nativeImageBase,
+    void **function
+) {
+    *function = NULL;
+    int status = checkNativeReference(framework, expectedUUID, 0);
+    if (status != 0) {
+        return status;
+    }
+    char path[256];
+    snprintf(path, sizeof(path), "/System/Library/Frameworks/%s.framework/%s", framework, framework);
+    void *handle = dlopen(path, RTLD_NOW | RTLD_LOCAL);
+    if (!handle) {
+        fprintf(stderr, "Setup failure: cannot retain native image %s.\n", framework);
+        return 77;
+    }
+    for (uint32_t index = 0; index < _dyld_image_count(); ++index) {
+        if (!imagePathMatches(_dyld_get_image_name(index), path)) {
+            continue;
+        }
+        const struct mach_header_64 *header = (const struct mach_header_64 *)_dyld_get_image_header(index);
+        const struct load_command *command = (const struct load_command *)(header + 1);
+        int baseMatches = 0;
+        int executableAddress = 0;
+        for (uint32_t number = 0; number < header->ncmds; ++number) {
+            if (command->cmd == LC_SEGMENT_64) {
+                const struct segment_command_64 *segment = (const struct segment_command_64 *)command;
+                if (strcmp(segment->segname, "__TEXT") == 0) {
+                    baseMatches = segment->vmaddr == nativeImageBase;
+                }
+                if ((segment->initprot & VM_PROT_EXECUTE) != 0 && nativeAddress >= segment->vmaddr &&
+                    nativeAddress - segment->vmaddr < segment->vmsize) {
+                    executableAddress = 1;
+                }
+            }
+            command = (const struct load_command *)((const char *)command + command->cmdsize);
+        }
+        if (!baseMatches || !executableAddress || nativeAddress < nativeImageBase) {
+            fprintf(stderr, "Setup failure: native address/base is outside the pinned executable image.\n");
+            dlclose(handle);
+            return 77;
+        }
+        uintptr_t address = (uintptr_t)header + (nativeAddress - nativeImageBase);
+        Dl_info information;
+        if (!dladdr((const void *)address, &information) || information.dli_fbase != header ||
+            !information.dli_fname || !imagePathMatches(information.dli_fname, path)) {
+            fprintf(stderr, "Setup failure: native offset resolved into an unexpected image.\n");
+            dlclose(handle);
+            return 77;
+        }
+        *function = (void *)address;
+        return 0;
+    }
+    fprintf(stderr, "Setup failure: no loaded owner for native address.\n");
+    dlclose(handle);
+    return 77;
+}
+
+int checkInternalImplementation(const void *function) {
+    Dl_info information;
+    if (!function || !dladdr(function, &information) || information.dli_fbase != _dyld_get_image_header(0)) {
+        fprintf(stderr, "Setup failure: internal replacement is not owned by the current test image.\n");
+        return 77;
+    }
+    return 0;
 }

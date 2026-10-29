@@ -16,6 +16,8 @@
             sourceTree = "<group>";
             exceptions = (
                 8B40830C9E2E83094B9E430E,
+                A5F2DA10DF3B3E718E6AB02A,
+                9A8DF383512D9D957BB1BD27,
             );
         };
         A68A01BC3517FDF3A076492D = {
@@ -295,6 +297,7 @@
             target = 63B4191BE2FF663882B26A5A;
             publicHeaders = (
                 OpenFoundation.h,
+                Base/ONSObjCRuntime.h,
                 Range/ONSRange.h,
             );
         };
@@ -480,6 +483,16 @@
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
+        A5F2DA10DF3B3E718E6AB02A = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = FCED26B3F5CF01836C4B7184;
+            membershipExceptions = (
+                Base/OCFBase.c,
+                Base/OCFHashBytes.c,
+                Bootstrap.c,
+                Date/OCFDate.c,
+            );
+        };
         D6FBB04F97A3F636FCF54562 = {
             isa = XCBuildConfiguration;
             name = Debug;
@@ -533,6 +546,7 @@
             productType = "com.apple.product-type.tool";
             fileSystemSynchronizedGroups = (
                 5B565A33B80B75DC462328A6,
+                D787A7C45CB2BAF8097F84FD,
             );
             buildConfigurationList = D2A1704AFC3CE0C308BA2B19;
             buildPhases = (
@@ -605,6 +619,16 @@
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
+        9A8DF383512D9D957BB1BD27 = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = BE88CA43ACE290E13F50CA5E;
+            membershipExceptions = (
+                Base/OCFBase.c,
+                Base/OCFHashBytes.c,
+                Bootstrap.c,
+                Date/OCFDate.c,
+            );
+        };
         5375D868972B5DF0CC423165 = {
             isa = XCBuildConfiguration;
             name = Debug;
@@ -658,6 +682,7 @@
             productType = "com.apple.product-type.tool";
             fileSystemSynchronizedGroups = (
                 59830EBC3A4184110566BF1A,
+                D787A7C45CB2BAF8097F84FD,
             );
             buildConfigurationList = E51BA6A3F329F2030101B956;
             buildPhases = (

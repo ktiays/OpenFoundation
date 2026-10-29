@@ -46,6 +46,21 @@ def self_test(prefix):
                     "ONSCallback": "NSCallback", "kOCFArray": "kCFArray"}
         if mapping != expected:
             raise SystemExit("Declaration-derived prefix mapping regression.")
+        swift = root / "Example.swift"
+        swift.write_text('@_cdecl("OCFExample")\nfunc OCFBridge(_ value: OCFIndex) -> OCFIndex { value }\n')
+        swift_mapping = prefix.discover(root)
+        if swift_mapping != {**expected, "OCFBridge": "CFBridge"}:
+            raise SystemExit("Swift declaration discovery regression.")
+        spec = importlib.util.spec_from_file_location("swift_build_test", ROOT / "Tools/swift-build.py")
+        swift_build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(swift_build)
+        translated_swift = swift_build.translate_source(swift.read_text(), swift_mapping)
+        if '@_cdecl("CFExample")' not in translated_swift or 'func CFBridge(_ value: CFIndex)' not in translated_swift:
+            raise SystemExit("Swift linkage-literal or concrete identifier translation regression.")
+        external = '@_silgen_name("$s5Swift17externalFunction")\n'
+        if swift_build.translate_source(external, swift_mapping) != external:
+            raise SystemExit("Swift naming changed an external runtime linkage name.")
+        swift.unlink()
         translated = prefix.translate('OCFExample(); /* OCFExample */ "OCFExample";', mapping)
         if translated != 'CFExample(); /* OCFExample */ "OCFExample";':
             raise SystemExit("Token mapping changed a comment or a string literal.")

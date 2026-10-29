@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 from common import (ROOT, PRODUCTS, SOURCE_SUFFIXES, build_directory, check_platform,
-                    defaults, output, run)
+                    defaults, internal_test_sources, output, run)
 
 
 def tool(name, *arguments):
@@ -100,6 +100,7 @@ def build_tests(directory, configuration, mode):
         if name == "DifferentialTests" and mode == "YES":
             continue
         sources = sorted(path for path in (ROOT / source_root).rglob("*") if path.suffix in SOURCE_SUFFIXES)
+        sources.extend(internal_test_sources())
         objects = compile_sources(sources, directory, configuration, mode)
         run(["xcrun", "clang", *link_flags(directory, configuration), *objects,
              "-Wl,-needed_framework,OpenCoreFoundation", "-Wl,-needed_framework,OpenFoundation",

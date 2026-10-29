@@ -5,9 +5,12 @@ one to one, from their pinned binaries. The intended consumers are
 OpenCoreGraphics and OpenCoreAnimation, which currently use the system libraries.
 Native implementation boundaries and observable behavior define the restoration.
 
-**Status:** the first scalar groups restore **five functions and one private table**:
+**Status:** the first scalar groups restore **nineteen functions and ten private tables**:
 CoreFoundation range construction, byte hashing and Gregorian field validation,
-and Foundation range union/intersection. Each has independent iOS Simulator and
+and Foundation range union/intersection, plus fourteen hidden UTF-8 and single-byte
+conversion kernels. Five functions are dynamically exported; the hidden kernels
+are verified through the same implementation sources in the internal test tools.
+Each has independent iOS Simulator and
 iOS Device readings. Object runtime, strings, collections and consumer replacement
 remain incomplete; these frameworks cannot replace either consumer's system dependency.
 

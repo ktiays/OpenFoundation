@@ -8,6 +8,7 @@
 #include "CoreFoundation/Base/OCFBaseTests.h"
 #include "CoreFoundation/Date/ScalarTests.h"
 #include "Foundation/Range/RangeDifferentialTests.h"
+#include "CoreFoundation/StringEncoding/KernelTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
 
@@ -34,6 +35,10 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runFoundationRangeDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runStringEncodingKernelDifferentialTests();
         if (status != 0) {
             return status;
         }

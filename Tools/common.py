@@ -70,3 +70,18 @@ def xcode_environment():
         os.environ.get("CONFIGURATION", "Debug"),
         os.environ.get("OF_SYSTEM_NAMES", "NO"),
     )
+
+
+def internal_test_sources():
+    registry = ROOT / "Configuration/InternalTestSources.json"
+    if not registry.exists():
+        return []
+    paths = []
+    for name in json.loads(registry.read_text())["sources"]:
+        path = ROOT / name
+        if not path.is_file() or path.suffix not in SOURCE_SUFFIXES or ROOT / "Source" not in path.parents:
+            raise SystemExit("Invalid internal test source: " + name)
+        paths.append(path)
+    if len(set(paths)) != len(paths):
+        raise SystemExit("Duplicate internal test source.")
+    return paths

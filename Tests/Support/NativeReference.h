@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 int checkNativeReference(const char *framework, const char *expectedUUID, int capture);
 
 int resolveReferenceFunction(
@@ -12,3 +14,13 @@ int resolveReferenceFunction(
 );
 
 int resolveReplacementFunction(const char *framework, const char *symbol, void **function);
+
+int resolveReferenceAddress(
+    const char *framework,
+    const char *expectedUUID,
+    uintptr_t nativeAddress,
+    uintptr_t nativeImageBase,
+    void **function
+);
+
+int checkInternalImplementation(const void *function);

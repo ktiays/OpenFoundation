@@ -142,6 +142,558 @@
       },
       "exported": true,
       "product": "OpenFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFUTF8.c",
+      "symbol": "__CFToUTF8",
+      "native_symbol": "__CFToUTF8",
+      "kind": "function",
+      "address": "0x1c0168fe4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToUTF8",
+        "address": "0x180650f64",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFUTF8.c",
+      "symbol": "__CFToUTF8Len",
+      "native_symbol": "__CFToUTF8Len",
+      "kind": "function",
+      "address": "0x1c0169564",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToUTF8Len",
+        "address": "0x18072755c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToASCII",
+      "native_symbol": "__CFToASCII",
+      "kind": "function",
+      "address": "0x1c01689f4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToASCII",
+        "address": "0x1806bf280",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromASCII",
+      "native_symbol": "__CFFromASCII",
+      "kind": "function",
+      "address": "0x1c0168a0c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromASCII",
+        "address": "0x1807338bc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToISOLatin1",
+      "native_symbol": "__CFToISOLatin1",
+      "kind": "function",
+      "address": "0x1c0168a20",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToISOLatin1",
+        "address": "0x18071cd3c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromISOLatin1",
+      "native_symbol": "__CFFromISOLatin1",
+      "kind": "function",
+      "address": "0x1c0168a38",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromISOLatin1",
+        "address": "0x1807338d0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToWinLatin1",
+      "native_symbol": "__CFToWinLatin1",
+      "kind": "function",
+      "address": "0x1c0168c80",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToWinLatin1",
+        "address": "0x180733aa0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromWinLatin1",
+      "native_symbol": "__CFFromWinLatin1",
+      "kind": "function",
+      "address": "0x1c0168d04",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromWinLatin1",
+        "address": "0x180733b28",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToNextStepLatin",
+      "native_symbol": "__CFToNextStepLatin",
+      "kind": "function",
+      "address": "0x1c0168e4c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToNextStepLatin",
+        "address": "0x180733c74",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromNextStepLatin",
+      "native_symbol": "__CFFromNextStepLatin",
+      "kind": "function",
+      "address": "0x1c0168ebc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromNextStepLatin",
+        "address": "0x180733ce4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToMacRomanLatin1",
+      "native_symbol": "__CFToMacRomanLatin1",
+      "kind": "function",
+      "address": "0x1c019fbc0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToMacRomanLatin1",
+        "address": "0x18074713c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromMacRomanLatin1",
+      "native_symbol": "__CFFromMacRomanLatin1",
+      "kind": "function",
+      "address": "0x1c019fc30",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromMacRomanLatin1",
+        "address": "0x1807471ac",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFToDOSLatin1",
+      "native_symbol": "__CFToDOSLatin1",
+      "kind": "function",
+      "address": "0x1c019fe78",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFToDOSLatin1",
+        "address": "0x1807473fc",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "__CFFromDOSLatin1",
+      "native_symbol": "__CFFromDOSLatin1",
+      "kind": "function",
+      "address": "0x1c019fef0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFFromDOSLatin1",
+        "address": "0x180747474",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Native scalar behavior agrees; UTF8 instruction block/register organization may differ."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFUTF8.c",
+      "symbol": "firstByteMark",
+      "native_symbol": "firstByteMark",
+      "kind": "data",
+      "address": "0x1c0373034",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "firstByteMark",
+        "address": "0x18082f290",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "cp1252_from_uni",
+      "native_symbol": "cp1252_from_uni",
+      "kind": "data",
+      "address": "0x1c0372c8c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "cp1252_from_uni",
+        "address": "0x18082eee8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "cp1252_to_uni",
+      "native_symbol": "cp1252_to_uni",
+      "kind": "data",
+      "address": "0x1c0372cf8",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "cp1252_to_uni",
+        "address": "0x18082ef54",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "nextstep_from_tab",
+      "native_symbol": "nextstep_from_tab",
+      "kind": "data",
+      "address": "0x1c0372d38",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "nextstep_from_tab",
+        "address": "0x18082ef94",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "NSToPrecompUnicodeTable",
+      "native_symbol": "NSToPrecompUnicodeTable",
+      "kind": "data",
+      "address": "0x1c0372f34",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "NSToPrecompUnicodeTable",
+        "address": "0x18082f190",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "MacRomanLatin1_from_uni",
+      "native_symbol": "MacRomanLatin1_from_uni",
+      "kind": "data",
+      "address": "0x1c03747f4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "MacRomanLatin1_from_uni",
+        "address": "0x180830a14",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "MacRomanLatin1_to_uni",
+      "native_symbol": "MacRomanLatin1_to_uni",
+      "kind": "data",
+      "address": "0x1c03749fc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "MacRomanLatin1_to_uni",
+        "address": "0x180830c1c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "DOSLatin1_from_uni",
+      "native_symbol": "DOSLatin1_from_uni",
+      "kind": "data",
+      "address": "0x1c0374dfc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "DOSLatin1_from_uni",
+        "address": "0x18083101c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFSingleByte.c",
+      "symbol": "DOSLatin1_to_uni",
+      "native_symbol": "DOSLatin1_to_uni",
+      "kind": "data",
+      "address": "0x1c0374ffc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/KernelTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/KernelStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "DOSLatin1_to_uni",
+        "address": "0x18083121c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Captured primitive table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

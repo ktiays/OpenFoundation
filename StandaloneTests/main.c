@@ -8,6 +8,7 @@
 #include "CoreFoundation/Base/OCFBaseStandaloneTests.h"
 #include "CoreFoundation/Date/ScalarStandaloneTests.h"
 #include "Foundation/Range/RangeStandaloneTests.h"
+#include "CoreFoundation/StringEncoding/KernelStandaloneTests.h"
 
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
@@ -33,6 +34,10 @@ int main(void) {
         return status;
     }
     status = runFoundationRangeStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runStringEncodingKernelStandaloneTests();
     if (status != 0) {
         return status;
     }
