@@ -6,3 +6,5 @@
 #pragma once
 
 int runCoreFoundationUnicodeStandaloneTests(void);
+
+int runCoreFoundationUnicodePlaneStandaloneTests(void);

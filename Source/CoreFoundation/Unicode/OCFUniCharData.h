@@ -173,3 +173,25 @@ extern const UniCharBitmapData __CFUniCharBitmapDataArray[22];
 extern const uint32_t __CFUniCharDecompositionTable[4158];
 
 extern const uint32_t __CFUniCharMultipleDecompositionTable[2088];
+
+extern const uint8_t __CFUniCharCombiningPriorityTablePlane0[8704];
+
+extern const uint8_t __CFUniCharCombiningPriorityTablePlane1[9472];
+
+extern const uint8_t __CFUniCharBidiPropertyPlane0[14080];
+
+extern const uint8_t __CFUniCharBidiPropertyPlane1[15360];
+
+extern const uint8_t __CFUniCharBidiPropertyPlane14[768];
+
+extern const uint8_t __CFUniCharDecompositionCombiningPriorityTablePlane0[8704];
+
+extern const uint8_t __CFUniCharDecompositionCombiningPriorityTablePlane1[9472];
+
+extern const uint8_t *const __CFUniCharCombiningPriorityTable[2];
+
+extern const uint8_t *const __CFUniCharBidiProperty[15];
+
+extern const uint8_t *const __CFUniCharDecompositionCombiningPriorityTable[2];
+
+extern const UniCharBitmapData __CFUniCharUnicodePropertyTable[2];

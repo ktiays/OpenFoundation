@@ -69,17 +69,17 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 7 |
+| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 12 |
 | Foundation | 3,375 | 575,568 | 26 | 1,298 | 2,051 | 26 |
 
 The scope is about 49% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 646 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
-Thirty-four of the 76 restored function definitions (33 native addresses) fall
+Thirty-nine of the 81 restored function definitions (38 native addresses) fall
 inside the scope: the
-UTF-8 encoder, Unicode membership/decomposition, `CFHashBytes` and the raw
-Decimal group. The range, Gregorian validation and single-byte codec units are
+UTF-8 encoder, Unicode membership/decomposition, the Unicode plane/property/priority
+group (the first group below the core), `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are
 outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
@@ -95,7 +95,7 @@ outside it. They are kept and reported separately ("Progress and Verification").
   and the bundle localization queries; `__CFStringGetRelevantLocaleInfoFromLocaleSummary`
   calls `CFBundleCopyLocalizationsForPreferences`. Whether those edges are cuts
   (downgraded through the native code's own path, for example no main bundle)
-  is the first owner decision the scope needs before the string group is read.
+  was the first owner decision the scope needed; see "Decisions".
 - A second group of 14 joins CFError and CFBundle. Foundation's call graph has no
   group larger than 3. Its coupling is through messages, which the components do
   not model.
@@ -166,10 +166,49 @@ SPI, and the XPC-based preferences daemon. swift-corelibs-libdispatch's
 counterparts to the `_4CF` interfaces have not been checked against these
 call sites.
 
+## Decisions
+
+### CFBundle is retained (2026-10-29)
+
+Owner criterion: CFBundle stays in the scope if it can be ported without
+difficulty; otherwise it is removed. Evaluation against the iOS Simulator
+image (`D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC`, IDA, high confidence for
+the functions named here):
+
+- The consumers import CFBundle directly. OpenCoreAnimation imports
+  `CFBundleGetMainBundle`, `CFBundleGetIdentifier`, `CFBundleGetInfoDictionary`,
+  `CFBundleGetValueForInfoDictionaryKey`, `_CFBundleGetMainBundleIfLooksLikeBundle`
+  and `NSBundle`; OpenCoreGraphics imports `CFBundleGetIdentifier`. Removing
+  CFBundle would cut consumer roots, not only the string-formatting edges.
+- The main bundle is found from the executable path and the directory layout:
+  `CFBundleGetMainBundle` (0x1c0169a0c) calls `_CFProcessPath`, builds a URL,
+  and asks `_CFBundleCopyBundleURLForExecutableURL`. When no bundle URL is
+  found, the main bundle is NULL. `__CFCopyResolvedFormatStringWithConfiguration`
+  (0x1c02cb238) then gets no localizations and creates the `en` locale itself.
+  This is POSIX file-system logic over CFURL and property lists, and it ports.
+- The Mach-O-specific readers already have native no-data paths.
+  `_CFBundleCreateInfoDictFromMainExecutable` (0x1c025b0a8) passes NULL data
+  when `getsegbyname("__TEXT")` fails, and
+  `_CFBundleGrokObjCImageInfoFromMainExecutable` (0x1c025b34c) reports zeros
+  when `getsegbyname("__DATA")` fails. A port supplies the interface and
+  answers that there is no Mach-O segment; it does not edit the code.
+- The loader interfaces CFBundle uses are not specific to it. `CFEqual`,
+  `CFHash`, `CFGetTypeID`, `CFCopyDescription` and `__CFStringAppendFormatCore`
+  call `dyld_program_sdk_at_least`, and `__CFLookUpClass` uses `dlopen`. A port
+  supplies those answers either way; removing CFBundle would not remove that work.
+
+Result: the CFBundle edges are **restored**, and the core group stays at 396
+functions. On a port TARGET, `_NSGetExecutablePath`, `_NSGetMachExecuteHeader`,
+`getsegbyname`, `getsectbynamefromheader_64`, the `_dyld_*` image queries,
+`NXGetLocalArchInfo`/`NXFindBestFatArch` and the `dlfcn` family are
+**substituted** interfaces in the platform dependency table. Unread: how
+`_CFBundleGrokBinaryType` and the fat-file reader treat an ELF executable;
+how `_CFBundleDYLDCopyLoadedImagePathsIfChanged` behaves with an empty image
+list.
+
 ## Next steps
 
-1. Owner decisions on the CFBundle edges into string formatting, and on the
-   CoreServicesInternal cut.
+1. Owner decision on the CoreServicesInternal cut.
 2. Narrow the message tiers by reading consumer receivers, starting with the
    over-approximation families above.
 3. Resolve data-stored callbacks for the runtime class table and collection

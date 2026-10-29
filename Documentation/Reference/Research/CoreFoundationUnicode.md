@@ -125,6 +125,80 @@ bitmap payloads were read independently, but these facts do not prove the
 Device pointer bindings or Device behavioral equivalence. No Device build or
 execution is claimed.
 
+## Plane, property and priority group
+
+Added 2026-10-29 as the first group below the scope's core component
+([scope reading](../Scope.md)). It depends only on the primitives above and
+on read tables; it has no CF/NS objects, allocator or callbacks. Evidence:
+`Local/Evidence/cf-unicode-planes/{iphone-simulator,iphone-device}-reading.json`
+(disassembly, pseudocode and byte spans captured through IDA on scratch clones)
+and the generator `GenerateUnicodePlaneData.py` beside them.
+
+| Native function | iOS Simulator | iOS Device | Linkage | Confidence |
+| --- | --- | --- | --- | --- |
+| CFUniCharGetBitmapForPlane | 0x1c02515a0 | 0x180715aa0 | private external | Verified; Device inlines the bitmap-pointer lookup |
+| CFUniCharGetNumberOfPlanes | 0x1c0251870 | 0x180715de4 | private external | Verified; identical instructions |
+| CFUniCharGetUnicodePropertyDataForPlane | 0x1c025268c | 0x18065673c | exported | Verified; identical instructions |
+| __CFUniCharPrioritySort | 0x1c0253324 | 0x1806fcf40 | non-external | Verified; register allocation differs |
+| CFUniCharPrioritySort | 0x1c0253320 | 0x1806fcc28 | exported | Verified; tail call |
+
+**Plane counts.** Sets 1 and 108 answer 15, sets below 4 answer 1 and set 12
+answers 17. Other sets take the membership remapping and read the 32-bit count
+of their `__CFUniCharBitmapDataArray` record. The record index is not checked:
+identifiers 26..99 and above 110 read past the 22 records in the native code
+too. The restoration keeps the unchecked load, and the tests use only the
+identifiers that map to read records.
+
+**Bitmap copy.** The function first asks `CFUniCharGetBitmapPtrForPlane` and
+copies or inverts its 8192 bytes. Without a stored bitmap:
+- The legal set (12) copies the legal bitmaps with the opposite inversion.
+- Plane 14 of the legal set writes 2 followed by three bytes that differ from
+  the remaining 8188.
+- Planes 15 and 16 of the legal set are filled except byte 8187 (0x3f/0xc0).
+- Plane 0 of sets below 4 and set 15 is built from the whitespace and newline
+  scalars. The seven newline values (LF, VT, FF, CR, NEL, LS, PS) are an
+  unnamed 16-byte local table at 0x1c03a46a8 (Device 0x1808a0718), restored as
+  `kNewlineCharacters`.
+- Otherwise the result is 1 or 0xff by inversion and set kind, and nothing is
+  written.
+
+The inversion flag is tested by bit 0 and as a whole word. Every native caller
+passes 0 or 1, so the restoration declares it `bool`.
+
+**Property data.** `__CFUniCharUnicodePropertyTable` holds two records with
+the bitmap-record layout: 2 combining-priority planes and 15 bidi planes, of
+which planes 2..13 are null. The property type is not checked.
+
+**Priority sort.** It skips leading characters whose combining priority is zero
+(characters at or above U+20000 have priority zero), stops when fewer than five
+bytes remain, and bubble-sorts the rest. After a swap the previous priority
+becomes the current element's, not the larger moved one; the restoration keeps
+that order. No native caller reads the returned register (callers in
+`__CFStringFoldCharacterClusterAtIndex`, `CFStringNormalize` and
+`CFUniCharDecomposeWithErrorLocation` were checked), so it returns `void`.
+
+**Tables.** The combining-priority and bidi planes are captured byte for byte
+and agree with the Device image. The combining-priority planes exist three
+times as non-external symbols, which suggests a table header included in
+several native translation units. The property table uses the copy at
+0x2227a6738; the sort uses the copy at 0x2227a67e0, which sits beside the
+decomposition tables. Both are restored; the sort's copy is named
+`__CFUniCharDecompositionCombiningPriorityTable*`, a recorded collision mapping
+because the restored data unit holds both. Bidi plane 14 is restored as 768
+bytes. That is the Device storage up to its next symbol; the simulator span is
+788, and its last 20 bytes are unnamed data this group does not reach. Device
+pointer vectors are chained fixups whose targets decode by offset to the matching
+Device symbols; their authentication/diversity bits remain unread.
+
+**Tests.** The standalone suite adds 20 fixed cases. The differential suite
+resolves the hidden native functions by IDA offset from the pinned image base,
+and calls the hidden replacements from production sources compiled into the
+test tools (`Configuration/InternalTestSources.json`). It adds 206,237 cases:
+- plane counts for every read identifier;
+- property planes 0..299 for both types;
+- 140 sets × 20 planes × both inversions of bitmap copies, with canaries;
+- 200,000 deterministic sort arrays of lengths -1..14.
+
 ## Verification and remaining work
 
 The standalone corpus has 20 fixed raw primitive cases and checks execution
@@ -151,6 +225,7 @@ under `Local/Scratch/cf-unicode`; products use
 The full stream functions `CFUniCharDecompose`/`WithErrorLocation` call
 CFAllocatorAllocateTyped and CFAllocatorDeallocate when a combining run grows
 past its 32-scalar stack buffer. They remain unbuilt until the real allocator
-closure lands. The other captured case/composition/property routines are not
-counted as restored by this dependency track. No placeholder allocator, partial
+closure lands. Case mapping and compatibility decomposition (`CFUniCharMapCaseTo`,
+`CFUniCharGetConditionalCaseMappingFlags`, `CFUniCharCompatibilityDecompose`)
+are not restored yet; they need the case-mapping tables. No placeholder allocator, partial
 stream flag branch, lifetime claim or performance claim is introduced.

@@ -87,3 +87,68 @@ int runCoreFoundationUnicodeStandaloneTests(void) {
     printf("Unicode standalone cases passed: %zu (raw primitives).\n", cases);
     return 0;
 }
+
+// Native CFUniCharGetNumberOfPlanes 0x1c0251870, CFUniCharGetBitmapForPlane 0x1c02515a0,
+// CFUniCharGetUnicodePropertyDataForPlane 0x1c025268c, CFUniCharPrioritySort 0x1c0253320.
+// iOS Simulator 24A434 UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified.
+// Device comparison: 0x180715de4, 0x180715aa0, 0x18065673c, 0x1806fcc28,
+// UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified.
+// Reading: Documentation/Reference/Research/CoreFoundationUnicode.md.
+int runCoreFoundationUnicodePlaneStandaloneTests(void) {
+    size_t cases = 0;
+    if (CFUniCharGetNumberOfPlanes(1) != 15 || CFUniCharGetNumberOfPlanes(108) != 15 ||
+        CFUniCharGetNumberOfPlanes(2) != 1 || CFUniCharGetNumberOfPlanes(12) != 17 ||
+        CFUniCharGetNumberOfPlanes(4) != 2 || CFUniCharGetNumberOfPlanes(5) != 15) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    cases += 6;
+    if (OCFUniCharGetUnicodePropertyDataForPlane(0, 0) == 0 ||
+        OCFUniCharGetUnicodePropertyDataForPlane(0, 2) != 0 ||
+        OCFUniCharGetUnicodePropertyDataForPlane(1, 13) != 0 ||
+        OCFUniCharGetUnicodePropertyDataForPlane(1, 14) == 0 ||
+        OCFUniCharGetUnicodePropertyDataForPlane(1, 15) != 0) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    cases += 5;
+    // U+0301 and U+0316 have nonzero combining priorities in plane 0; a leading base letter is skipped.
+    const uint8_t *priorities = OCFUniCharGetUnicodePropertyDataForPlane(0, 0);
+    uint32_t marks[] = {0x61, 0x301, 0x316, 0x301};
+    OCFUniCharPrioritySort(marks, 4);
+    uint8_t previous = 0;
+    for (size_t index = 1; index < 4; ++index) {
+        uint32_t character = marks[index];
+        uint8_t page = priorities[character >> 8];
+        uint8_t priority = page ? priorities[page * 256 + (character & 0xff)] : 0;
+        if (priority == 0 || priority < previous) {
+            fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+            return 1;
+        }
+        previous = priority;
+    }
+    if (marks[0] != 0x61) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    cases += 4;
+    static uint8_t bitmap[8192];
+    if (CFUniCharGetBitmapForPlane(2, 0, bitmap, false) != 0 || !(bitmap[1] & 0x02) || (bitmap[1] & 0x04) ||
+        !(bitmap[0x2000 >> 3] & 1)) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    if (CFUniCharGetBitmapForPlane(3, 0, bitmap, false) != 0 || !(bitmap[1] & 0x04)) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    if (CFUniCharGetBitmapForPlane(2, 1, bitmap, false) != 0xff ||
+        CFUniCharGetBitmapForPlane(2, 1, bitmap, true) != 1 ||
+        CFUniCharGetBitmapForPlane(12, 13, bitmap, false) != 1) {
+        fprintf(stderr, "Unicode plane standalone mismatch at source line %d.\n", __LINE__);
+        return 1;
+    }
+    cases += 5;
+    printf("Unicode plane standalone cases passed: %zu (finite coverage).\n", cases);
+    return 0;
+}

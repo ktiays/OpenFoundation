@@ -47,6 +47,10 @@ int main(void) {
     if (status != 0) {
         return status;
     }
+    status = runCoreFoundationUnicodePlaneStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
     status = runFoundationDecimalStandaloneTests();
     if (status != 0) {
         return status;

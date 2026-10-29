@@ -4563,6 +4563,414 @@
       "source_definition": "_ONSDecimalMultiplyByPowerOf10 (Swift body)",
       "emitted_symbol": "__ONSDecimalMultiplyByPowerOf10",
       "emitted_system_symbol": "__NSDecimalMultiplyByPowerOf10"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "CFUniCharGetBitmapForPlane",
+      "native_symbol": "CFUniCharGetBitmapForPlane",
+      "kind": "function",
+      "address": "0x1c02515a0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFUniCharGetBitmapForPlane",
+        "address": "0x180715aa0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device inlines CFUniCharGetBitmapPtrForPlane; branches, writes and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "CFUniCharGetNumberOfPlanes",
+      "native_symbol": "CFUniCharGetNumberOfPlanes",
+      "kind": "function",
+      "address": "0x1c0251870",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFUniCharGetNumberOfPlanes",
+        "address": "0x180715de4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "OCFUniCharGetUnicodePropertyDataForPlane",
+      "native_symbol": "CFUniCharGetUnicodePropertyDataForPlane",
+      "kind": "function",
+      "address": "0x1c025268c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFUniCharGetUnicodePropertyDataForPlane",
+        "address": "0x18065673c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "__CFUniCharPrioritySort",
+      "native_symbol": "__CFUniCharPrioritySort",
+      "kind": "function",
+      "address": "0x1c0253324",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharPrioritySort",
+        "address": "0x1806fcf40",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Register allocation differs; comparisons, swaps and table reads agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "OCFUniCharPrioritySort",
+      "native_symbol": "CFUniCharPrioritySort",
+      "kind": "function",
+      "address": "0x1c0253320",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "CFUniCharPrioritySort",
+        "address": "0x1806fcc28",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same tail call."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniChar.c",
+      "symbol": "kNewlineCharacters",
+      "native_symbol": "unnamed local table of CFUniCharGetBitmapForPlane",
+      "kind": "data",
+      "address": "0x1c03a46a8",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "unnamed local table of CFUniCharGetBitmapForPlane",
+        "address": "0x1808a0718",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The seven values read by the loop agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharCombiningPriorityTablePlane0",
+      "native_symbol": "__CFUniCharCombiningPriorityTablePlane0",
+      "kind": "data",
+      "address": "0x1c041b644",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharCombiningPriorityTablePlane0",
+        "address": "0x18092ff10",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharCombiningPriorityTablePlane1",
+      "native_symbol": "__CFUniCharCombiningPriorityTablePlane1",
+      "kind": "data",
+      "address": "0x1c041d844",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharCombiningPriorityTablePlane1",
+        "address": "0x180932110",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharBidiPropertyPlane0",
+      "native_symbol": "__CFUniCharBidiPropertyPlane0",
+      "kind": "data",
+      "address": "0x1c041fd44",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharBidiPropertyPlane0",
+        "address": "0x180934610",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharBidiPropertyPlane1",
+      "native_symbol": "__CFUniCharBidiPropertyPlane1",
+      "kind": "data",
+      "address": "0x1c0423444",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharBidiPropertyPlane1",
+        "address": "0x180937d10",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharBidiPropertyPlane14",
+      "native_symbol": "__CFUniCharBidiPropertyPlane14",
+      "kind": "data",
+      "address": "0x1c0427044",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharBidiPropertyPlane14",
+        "address": "0x18093b910",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The common 768 bytes agree; the Device storage ends at 768, the simulator span at 788."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharDecompositionCombiningPriorityTablePlane0",
+      "native_symbol": "__CFUniCharCombiningPriorityTablePlane0",
+      "kind": "data",
+      "address": "0x1c042d4f0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharCombiningPriorityTablePlane0",
+        "address": "0x18093bc18",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree; recorded collision mapping of a second non-external copy."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharDecompositionCombiningPriorityTablePlane1",
+      "native_symbol": "__CFUniCharCombiningPriorityTablePlane1",
+      "kind": "data",
+      "address": "0x1c042f6f0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFUniCharCombiningPriorityTablePlane1",
+        "address": "0x18093de18",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Table bytes agree; recorded collision mapping of a second non-external copy."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharCombiningPriorityTable",
+      "native_symbol": "__CFUniCharCombiningPriorityTable",
+      "kind": "data",
+      "address": "0x2227a6738",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "__CFUniCharCombiningPriorityTable",
+        "address": "0x1e01748c8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode by offset to the matching Device symbols; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharBidiProperty",
+      "native_symbol": "__CFUniCharBidiProperty",
+      "kind": "data",
+      "address": "0x2227a6748",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "__CFUniCharBidiProperty",
+        "address": "0x1e0539cb0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode by offset to the matching Device symbols; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharDecompositionCombiningPriorityTable",
+      "native_symbol": "__CFUniCharCombiningPriorityTable",
+      "kind": "data",
+      "address": "0x2227a67e0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "__CFUniCharCombiningPriorityTable",
+        "address": "0x1e01748d8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode by offset to the matching Device symbols; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Unicode/OCFUniCharData.c",
+      "symbol": "__CFUniCharUnicodePropertyTable",
+      "native_symbol": "__CFUniCharUnicodePropertyTable",
+      "kind": "data",
+      "address": "0x2227a67c0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationUnicode.md",
+      "tests": [
+        "Tests/CoreFoundation/Unicode/UnicodeTests.c",
+        "StandaloneTests/CoreFoundation/Unicode/UnicodeStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "layout-compared-bindings-decoded",
+        "native_symbol": "__CFUniCharUnicodePropertyTable",
+        "address": "0x1e0174a48",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "partial",
+        "differences": "Chained-fixup slots decode by offset to the matching Device symbols; authentication/diversity bits remain unread."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

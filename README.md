@@ -9,12 +9,13 @@ linked binaries and closed over the native call graphs
 surface is not a goal. Inside the scope, native implementation boundaries and
 observable behavior define the restoration.
 
-**Status:** the first scalar groups restore **seventy-eight function definitions, ninety-three data definitions and two Swift support types**:
+**Status:** the first scalar groups restore **eighty-three function definitions, one hundred five data definitions and two Swift support types**:
 CoreFoundation range construction, byte hashing and Gregorian field validation,
 and Foundation range union/intersection, plus fourteen hidden UTF-8 and single-byte
-conversion kernels. Twenty C functions are dynamically exported; the hidden kernels
+conversion kernels. Twenty-two C functions are dynamically exported; the hidden kernels
 are verified through the same implementation sources in the internal test tools.
-Unicode bitmap membership, raw character decomposition and destination formatting
+Unicode bitmap membership, raw character decomposition, destination formatting,
+plane counts, bitmap copies, property-plane lookup and combining-priority sorting
 are also restored. The complete eleven-entry raw NSDecimal arithmetic group preserves
 its native C-to-Swift boundary, with ten compiler-generated C bridges counted
 separately in the ledger. Each has independent iOS Simulator and iOS Device readings;
@@ -23,7 +24,7 @@ value-witness bindings remain explicitly unread. Object runtime, strings, collec
 remain incomplete; these frameworks cannot replace either consumer's system dependency.
 
 The first iOS Simulator scope holds 3,593 CoreFoundation and 3,375 Foundation
-functions, most of them in over-approximating message tiers. Thirty-four restored
+functions, most of them in over-approximating message tiers. Thirty-nine restored
 function definitions fall inside it.
 
 Stage 1 matches iOS 27.0 Simulator (24A434), arm64. Stage 2 compares and restores
