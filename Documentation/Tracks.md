@@ -3,9 +3,13 @@
 Implementation tracks use isolated `codex/<track>` branches and build directories.
 The coordinating session owns shared build policy, public-header registration,
 restoration records, test entry points and squash integration into linear main.
+Since 2026-10-29 the restoration is limited to the consumer-derived scope in
+`Configuration/Scope.json` (AGENTS.md, "Scope"); a track takes its groups from
+that scope, bottom up.
 
 | Track | Scope and owned paths | Depends on | State |
 | --- | --- | --- | --- |
+| SCOPE | `Tools/scope.py`, `Configuration/Scope.json`, `Documentation/Reference/Scope.md`, evidence under `Local/Evidence/scope` | REF; consumer builds | In progress: iOS Simulator roots and two-image closure assembled (3,593 CoreFoundation and 3,375 Foundation functions, three tiers); message tiers, data-stored callbacks, iOS Device images, CFBundle/CoreServicesInternal cut decisions open ([reading](Reference/Scope.md)) |
 | INIT | Root engineering files, Configuration, Tools, Xcode project, Resources, bootstrap Source/Tests | None | Complete; empty bootstrap is not behavior coverage |
 | REF | Four canonical images/databases, identity-guarded IDA symbol inventories, `Documentation/Reference` | INIT | Image inventory complete; full class-cluster/ABI/reexport graph still in progress |
 | CF-BASE | `codex/cf-base`; `Source/CoreFoundation/Base`, mirror tests, base reading | REF scalar closure | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
@@ -17,9 +21,9 @@ restoration records, test entry points and squash integration into linear main.
 | CF-UNICODE | `codex/cf-unicode`; complete normalization/property/table group under `Source/CoreFoundation/Unicode`, mirrors/reading | REF; exact native table/resource boundary | Complete raw primitive batch: 5 functions and 82 data definitions; 14,980,800 differential cases per prefixed configuration and full Make/Xcode matrix passed. Stream decomposition waits on allocator; 23 Device pointer bindings unread |
 | CF-STRING | `codex/cf-string`; complete string objects/core/formatting under `Source/CoreFoundation/String`, mirrors/reading | Runtime ABI, encoding and Unicode | Evidence preserved; implementation deferred with its exact class/bridge dependencies |
 | CF-NUMBER-DATE | Independent worktree; complete number/boolean/date object callback group in coordinated new source paths, mirrors/readings | Runtime ABI and exact native dependencies | Evidence preserved; implementation deferred; separate from completed date-field scalar unit |
-| CG-DEPS | Complete dependency groups required by OpenCoreGraphics | Runtime/storage groups | Not started |
-| CA-DEPS | Complete Foundation/CoreFoundation groups required by OpenCoreAnimation | Runtime/storage groups | Not started |
-| INTEGRATION | Explicit replacement builds and dependency audits in the consumers | CG-DEPS, CA-DEPS | Not started |
+| CONSUMER-SCOPE | Remaining groups of the scope after the runtime, string, number/date and encoding tracks: collections, data, run loop, property lists, keyed archiving, NS classes and bridging, each a track of its own when read | SCOPE, RUNTIME | Not started |
+| PORT | Port infrastructure (hook header, `Port/hooks.tsv`, `Configuration/PlatformDependencies.tsv` and its check), then the first port TARGET with its supplied libraries | SCOPE cut classification; restored groups | Not started; no port TARGET admitted |
+| INTEGRATION | Explicit replacement builds and dependency audits in the consumers, on Apple and port TARGETs | CONSUMER-SCOPE, PORT | Not started |
 | IOS-DEVICE | Device execution and admitted replacement build | Validated complete simulator groups and device ABI | Deferred; scalar image comparison is not device equivalence |
 
 `Configuration/Restoration.json` records 173 definitions: seventy-eight function definitions, ninety-three

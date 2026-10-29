@@ -2,12 +2,19 @@
 
 ## Goal
 
-Restore the iOS Foundation and CoreFoundation implementations one to one, so
-OpenCoreGraphics and OpenCoreAnimation can replace their system dependencies.
-The native implementation's boundaries, data layouts, ownership, call order,
-errors and observable behavior are the architecture. Restoration comes before
-refactoring, portability or a design of this project's own. Never describe an
-incomplete framework as an equivalent replacement.
+Restore, one to one, the part of the iOS Foundation and CoreFoundation
+implementations that the consumers require, and run that restoration on other
+platforms (owner decision, 2026-10-29). The consumers are OpenCoreAnimation and
+OpenCoreGraphics; the objective is a cross-platform OpenCoreAnimation. The rest
+of the framework surface is not a goal of this project.
+
+Inside the declared scope ("Scope"), the native implementation's boundaries,
+data layouts, ownership, call order, errors and observable behavior are the
+architecture. Restoration comes before refactoring or a design of this project's
+own; portability follows the restoration ("Porting"). Never describe the
+result as an equivalent replacement of Foundation or CoreFoundation, only as a
+restoration of its declared scope, and never describe an incomplete scope as
+complete.
 
 The engineering baseline follows OpenCoreAnimation and OpenCoreGraphics, as
 requested on 2026-10-29. Their source trees are references for engineering
@@ -18,6 +25,33 @@ conventions and consumer requirements; they do not establish Foundation behavior
 All project documentation, source code, identifiers, comments, commit messages,
 build output and test diagnostics use professional English unless the user
 explicitly requests an exception. Conversation may use the user's language.
+
+## Scope
+
+- The scope is derived, never chosen by hand. Its roots are the CF/NS
+  symbols, Objective-C classes and selectors that the consumers' admitted
+  builds import from CoreFoundation and Foundation, measured on their linked
+  binaries; a lexical source scan locates candidates and is not a root. The
+  scope is those roots closed over the pinned images' call graphs in IDA.
+- `Configuration/Scope.json` records the scope: consumer revisions and builds,
+  every root, every native function in the closure with its image, address and
+  UUID, the roots that reach it, and every cut. `Tools/scope.py` regenerates and
+  checks it from evidence under `Local/Evidence/scope`. A root or function added
+  without a consumer reaching it needs a recorded owner decision.
+- A cut is where the closure leaves the scope: an edge into another image, or
+  into native code the owner decides not to restore. Classify every cut:
+  **restored** (the target joins the scope), **external** (another library the
+  native image links, such as libobjc, libdispatch, ICU or libsystem; it is
+  supplied, never reimplemented here), **downgraded** (the native code's own
+  path when the dependency is absent) or **unsupported** (a build that needs it
+  fails, naming the cut). Never cut with a stub, a success return or a fitted
+  value.
+- Indirect edges (Objective-C messages, CF callbacks, blocks, function
+  pointers, Swift witnesses) are resolved by reading; an unresolved edge is
+  recorded as unread and keeps its group open.
+- Consumers' new requirements enter by regenerating the scope at their new
+  revision. A scope reduction never removes a restored definition silently;
+  record why it is no longer reached.
 
 ## Reading Apple Frameworks
 
@@ -37,7 +71,9 @@ explicitly requests an exception. Conversation may use the user's language.
   old project code, third-party headers, or Apple's open-source releases.
   Those may locate a question; the pinned implementation settles it.
 - Do not download or import another Foundation/CoreFoundation implementation
-  as a substitute for reverse engineering. A dependency is reused only when
+  as a substitute for reverse engineering. swift-corelibs-foundation,
+  swift-foundation, Apple's CF releases and GNUstep may locate a question; they
+  never supply code or settle behavior. A dependency is reused only when
   explicit native evidence establishes that dependency and its exact boundary.
   Preserve its licensing and provenance. Obtain the user's decision before
   changing this source-of-evidence policy.
@@ -73,12 +109,46 @@ explicitly requests an exception. Conversation may use the user's language.
   address and confidence, or stating that the iOS Device side remains unread.
 - `TARGET` is where the code runs; `MATCH` is the implementation it reproduces.
   They are independent inputs, as in OpenCoreAnimation. Only pairs admitted by
-  `Configuration/Platforms.json` build. Initially only
-  `TARGET=iphonesimulator MATCH=iphonesimulator` is admitted, and only as an
-  empty bootstrap. Unsupported pairs fail before compilation. Do not invent
-  cross-platform fallbacks or silently use macOS behavior.
+  `Configuration/Platforms.json` build. Currently only
+  `TARGET=iphonesimulator MATCH=iphonesimulator` is admitted. Unsupported pairs
+  fail before compilation. A foreign TARGET is admitted only under "Porting";
+  there is no other cross-platform fallback, and macOS behavior is never used
+  silently.
 - Use Apple's TargetConditionals macros for native platform conditions.
   arm64 is the only build architecture at this stage.
+
+## Porting
+
+Owner decision, 2026-10-29, following OpenCoreAnimation's porting rules: the
+restored scope runs on other platforms without changing what any Apple build
+compiles.
+
+- **A port is a TARGET, never a MATCH.** `MATCH` stays whose implementation is
+  reproduced; a port adds a `TARGET` (for example `android` or `linux`) that
+  runs an existing MATCH's restoration. Restored function bodies are never
+  edited for a port beyond the hooks below.
+- **How a port changes behavior**, the first that serves:
+  0. *Leave a cut out*: the TARGET's row in `Configuration/PlatformDependencies.tsv`
+     marks a cut unsupported, or downgraded through the native code's own path.
+  1. *Supply the API*: the TARGET gets the same lower-level C interfaces the
+     restored code calls (Mach time, locks, libdispatch, libobjc, ICU,
+     libsystem), as libraries on its link line or from `Port/`, so call sites
+     stay as they are. The table classifies such an entry as **substituted**.
+  2. *A hook*: one expression's value or a whole function, through the port
+     hook macros, on every Apple TARGET expanding to the restored code alone.
+     Each hook is a row of `Port/hooks.tsv` stating why 0–1 do not serve.
+- **Supplied libraries** are recorded with provenance and license in the
+  table: the objc4 Android port for libobjc, swift-corelibs-libdispatch for
+  libdispatch, a pinned ICU for libicucore. A supplied library implements its
+  own interface only; it never supplies Foundation or CoreFoundation behavior.
+- **Nothing else enters `Source/`**: no port logic in a restored function, no
+  `#if` on a port TARGET outside the hook header, no include of a port header.
+  Port code lives in `Port/`.
+- **Apple builds stay byte-identical.** A port change leaves the Release binary
+  of every admitted Apple pair identical to main's (`cmp`).
+- The port infrastructure (hook header, `Port/hooks.tsv`, the platform
+  dependency table and its check) is not built yet. No port TARGET is admitted
+  until it is and until every cut on that TARGET is classified.
 
 ## Naming and Coexistence
 
@@ -181,7 +251,11 @@ explicitly requests an exception. Conversation may use the user's language.
   Only the two empty bootstrap units are exempt. `Tools/progress.py` and the
   prefix checker run in both build systems. No unrecorded translation unit or
   undeclared export may ship. A definition is marked restored only when its
-  whole dependency group is independently implemented and tested.
+  whole dependency group is independently implemented and tested; a group that
+  reaches a cut is whole when every cut is classified under "Scope".
+- Restored definitions outside `Configuration/Scope.json` are kept but
+  reported separately; new restoration work starts only inside the scope.
+  Progress is reported against the scope, never as a share of the framework.
 - Progress follows the dependency graph, bottom up. No restored function may
   depend on a placeholder or a call into the system implementation. Strongly
   connected groups are read and restored together. ABI and bridging decisions

@@ -1,9 +1,13 @@
 # OpenFoundation
 
-A project to restore the iOS implementations of Foundation and CoreFoundation
-one to one, from their pinned binaries. The intended consumers are
-OpenCoreGraphics and OpenCoreAnimation, which currently use the system libraries.
-Native implementation boundaries and observable behavior define the restoration.
+A project to restore, one to one from their pinned binaries, the part of the iOS
+Foundation and CoreFoundation implementations that OpenCoreAnimation and
+OpenCoreGraphics require, and to run it on other platforms toward a
+cross-platform OpenCoreAnimation. The scope is derived from the consumers'
+linked binaries and closed over the native call graphs
+([scope reading](Documentation/Reference/Scope.md)); the rest of the framework
+surface is not a goal. Inside the scope, native implementation boundaries and
+observable behavior define the restoration.
 
 **Status:** the first scalar groups restore **seventy-eight function definitions, ninety-three data definitions and two Swift support types**:
 CoreFoundation range construction, byte hashing and Gregorian field validation,
@@ -18,8 +22,13 @@ twenty-three iOS Device descriptor/vector pointer bindings and seven Swift
 value-witness bindings remain explicitly unread. Object runtime, strings, collections and consumer replacement
 remain incomplete; these frameworks cannot replace either consumer's system dependency.
 
+The first iOS Simulator scope holds 3,593 CoreFoundation and 3,375 Foundation
+functions, most of them in over-approximating message tiers. Thirty-four restored
+function definitions fall inside it.
+
 Stage 1 matches iOS 27.0 Simulator (24A434), arm64. Stage 2 compares and restores
-iOS Device 27.0.1 (24A446), using arm64e reference images. Other TARGET/MATCH pairs
+iOS Device 27.0.1 (24A446), using arm64e reference images. Port TARGETs follow
+the porting rules in AGENTS.md; none is admitted yet. Other TARGET/MATCH pairs
 are refused until their dependencies and behavior are established.
 
 | Path | Purpose |
@@ -30,7 +39,7 @@ are refused until their dependencies and behavior are established.
 | `Source/Foundation/` | `OpenFoundation.framework` sources and headers |
 | `Tests/`, `StandaloneTests/` | Native-reference checks and tests without system Foundation/CoreFoundation |
 | [Documentation](Documentation/README.md) | Method, reference identities, consumer inventory and restoration sequence |
-| `Configuration/` | Shared build defaults, admitted platforms, image pins and restoration ledger |
+| `Configuration/` | Shared build defaults, admitted platforms, image pins, restoration ledger and scope |
 | `Local/` (unversioned) | Reference images, IDA databases, evidence and research scratch |
 
 ## Building

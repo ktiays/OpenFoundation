@@ -1,5 +1,9 @@
 # Consumer requirements
 
+The link-level requirements that define the restoration scope are measured
+from the consumers' linked binaries; see the [scope reading](Scope.md). This
+lexical snapshot locates candidates only.
+
 The [source snapshot](Consumers.json) records CF/NS tokens and direct system
 header imports from OpenCoreGraphics (`src`, `include`) and OpenCoreAnimation
 (`Source`) at their listed revisions. Reproduce it with:
