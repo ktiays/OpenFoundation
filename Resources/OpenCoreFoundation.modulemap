@@ -1,0 +1,4 @@
+framework module OpenCoreFoundation {
+    umbrella header "OpenCoreFoundation.h"
+    export *
+}

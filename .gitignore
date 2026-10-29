@@ -1,0 +1,17 @@
+# Build products and compiler caches.
+/.build/
+/build/
+__pycache__/
+*.pyc
+.DS_Store
+xcuserdata/
+*.xcuserstate
+*.swp
+
+# Canonical reference images, IDA databases, captures and scratch.
+/Local/
+
+# Machine-specific agent configuration and managed worktrees.
+/.codex/config.toml
+/.claude/settings.local.json
+/.worktrees/

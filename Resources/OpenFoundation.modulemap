@@ -1,0 +1,4 @@
+framework module OpenFoundation {
+    umbrella header "OpenFoundation.h"
+    export *
+}

@@ -1,0 +1,724 @@
+// !$*UTF8*$!
+{
+    archiveVersion = 1;
+    classes = {};
+    objectVersion = 77;
+    objects = {
+        D215DD8D2FA5E0934950111E = {
+            isa = PBXFileReference;
+            path = Configuration/Build.xcconfig;
+            lastKnownFileType = text.xcconfig;
+            sourceTree = SOURCE_ROOT;
+        };
+        D787A7C45CB2BAF8097F84FD = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Source/CoreFoundation;
+            sourceTree = "<group>";
+            exceptions = (
+                8B40830C9E2E83094B9E430E,
+            );
+        };
+        A68A01BC3517FDF3A076492D = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Source/Foundation;
+            sourceTree = "<group>";
+            exceptions = (
+                F73AC23D2193E8B66E61AF3C,
+            );
+        };
+        41CF6794BA4200B839C53531 = {
+            isa = PBXGroup;
+            name = Source;
+            children = (
+                D787A7C45CB2BAF8097F84FD,
+                A68A01BC3517FDF3A076492D,
+            );
+            sourceTree = "<group>";
+        };
+        59830EBC3A4184110566BF1A = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Tests;
+            sourceTree = "<group>";
+        };
+        5B565A33B80B75DC462328A6 = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = StandaloneTests;
+            sourceTree = "<group>";
+        };
+        B332C3492D5EB10A118EB6D8 = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Configuration;
+            sourceTree = "<group>";
+        };
+        C205924DE0FE636CCDDE4ED6 = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Documentation;
+            sourceTree = "<group>";
+        };
+        EA93D6A262ECB87A9FA4D09E = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Tools;
+            sourceTree = "<group>";
+        };
+        E89B30AA1DC30A6AD8C34610 = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = Resources;
+            sourceTree = "<group>";
+        };
+        B335630551682C19A781AFEB = {
+            isa = PBXFileReference;
+            path = README.md;
+            sourceTree = "<group>";
+            lastKnownFileType = net.daringfireball.markdown;
+        };
+        A54FF182C7E8ACF56ACFD6E4 = {
+            isa = PBXFileReference;
+            path = AGENTS.md;
+            sourceTree = "<group>";
+            lastKnownFileType = net.daringfireball.markdown;
+        };
+        76ED074A9305C04054CDEBB9 = {
+            isa = PBXFileReference;
+            path = Makefile;
+            sourceTree = "<group>";
+            lastKnownFileType = sourcecode.make;
+        };
+        1026E0038B722990204A42BE = {
+            isa = PBXFileReference;
+            path = ".clang-format";
+            sourceTree = "<group>";
+            lastKnownFileType = text;
+        };
+        71A9F0678F9477617270D9AB = {
+            isa = PBXFileReference;
+            path = ".swift-format";
+            sourceTree = "<group>";
+            lastKnownFileType = text;
+        };
+        D0CE395FADE5D75F798CFC70 = {
+            isa = PBXFileReference;
+            includeInIndex = 0;
+            path = OpenCoreFoundation.framework;
+            explicitFileType = wrapper.framework;
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        8D3990AE4ED97AA93C280C54 = {
+            isa = PBXFileReference;
+            includeInIndex = 0;
+            path = OpenFoundation.framework;
+            explicitFileType = wrapper.framework;
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        2A7C49A6B3A5422042D96066 = {
+            isa = PBXFileReference;
+            includeInIndex = 0;
+            path = StandaloneTests;
+            explicitFileType = "compiled.mach-o.executable";
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        00CAA065DD96E2BF606FDA98 = {
+            isa = PBXFileReference;
+            includeInIndex = 0;
+            path = DifferentialTests;
+            explicitFileType = "compiled.mach-o.executable";
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        0A3E27B8CA818264D75C8D81 = {
+            isa = PBXGroup;
+            name = Products;
+            children = (
+                D0CE395FADE5D75F798CFC70,
+                8D3990AE4ED97AA93C280C54,
+                2A7C49A6B3A5422042D96066,
+                00CAA065DD96E2BF606FDA98,
+            );
+            sourceTree = "<group>";
+        };
+        4813494D137E1631BBA301D5 = {
+            isa = PBXGroup;
+            children = (
+                41CF6794BA4200B839C53531,
+                59830EBC3A4184110566BF1A,
+                5B565A33B80B75DC462328A6,
+                B332C3492D5EB10A118EB6D8,
+                C205924DE0FE636CCDDE4ED6,
+                EA93D6A262ECB87A9FA4D09E,
+                E89B30AA1DC30A6AD8C34610,
+                B335630551682C19A781AFEB,
+                A54FF182C7E8ACF56ACFD6E4,
+                76ED074A9305C04054CDEBB9,
+                1026E0038B722990204A42BE,
+                71A9F0678F9477617270D9AB,
+                0A3E27B8CA818264D75C8D81,
+            );
+            sourceTree = "<group>";
+        };
+        CE4D52DDD3A44BDC2D11688C = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Prepare Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" prepare\n";
+        };
+        8B40830C9E2E83094B9E430E = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = EBD7EFD326F731842489CCF7;
+            publicHeaders = (
+                OpenCoreFoundation.h,
+                OCFBuild.h,
+            );
+        };
+        5D13D67A5E3BF1A8205DBB7E = {
+            isa = PBXHeadersBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        EA5E6A8D040FA63A63F8D800 = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        D7DFEEDD03F8AE2AE90CF49C = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        E5E3B53C1401D0C5C8AE3D5E = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Package Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" package\n";
+        };
+        36E0A3309BFF29312BFAE82A = {
+            isa = XCBuildConfiguration;
+            name = Debug;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = OpenCoreFoundation;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                PRODUCT_BUNDLE_IDENTIFIER = me.ktiays.OpenCoreFoundation;
+                INFOPLIST_FILE = "Resources/OpenCoreFoundation-Info.plist";
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                DEFINES_MODULE = YES;
+                MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
+                GCC_OPTIMIZATION_LEVEL = 0;
+                LLVM_LTO = NO;
+            };
+        };
+        420D7479A153F31FBE56DCA5 = {
+            isa = XCBuildConfiguration;
+            name = Release;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = OpenCoreFoundation;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                PRODUCT_BUNDLE_IDENTIFIER = me.ktiays.OpenCoreFoundation;
+                INFOPLIST_FILE = "Resources/OpenCoreFoundation-Info.plist";
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                DEFINES_MODULE = YES;
+                MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
+                GCC_OPTIMIZATION_LEVEL = 2;
+                LLVM_LTO = YES;
+            };
+        };
+        AEA006D095C9BF954B25B903 = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                36E0A3309BFF29312BFAE82A,
+                420D7479A153F31FBE56DCA5,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        EBD7EFD326F731842489CCF7 = {
+            isa = PBXNativeTarget;
+            name = OpenCoreFoundation;
+            productName = OpenCoreFoundation;
+            productReference = D0CE395FADE5D75F798CFC70;
+            productType = "com.apple.product-type.framework";
+            fileSystemSynchronizedGroups = (
+                D787A7C45CB2BAF8097F84FD,
+            );
+            buildConfigurationList = AEA006D095C9BF954B25B903;
+            buildPhases = (
+                CE4D52DDD3A44BDC2D11688C,
+                5D13D67A5E3BF1A8205DBB7E,
+                EA5E6A8D040FA63A63F8D800,
+                D7DFEEDD03F8AE2AE90CF49C,
+                E5E3B53C1401D0C5C8AE3D5E,
+            );
+            buildRules = ();
+            dependencies = ();
+        };
+        B789413AE661F9B031A87E06 = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Prepare Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" prepare\n";
+        };
+        F73AC23D2193E8B66E61AF3C = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = 63B4191BE2FF663882B26A5A;
+            publicHeaders = (
+                OpenFoundation.h,
+            );
+        };
+        A0F5FE790E1DA0D5F1974C53 = {
+            isa = PBXHeadersBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        FB15B3B0A46292C05520637E = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        37654121896D9EEE0CDA1E9E = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 244210E48437B6556980A702;
+            proxyType = 1;
+            remoteGlobalIDString = EBD7EFD326F731842489CCF7;
+            remoteInfo = OpenCoreFoundation;
+        };
+        52074B24EBA288F0B92C37EC = {
+            isa = PBXTargetDependency;
+            target = EBD7EFD326F731842489CCF7;
+            targetProxy = 37654121896D9EEE0CDA1E9E;
+        };
+        12504413055FF8A78FA00B2B = {
+            isa = PBXBuildFile;
+            fileRef = D0CE395FADE5D75F798CFC70;
+        };
+        6DDB144700004266EEB49103 = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                12504413055FF8A78FA00B2B,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        686A402535E9011DEA854A46 = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Package Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" package\n";
+        };
+        C989EBAB40B7BB4DF77C4A1F = {
+            isa = XCBuildConfiguration;
+            name = Debug;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = OpenFoundation;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                PRODUCT_BUNDLE_IDENTIFIER = me.ktiays.OpenFoundation;
+                INFOPLIST_FILE = "Resources/OpenFoundation-Info.plist";
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                DEFINES_MODULE = YES;
+                MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
+                GCC_OPTIMIZATION_LEVEL = 0;
+                LLVM_LTO = NO;
+            };
+        };
+        1427FCE8682BF8212F9ED8AE = {
+            isa = XCBuildConfiguration;
+            name = Release;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = OpenFoundation;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                PRODUCT_BUNDLE_IDENTIFIER = me.ktiays.OpenFoundation;
+                INFOPLIST_FILE = "Resources/OpenFoundation-Info.plist";
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                DEFINES_MODULE = YES;
+                MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
+                GCC_OPTIMIZATION_LEVEL = 2;
+                LLVM_LTO = YES;
+            };
+        };
+        09356BAD33CFFE39AEB7D78E = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                C989EBAB40B7BB4DF77C4A1F,
+                1427FCE8682BF8212F9ED8AE,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        63B4191BE2FF663882B26A5A = {
+            isa = PBXNativeTarget;
+            name = OpenFoundation;
+            productName = OpenFoundation;
+            productReference = 8D3990AE4ED97AA93C280C54;
+            productType = "com.apple.product-type.framework";
+            fileSystemSynchronizedGroups = (
+                A68A01BC3517FDF3A076492D,
+            );
+            buildConfigurationList = 09356BAD33CFFE39AEB7D78E;
+            buildPhases = (
+                B789413AE661F9B031A87E06,
+                A0F5FE790E1DA0D5F1974C53,
+                FB15B3B0A46292C05520637E,
+                6DDB144700004266EEB49103,
+                686A402535E9011DEA854A46,
+            );
+            buildRules = ();
+            dependencies = (
+                52074B24EBA288F0B92C37EC,
+            );
+        };
+        AD0333FF6AA99248AD1C427C = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Prepare Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" prepare\n";
+        };
+        B88FD8B4EF7451648531D594 = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        6A615A1712DD563B206FE5D4 = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 244210E48437B6556980A702;
+            proxyType = 1;
+            remoteGlobalIDString = EBD7EFD326F731842489CCF7;
+            remoteInfo = OpenCoreFoundation;
+        };
+        CC9B520ACAF81CC9CA67F0BF = {
+            isa = PBXTargetDependency;
+            target = EBD7EFD326F731842489CCF7;
+            targetProxy = 6A615A1712DD563B206FE5D4;
+        };
+        E241CF9E3762ED5B268D9C78 = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 244210E48437B6556980A702;
+            proxyType = 1;
+            remoteGlobalIDString = 63B4191BE2FF663882B26A5A;
+            remoteInfo = OpenFoundation;
+        };
+        FFC35B287F3C0662D1039288 = {
+            isa = PBXTargetDependency;
+            target = 63B4191BE2FF663882B26A5A;
+            targetProxy = E241CF9E3762ED5B268D9C78;
+        };
+        6F5884065B0445E6C522E4D3 = {
+            isa = PBXBuildFile;
+            fileRef = D0CE395FADE5D75F798CFC70;
+        };
+        2663DB9683DEAA62373FFFC1 = {
+            isa = PBXBuildFile;
+            fileRef = 8D3990AE4ED97AA93C280C54;
+        };
+        E424B5736BB41C2F3EB4080B = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                6F5884065B0445E6C522E4D3,
+                2663DB9683DEAA62373FFFC1,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        D6FBB04F97A3F636FCF54562 = {
+            isa = XCBuildConfiguration;
+            name = Debug;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = StandaloneTests;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                GCC_OPTIMIZATION_LEVEL = 0;
+                LLVM_LTO = NO;
+            };
+        };
+        6F944CFFDB72386202E30AC8 = {
+            isa = XCBuildConfiguration;
+            name = Release;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = StandaloneTests;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                GCC_OPTIMIZATION_LEVEL = 2;
+                LLVM_LTO = YES;
+            };
+        };
+        D2A1704AFC3CE0C308BA2B19 = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                D6FBB04F97A3F636FCF54562,
+                6F944CFFDB72386202E30AC8,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        FCED26B3F5CF01836C4B7184 = {
+            isa = PBXNativeTarget;
+            name = StandaloneTests;
+            productName = StandaloneTests;
+            productReference = 2A7C49A6B3A5422042D96066;
+            productType = "com.apple.product-type.tool";
+            fileSystemSynchronizedGroups = (
+                5B565A33B80B75DC462328A6,
+            );
+            buildConfigurationList = D2A1704AFC3CE0C308BA2B19;
+            buildPhases = (
+                AD0333FF6AA99248AD1C427C,
+                B88FD8B4EF7451648531D594,
+                E424B5736BB41C2F3EB4080B,
+            );
+            buildRules = ();
+            dependencies = (
+                CC9B520ACAF81CC9CA67F0BF,
+                FFC35B287F3C0662D1039288,
+            );
+        };
+        20623F9F6930F6DFD62D5080 = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+            name = "Prepare Framework Policy";
+            alwaysOutOfDate = 1;
+            inputPaths = ();
+            outputPaths = ();
+            shellPath = /bin/sh;
+            shellScript = "set -eu\n/usr/bin/python3 \"$SRCROOT/Tools/xcode-phase.py\" prepare\n";
+        };
+        A859BFAC12B03FB1CA7CF6A1 = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        D40467E19128ACE66A367BC7 = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 244210E48437B6556980A702;
+            proxyType = 1;
+            remoteGlobalIDString = EBD7EFD326F731842489CCF7;
+            remoteInfo = OpenCoreFoundation;
+        };
+        BC9F2982EE007B980E3D380C = {
+            isa = PBXTargetDependency;
+            target = EBD7EFD326F731842489CCF7;
+            targetProxy = D40467E19128ACE66A367BC7;
+        };
+        06517DE619325E77096821A4 = {
+            isa = PBXContainerItemProxy;
+            containerPortal = 244210E48437B6556980A702;
+            proxyType = 1;
+            remoteGlobalIDString = 63B4191BE2FF663882B26A5A;
+            remoteInfo = OpenFoundation;
+        };
+        340F968FEB56E244214218ED = {
+            isa = PBXTargetDependency;
+            target = 63B4191BE2FF663882B26A5A;
+            targetProxy = 06517DE619325E77096821A4;
+        };
+        6B883E9F7FB3E31C532EC797 = {
+            isa = PBXBuildFile;
+            fileRef = D0CE395FADE5D75F798CFC70;
+        };
+        B180AE5F89EFCF479A6BCEC2 = {
+            isa = PBXBuildFile;
+            fileRef = 8D3990AE4ED97AA93C280C54;
+        };
+        B704D2548D42BDA2A1796F73 = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                6B883E9F7FB3E31C532EC797,
+                B180AE5F89EFCF479A6BCEC2,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        5375D868972B5DF0CC423165 = {
+            isa = XCBuildConfiguration;
+            name = Debug;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = DifferentialTests;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                GCC_OPTIMIZATION_LEVEL = 0;
+                LLVM_LTO = NO;
+            };
+        };
+        C613FC40519B89C97FEB9AC5 = {
+            isa = XCBuildConfiguration;
+            name = Release;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                PRODUCT_NAME = DifferentialTests;
+                OF_SYSTEM_NAMES_VALUE_NO = 0;
+                OF_SYSTEM_NAMES_VALUE_YES = 1;
+                GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) OF_SYSTEM_NAMES=$(OF_SYSTEM_NAMES_VALUE_$(OF_SYSTEM_NAMES))";
+                HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Source\" \"$(SRCROOT)/Tests\" \"$(BUILT_PRODUCTS_DIR)/Generated\"";
+                FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
+                OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
+                LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
+                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation";
+                GCC_OPTIMIZATION_LEVEL = 2;
+                LLVM_LTO = YES;
+            };
+        };
+        E51BA6A3F329F2030101B956 = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                5375D868972B5DF0CC423165,
+                C613FC40519B89C97FEB9AC5,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        BE88CA43ACE290E13F50CA5E = {
+            isa = PBXNativeTarget;
+            name = DifferentialTests;
+            productName = DifferentialTests;
+            productReference = 00CAA065DD96E2BF606FDA98;
+            productType = "com.apple.product-type.tool";
+            fileSystemSynchronizedGroups = (
+                59830EBC3A4184110566BF1A,
+            );
+            buildConfigurationList = E51BA6A3F329F2030101B956;
+            buildPhases = (
+                20623F9F6930F6DFD62D5080,
+                A859BFAC12B03FB1CA7CF6A1,
+                B704D2548D42BDA2A1796F73,
+            );
+            buildRules = ();
+            dependencies = (
+                BC9F2982EE007B980E3D380C,
+                340F968FEB56E244214218ED,
+            );
+        };
+        73EBF6644258C120893E685D = {
+            isa = XCBuildConfiguration;
+            name = Debug;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                GCC_OPTIMIZATION_LEVEL = 0;
+                LLVM_LTO = NO;
+            };
+        };
+        0B0C687DF8B6B8DC790B519C = {
+            isa = XCBuildConfiguration;
+            name = Release;
+            baseConfigurationReference = D215DD8D2FA5E0934950111E;
+            buildSettings = {
+                GCC_OPTIMIZATION_LEVEL = 2;
+                LLVM_LTO = YES;
+            };
+        };
+        76F8DEC3DFE0BDB465198890 = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                73EBF6644258C120893E685D,
+                0B0C687DF8B6B8DC790B519C,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        244210E48437B6556980A702 = {
+            isa = PBXProject;
+            attributes = {
+                LastUpgradeCheck = 2710;
+            };
+            buildConfigurationList = 76F8DEC3DFE0BDB465198890;
+            compatibilityVersion = "Xcode 16.0";
+            preferredProjectObjectVersion = 77;
+            developmentRegion = en;
+            knownRegions = (
+                en,
+                Base,
+            );
+            mainGroup = 4813494D137E1631BBA301D5;
+            productRefGroup = 0A3E27B8CA818264D75C8D81;
+            projectDirPath = "";
+            projectRoot = "";
+            targets = (
+                EBD7EFD326F731842489CCF7,
+                63B4191BE2FF663882B26A5A,
+                FCED26B3F5CF01836C4B7184,
+                BE88CA43ACE290E13F50CA5E,
+            );
+        };
+    };
+    rootObject = 244210E48437B6556980A702;
+}

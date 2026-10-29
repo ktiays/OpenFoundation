@@ -1,0 +1,17 @@
+{
+  "stage": "bootstrap",
+  "pairs": [
+    {
+      "target": "iphonesimulator",
+      "match": "iphonesimulator",
+      "architecture": "arm64",
+      "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+      "runtime_build": "24A434",
+      "status": "bootstrap"
+    }
+  ],
+  "deferred": {
+    "iphoneos": "Stage 2 requires iOS Device readings, ABI comparison and validation.",
+    "macosx": "No macOS restoration or foreign-target fallback has been established."
+  }
+}

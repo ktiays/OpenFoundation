@@ -1,0 +1,21 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 110
+BreakBeforeBraces: Attach
+PointerAlignment: Right
+ReferenceAlignment: Right
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+BinPackParameters: false
+BinPackArguments: false
+IndentCaseLabels: true
+NamespaceIndentation: None
+SortIncludes: Never
+AlignAfterOpenBracket: BlockIndent
+SeparateDefinitionBlocks: Always
+
+AccessModifierOffset: 0
+IndentAccessModifiers: false

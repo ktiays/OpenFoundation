@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "definitions": [],
+  "exclusions": [
+    {
+      "path": "Source/CoreFoundation/Bootstrap.c",
+      "reason": "Build infrastructure only; defines no replacement API."
+    },
+    {
+      "path": "Source/Foundation/Bootstrap.c",
+      "reason": "Build infrastructure only; defines no replacement API."
+    }
+  ]
+}

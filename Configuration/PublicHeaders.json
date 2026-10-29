@@ -1,0 +1,9 @@
+{
+  "OpenCoreFoundation": [
+    "OpenCoreFoundation.h",
+    "OCFBuild.h"
+  ],
+  "OpenFoundation": [
+    "OpenFoundation.h"
+  ]
+}
