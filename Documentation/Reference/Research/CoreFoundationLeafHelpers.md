@@ -4,10 +4,12 @@
 
 This reading restores sixteen small CoreFoundation functions from five
 subsystems (string formatting, property lists, file-path utilities, bundles and
-URLs) plus one character-set comparator, and a second batch of three: the
+URLs) plus one character-set comparator, and a second batch of five: the
 Gregorian day count `__CFAbsoluteFromYMD`, the binary-plist header and trailer
-validation `__CFBinaryPlistGetTopLevelInfo` and the system-version mapping
-`_CFBuildVersionForCFSystemVersion`, with their three tables. Each is a leaf of the scope: it calls
+validation `__CFBinaryPlistGetTopLevelInfo`, the system-version mapping
+`_CFBuildVersionForCFSystemVersion` with its two callers
+`_CFPlatformExecutableLinkedOnOrAfter` and `_CFExecutableLinkedOnOrAfter`, and
+three tables. Each is a leaf of the scope: it calls
 nothing but `memcmp`, `strncmp` (libsystem, external) or a block its caller
 passes, and it reads or writes no CF/NS object. It is not a restoration of
 string formatting, the binary, XML or old-style property-list parsers, CFBundle,
@@ -27,7 +29,9 @@ canonical images. No IDA session was opened for the first batch. The second
 batch is `batch3-iphone-simulator.json` and `batch3-iphone-device.json`, group
 `scalar-leaves`, captured with the same script through IDA on APFS clones under
 `Local/Scratch/cf-scalar-leaves`, plus `iphone-device-toplevel-cold.json` for the
-Device cold entries of `__CFBinaryPlistGetTopLevelInfo`.
+Device cold entries of `__CFBinaryPlistGetTopLevelInfo`, and `batch4-*.json`, group
+`linked-on-or-after`, for the two linked-on-or-after checks and the two callers
+left unbuilt (below).
 
 | Native function | Linkage | iOS Simulator | iOS Device | Source | Confidence |
 | --- | --- | --- | --- | --- | --- |
@@ -53,9 +57,12 @@ Device cold entries of `__CFBinaryPlistGetTopLevelInfo`.
 | `_CFBuildVersionForCFSystemVersion` | external | 0x1c0256b10 | 0x18060c1c8 | `Base/OCFUtilities.c` | verified |
 | `_CFBuildVersionForCFSystemVersion.macos_map` (data) | non-external | 0x1c0456ae0 | 0x1809651d8 | `Base/OCFUtilities.c` | verified |
 | unnamed version table (data, 11 entries) | no symbol | 0x1c0456b28 | 0x180965220 | `Base/OCFUtilities.c` | verified |
+| `_CFPlatformExecutableLinkedOnOrAfter` | external | 0x1c0256c34 | 0x180703f48 | `Base/OCFUtilities.c` | verified |
+| `_CFExecutableLinkedOnOrAfter` | external | 0x1c0256c8c | 0x18060bfb0 | `Base/OCFUtilities.c` | verified |
 
-The five external functions are exported as `__OCFBinaryPlist...` and
-`_OCFBuildVersionForCFSystemVersion` (prefixed) or under their native names
+The seven external functions are exported as `__OCFBinaryPlist...`,
+`_OCFBuildVersionForCFSystemVersion`, `_OCFPlatformExecutableLinkedOnOrAfter` and
+`_OCFExecutableLinkedOnOrAfter` (prefixed) or under their native names
 (system-names mode); the others keep their native spelling and stay hidden.
 `OCFDate.c` now holds an exported and a hidden function, so it joins
 `Configuration/InternalTestSources.json` as `OCFUniChar.c` did.
@@ -85,8 +92,13 @@ functions; `_CFBuildVersionForCFSystemVersion` between
 (`Base/OCFUtilities.c`, a new file). The directory and file names are inferred.
 
 Unread and unbuilt: the producers of the format-spec buffers and both parser
-contexts; the callers of `__CFBinaryPlistGetTopLevelInfo` and of
-`_CFBuildVersionForCFSystemVersion`; the callers' string blocks; four iOS Device
+contexts; `CFGregorianDateGetAbsoluteTime` (0x1c018de3c), the caller of
+`__CFAbsoluteFromYMD`, which calls `CFTimeZoneGetSecondsFromGMT` twice for a
+nonnull time zone (CFTimeZone is unrestored); `__CFDataGetBinaryPlistTopLevelInfo`
+(0x1c018acd4), the caller of `__CFBinaryPlistGetTopLevelInfo`, which dispatches
+through `__CF_IS_OBJC` and `objc_msgSend` and reads the CFData length at offset
+0x10 after `CFDataGetBytePtr` (runtime and CFData unrestored); both wait for those
+groups; the callers' string blocks; four iOS Device
 linker-outlined bodies reached from the `.cold` entries listed below.
 
 ## Native implementation
@@ -303,6 +315,20 @@ macOS version to iOS: `macos_map` entries below index 11 and versions below
 native fallback after that bound (macOS, 0xffff0000) is unreachable because the
 range check admits at most index 10; it is kept.
 
+### Linked-on-or-after checks
+
+Both return `dyld_program_sdk_at_least(buildVersion)` unchanged; libdyld
+(re-exported by libSystem) is an external cut, and the SDK has no declaration of
+it or of `dyld_get_active_platform`, so `OCFUtilities.c` declares both, as the
+encoding group declares `ucnv_getAlias`. `_CFExecutableLinkedOnOrAfter(version)`
+maps the version for `dyld_get_active_platform()` through
+`_CFBuildVersionForCFSystemVersion`. `_CFPlatformExecutableLinkedOnOrAfter(version,
+platform)` does the same for any platform but Mac Catalyst (6), for which it builds
+the pair inline: iOS (2) with 0 for 0..9, 0xffff0000 for 10..20, 0 for 1000..1015
+and the version's low 32 bits otherwise, without `macos_map` or the Catalyst
+rewrite. Its one caller in the image is `_CFAppVersionCheckLessThan`;
+`_CFExecutableLinkedOnOrAfter` has seventy call sites.
+
 ## Dependencies and naming
 
 The second batch calls nothing. `memcmp` and `strncmp` are libsystem functions, external cuts called with raw
@@ -361,6 +387,13 @@ only Device caller is `_CFPlatformExecutableLinkedOnOrAfter`.
 4-byte reads of the top object's offset to `.cold.1` (0x1807b9410, `B
 _OUTLINED_FUNCTION_2_0`) and `.cold.2` (0x18070d4d4, `B _OUTLINED_FUNCTION_1_2`),
 the same `LDR` + `REV` bodies that serve the array lookup. Confidence: verified.
+`_CFPlatformExecutableLinkedOnOrAfter` places its Mac Catalyst block after the
+call, with the same operations. `_CFExecutableLinkedOnOrAfter` inlines
+`_CFBuildVersionForCFSystemVersion` (same branches and tables) instead of calling
+it. Their calls to 0x18813ac80 and 0x188138360 leave the extracted image (direct
+shared-cache branches) and are identified as `dyld_get_active_platform` and
+`dyld_program_sdk_at_least` only by position against the simulator. Confidence:
+verified for the bodies, medium for those two targets.
 
 No Device trap replaces a simulator read.
 
@@ -399,7 +432,11 @@ compared exactly.
   compared (2,000,008 cases, 1,065,774 accepted); `_CFBuildVersionForCFSystemVersion`
   over versions 0..4095 and the macOS-version edges with clear, single and random
   high bits, over 64 small and random platforms, and 1,000,000 random pairs
-  (1,887,976 cases). Standalone: 13, 10 and 19 known answers.
+  (1,887,976 cases); the two linked-on-or-after checks over the same versions
+  and 200,000 random ones, with platforms 0..15 and random platforms (3,878,109
+  cases, 16,720 true). Both sides ask the test tool's own dyld, so these
+  compare the restored mapping and call, not dyld's answer for other SDKs.
+  Standalone: 13, 10 and 21 known answers.
 
 Standalone cases check the layouts and known answers in both naming modes.
 Coverage is finite. Pointer-wrap paths of the binary-plist checks are reachable

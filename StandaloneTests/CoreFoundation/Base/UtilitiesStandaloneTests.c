@@ -10,7 +10,8 @@
 
 // Native _CFBuildVersionForCFSystemVersion 0x1c0256b10, iOS Simulator 24A434
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Device comparison: 0x18060c1c8,
-// UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified.
+// UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified. _CFExecutableLinkedOnOrAfter 0x1c0256c8c
+// (Device 0x18060bfb0) is checked at its two ends; its answer comes from this process's dyld.
 // Reading: Documentation/Reference/Research/CoreFoundationLeafHelpers.md.
 int runCoreFoundationUtilitiesStandaloneTests(void) {
     struct {
@@ -52,5 +53,12 @@ int runCoreFoundationUtilitiesStandaloneTests(void) {
         }
     }
     printf("Build-version standalone cases passed: %zu.\n", count);
+    // Version 0 maps to build version 0 on the active platform, which every program's SDK reaches; a
+    // version passed through as 0xfffffffe (version 0xfffffffe, the active platform) is above any SDK.
+    if (!_OCFExecutableLinkedOnOrAfter(0) || _OCFExecutableLinkedOnOrAfter(UINT64_C(0xfffffffe))) {
+        fputs("Linked-on-or-after standalone mismatch.\n", stderr);
+        return 1;
+    }
+    puts("Linked-on-or-after standalone cases passed: 2.");
     return 0;
 }

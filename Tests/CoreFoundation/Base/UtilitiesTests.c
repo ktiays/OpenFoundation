@@ -12,6 +12,10 @@
 
 typedef OCFBuildVersion (*BuildVersionFunction)(uint64_t, uint32_t);
 
+typedef bool (*PlatformLinkedFunction)(uint64_t, uint32_t);
+
+typedef bool (*LinkedFunction)(uint64_t);
+
 static uint64_t nextRandom(uint64_t *state) {
     uint64_t value = (*state += UINT64_C(0x9e3779b97f4a7c15));
     value = (value ^ (value >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
@@ -32,6 +36,98 @@ compare(BuildVersionFunction native, BuildVersionFunction replacement, uint64_t 
         );
         return 1;
     }
+    return 0;
+}
+
+static int
+resolvePair(const char *nativeName, const char *replacementName, void **native, void **replacement) {
+    int status = resolveReferenceFunction("CoreFoundation", OF_REFERENCE_CF_UUID, nativeName, native);
+    if (status == 0) {
+        status = resolveReplacementFunction("OpenCoreFoundation", replacementName, replacement);
+    }
+    if (status == 0 && *native == *replacement) {
+        fputs("Setup failure: utilities reference resolved to the replacement.\n", stderr);
+        status = 77;
+    }
+    return status;
+}
+
+// Native _CFPlatformExecutableLinkedOnOrAfter 0x1c0256c34 and _CFExecutableLinkedOnOrAfter 0x1c0256c8c
+// (external), iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified.
+// iOS Device 24A446: 0x180703f48 and 0x18060bfb0, UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence:
+// verified for the bodies, medium for the identity of their out-of-image branch targets.
+// Both sides ask the same process's dyld, so the answers are those of this test tool's linked SDK. The
+// result bytes are compared over the version set of the build-version suite with platforms 0..15 and
+// random platforms, then random versions; accepted (true) answers are counted to keep both outcomes
+// visible.
+// Reading: Documentation/Reference/Research/CoreFoundationLeafHelpers.md.
+static int runLinkedOnOrAfterTests(const uint64_t *values, size_t count, uint64_t *state, size_t *cases) {
+    void *nativeFunction = NULL;
+    void *replacementFunction = NULL;
+    int status = resolvePair(
+        OF_NAME_STRING(_CFPlatformExecutableLinkedOnOrAfter),
+        OF_NAME_STRING(_OCFPlatformExecutableLinkedOnOrAfter),
+        &nativeFunction,
+        &replacementFunction
+    );
+    if (status != 0) {
+        return status;
+    }
+    PlatformLinkedFunction nativePlatform = (PlatformLinkedFunction)nativeFunction;
+    PlatformLinkedFunction replacementPlatform = (PlatformLinkedFunction)replacementFunction;
+    status = resolvePair(
+        OF_NAME_STRING(_CFExecutableLinkedOnOrAfter),
+        OF_NAME_STRING(_OCFExecutableLinkedOnOrAfter),
+        &nativeFunction,
+        &replacementFunction
+    );
+    if (status != 0) {
+        return status;
+    }
+    LinkedFunction nativeLinked = (LinkedFunction)nativeFunction;
+    LinkedFunction replacementLinked = (LinkedFunction)replacementFunction;
+    size_t accepted = 0;
+    size_t total = 0;
+    for (size_t index = 0; index < count + 200000; ++index) {
+        uint64_t version = index < count ? values[index] : nextRandom(state);
+        if (index >= count && (version & 1)) {
+            version &= 0xffffffff;
+        }
+        bool expected = nativeLinked(version);
+        bool actual = replacementLinked(version);
+        if (expected != actual) {
+            fprintf(
+                stderr,
+                "_CFExecutableLinkedOnOrAfter mismatch: version 0x%llx.\n",
+                (unsigned long long)version
+            );
+            return 1;
+        }
+        accepted += expected;
+        ++total;
+        for (uint32_t platform = 0; platform < 18; ++platform) {
+            uint32_t value = platform < 16 ? platform : (uint32_t)nextRandom(state);
+            expected = nativePlatform(version, value);
+            actual = replacementPlatform(version, value);
+            if (expected != actual) {
+                fprintf(
+                    stderr,
+                    "_CFPlatformExecutableLinkedOnOrAfter mismatch: version 0x%llx, platform %u.\n",
+                    (unsigned long long)version,
+                    value
+                );
+                return 1;
+            }
+            accepted += expected;
+            ++total;
+        }
+    }
+    *cases += total;
+    printf(
+        "Linked-on-or-after differential cases passed: %zu, %zu true (two functions; finite coverage).\n",
+        total,
+        accepted
+    );
     return 0;
 }
 
@@ -123,5 +219,5 @@ int runCoreFoundationUtilitiesDifferentialTests(void) {
         ++cases;
     }
     printf("Build-version differential cases passed: %zu (one function; finite coverage).\n", cases);
-    return 0;
+    return runLinkedOnOrAfterTests(values, count, &state, &cases);
 }

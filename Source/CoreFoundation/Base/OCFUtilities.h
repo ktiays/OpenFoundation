@@ -7,6 +7,7 @@
 
 #include <OpenCoreFoundation/Base/OCFBase.h>
 
+#include <stdbool.h>
 #include <stdint.h>
 
 // The 8-byte result of _CFBuildVersionForCFSystemVersion, returned in X0: the platform in the low 32
@@ -20,3 +21,8 @@ typedef struct {
 
 // systemVersion is compared as an unsigned 64-bit value; platform is a 32-bit dyld platform number.
 OF_EXPORT OCFBuildVersion _OCFBuildVersionForCFSystemVersion(uint64_t systemVersion, uint32_t platform);
+
+// Both return the dyld answer for the mapped build version unchanged.
+OF_EXPORT bool _OCFPlatformExecutableLinkedOnOrAfter(uint64_t systemVersion, uint32_t platform);
+
+OF_EXPORT bool _OCFExecutableLinkedOnOrAfter(uint64_t systemVersion);

@@ -7059,6 +7059,54 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFUtilities.c",
+      "symbol": "_OCFPlatformExecutableLinkedOnOrAfter",
+      "native_symbol": "_CFPlatformExecutableLinkedOnOrAfter",
+      "kind": "function",
+      "address": "0x1c0256c34",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/UtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/UtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFPlatformExecutableLinkedOnOrAfter",
+        "address": "0x180703f48",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The Mac Catalyst block follows the call; operations agree. The branch to 0x188138360 leaves the image and is taken to be dyld_program_sdk_at_least by position (confidence: medium)."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFUtilities.c",
+      "symbol": "_OCFExecutableLinkedOnOrAfter",
+      "native_symbol": "_CFExecutableLinkedOnOrAfter",
+      "kind": "function",
+      "address": "0x1c0256c8c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/UtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/UtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFExecutableLinkedOnOrAfter",
+        "address": "0x18060bfb0",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: inlines _CFBuildVersionForCFSystemVersion with the same branches and tables instead of calling it. The branches to 0x18813ac80 and 0x188138360 leave the image and are taken to be dyld_get_active_platform and dyld_program_sdk_at_least by position (confidence: medium)."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [
