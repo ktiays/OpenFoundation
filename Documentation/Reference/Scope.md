@@ -80,8 +80,12 @@ images have not been closed yet.
    callbacks still come only from instantiation sites. This reaches the static
    allocator objects' zone and context functions, collection callback tables,
    converter tables and block literals and descriptors; the edges are listed as
-   `data_callbacks`. Two more alternating passes reached the fixpoint
-   (2026-10-31).
+   `data_callbacks`. A referenced data object that is a CF static instance (an
+   Objective-C class isa, then an info word with the static bit 0x80 and a builtin
+   type) also reaches its class's callbacks: the static allocators (type 2),
+   `kCFNull` (16), `kCFBooleanTrue`/`False` (21), static numbers (22) and static
+   character sets (25), listed as `static_instances`. Two more alternating passes
+   reached the fixpoint (2026-10-31).
 6. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
    name-based family label, computes strongly connected components and
    bottom-up levels over call edges, marks already restored definitions by
@@ -104,7 +108,7 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 4,563 | 1,110,776 | 2,726 | 809 | 1,028 | 86 |
+| CoreFoundation | 4,571 | 1,111,060 | 2,734 | 809 | 1,028 | 86 |
 | Foundation | 3,598 | 632,164 | 52 | 1,411 | 2,135 | 26 |
 
 The scope is about 59% of CoreFoundation's `__text` and about 5% of Foundation's.
@@ -124,7 +128,7 @@ outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
 
-- CoreFoundation has 1,631 leaf functions (level 0) and depth 38. Foundation
+- CoreFoundation has 1,635 leaf functions (level 0) and depth 38. Foundation
   has 2,184 leaves and depth 34.
 - **One strongly connected group dominates CoreFoundation**: 396 functions,
   273,224 bytes at level 13. It ties CFString (78), CFBundle (50), CFURL (30),

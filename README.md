@@ -30,7 +30,7 @@ twenty-three iOS Device descriptor/vector pointer bindings and seven Swift
 value-witness bindings remain explicitly unread. Object runtime, strings, collections and consumer replacement
 remain incomplete; these frameworks cannot replace either consumer's system dependency.
 
-The first iOS Simulator scope holds 4,563 CoreFoundation and 3,598 Foundation
+The first iOS Simulator scope holds 4,571 CoreFoundation and 3,598 Foundation
 functions, most of them in over-approximating message tiers. One hundred thirteen restored
 function definitions fall inside it.
 

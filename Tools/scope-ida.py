@@ -27,7 +27,9 @@
 # Functions whose addresses are stored in data that closure functions or data roots reference (to the next
 # named address, following data-to-data pointers three levels) are reached with the referencing tier and are
 # listed in `data_callbacks`; Objective-C metadata, string sections and the runtime class tables and records
-# are excluded.
+# are excluded. A referenced data object that is a CF static instance (an Objective-C class isa, then an info
+# word with the static bit 0x80, a builtin type and a zero retain field) reaches its class's callbacks; the
+# types are listed in `static_instances`.
 #
 # Image initializers (__init_offsets and __mod_init_func entries) and +load methods are roots of every consumer
 # in the request, because they run whenever the image is loaded; they are listed in `initializers`.
@@ -51,7 +53,7 @@ REGISTER_ENTRY = "__CFRuntimeRegisterClass"
 BUILTIN_TABLE = "___CFRuntimeBuiltinClassTable"
 BUILTIN_COUNT = 72
 CALLBACK_OFFSETS = range(16, 88, 8)
-DATA_SKIPPED = ("__objc_", "__cfstring", "__cstring", "__ustring", "__oslogstring", "__const_cfobj2")
+DATA_SKIPPED = ("__objc_", "__cfstring", "__cstring", "__ustring", "__oslogstring")
 
 
 def segment_name(ea):
@@ -116,6 +118,8 @@ class Closure:
         self.unresolved_class_sites = []
         self.initializers = []
         self.data_callbacks = {}
+        self.static_instances = {}
+        self.builtin_table = None
         self.class_callbacks = {}
 
     def import_of(self, ea):
@@ -279,6 +283,20 @@ class Closure:
                                    "argument": value[0] if value else None})
         return callbacks, unresolved
 
+    def static_instance_type(self, address):
+        """The builtin type ID of a CF static instance at `address` (an Objective-C class isa, then an info
+        word with the static bit 0x80, a builtin type in bits 8-17 and a zero retain field), or None."""
+        isa = ida_bytes.get_qword(address)
+        info = ida_bytes.get_qword(address + 8)
+        if not isa or not segment_name(isa).startswith("__objc_data"):
+            return None
+        if info & 0x80 == 0:
+            return None
+        type_id = (info >> 8) & 0x3ff
+        if info & ~0x3ffff != 0 or type_id == 0 or type_id >= BUILTIN_COUNT:
+            return None
+        return type_id
+
     def data_functions(self, address, excluded, depth=0, seen=None):
         """Functions whose addresses are stored in the data object at `address` (to the next named address,
         at most 4 KB), following pointers into other data objects up to three levels."""
@@ -293,6 +311,12 @@ class Closure:
         while end < address + 4096 and not ida_name.get_name(end) and segment_name(end) == segment:
             end += 8
         functions = set()
+        type_id = self.static_instance_type(address)
+        if type_id is not None and self.builtin_table is not None:
+            record = ida_bytes.get_qword(self.builtin_table + 8 * type_id)
+            if record:
+                functions |= set(self.record_callbacks(record))
+                self.static_instances.setdefault(type_id, set()).add(ida_name.get_name(address) or "0x%x" % address)
         start = address - address % 8
         for slot in range(start, end, 8):
             pointer = ida_bytes.get_qword(slot)
@@ -427,6 +451,7 @@ class Closure:
         rows = {}
         self.propagate(work, tier, reach, rows)
         entries, table = self.runtime_entries()
+        self.builtin_table = table
         scanned = set()
         data_scanned = set()
         excluded_data = set()
@@ -563,6 +588,7 @@ def main():
               "unresolved_roots": closure.unresolved, "data_roots": closure.data_roots,
               "unresolved_class_sites": closure.unresolved_class_sites,
               "initializers": closure.initializers,
+              "static_instances": {str(k): sorted(v) for k, v in sorted(closure.static_instances.items())},
               "imports": [{"module": module, "name": name, "callers": len(callers)}
                           for (module, name), callers in sorted(closure.imports.items())],
               "selectors_sent": dict(sorted(closure.selectors_sent.items()))}
@@ -577,6 +603,7 @@ def main():
             "data_callbacks": sum(map(len, closure.data_callbacks.values())),
             "unresolved_class_sites": len(closure.unresolved_class_sites),
             "initializers": [row["function"] for row in closure.initializers],
+            "static_instance_types": sorted(closure.static_instances),
             "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"])}
 
 
