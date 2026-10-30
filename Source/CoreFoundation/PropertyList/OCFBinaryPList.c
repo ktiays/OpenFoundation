@@ -256,3 +256,143 @@ bool __OCFBinaryPlistParseUnicode16String(
     }
     return block(characters, count);
 }
+
+// Native __CFBinaryPlistGetTopLevelInfo, iOS Simulator 24A434, 0x1c0163b94,
+// UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. External; its one caller is
+// __CFDataGetBinaryPlistTopLevelInfo (0x1c018ad74).
+// iOS Device divergence: __CFBinaryPlistGetTopLevelInfo at 0x18061ce78 (UUID
+// 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified) adds a stack guard and moves the 8-byte
+// and 4-byte top-object offset reads out of line (.cold.1 0x1807b9410 into _OUTLINED_FUNCTION_2_0, .cold.2
+// 0x18070d4d4 into _OUTLINED_FUNCTION_1_2; LDR + REV + STR through X1, the simulator's reads). The
+// checks, their order and the stores agree.
+// The header is the seven bytes "bplist0" (two overlapping 32-bit compares at 0 and 3); the version
+// digit is not tested. Trailer fields are big-endian in the last 32 bytes. Each check fails with false
+// and no store; the order below is the native order. Every offset-table entry must be at most
+// offsetTableOffset - 1 and the top object's offset must lie in [8, offsetTableOffset). The native
+// function switches on the entry width (1, 2, 4 and 8 with REV loads, a byte loop otherwise); every
+// case yields the big-endian value of the byte loop below. On success the trailer is stored, then
+// *offset, then *marker (the byte at the top object's offset), each only when nonnull.
+// Reading: Documentation/Reference/Research/CoreFoundationLeafHelpers.md.
+bool __OCFBinaryPlistGetTopLevelInfo(
+    const uint8_t *databytes, uint64_t datalen, uint8_t *marker, uint64_t *offset, BinaryPlistTrailer *trailer
+) {
+    if (databytes == NULL || datalen < 0x29) {
+        return false;
+    }
+    uint32_t head = 0;
+    uint32_t tail = 0;
+    __builtin_memcpy(&head, databytes, 4);
+    __builtin_memcpy(&tail, databytes + 3, 4);
+    if (head != 0x696c7062 || tail != 0x30747369) {
+        return false;
+    }
+    const uint8_t *end = databytes + datalen;
+    uint64_t numObjects = 0;
+    __builtin_memcpy(&numObjects, end - 24, 8);
+    if (numObjects == 0) {
+        return false;
+    }
+    numObjects = __builtin_bswap64(numObjects);
+    if (numObjects >> 63) {
+        return false;
+    }
+    uint64_t offsetTableOffset = 0;
+    __builtin_memcpy(&offsetTableOffset, end - 8, 8);
+    offsetTableOffset = __builtin_bswap64(offsetTableOffset);
+    if (offsetTableOffset >> 63) {
+        return false;
+    }
+    uint64_t topObject = 0;
+    __builtin_memcpy(&topObject, end - 16, 8);
+    topObject = __builtin_bswap64(topObject);
+    if (numObjects <= topObject) {
+        return false;
+    }
+    if (offsetTableOffset < 9) {
+        return false;
+    }
+    if (datalen - 32 <= offsetTableOffset) {
+        return false;
+    }
+    uint8_t offsetIntSize = end[-26];
+    if (offsetIntSize == 0) {
+        return false;
+    }
+    uint8_t objectRefSize = end[-25];
+    if (objectRefSize == 0) {
+        return false;
+    }
+    uint64_t tableSize = 0;
+    if (__builtin_mul_overflow(numObjects, (uint64_t)offsetIntSize, &tableSize)) {
+        return false;
+    }
+    if (tableSize == 0) {
+        return false;
+    }
+    if (offsetTableOffset + tableSize > UINT64_C(0xffffffffffffffdf)) {
+        return false;
+    }
+    if (offsetTableOffset > ~tableSize) {
+        return false;
+    }
+    if (datalen != offsetTableOffset + tableSize + 32) {
+        return false;
+    }
+    if (objectRefSize <= 7 && (numObjects >> (8 * objectRefSize)) != 0) {
+        return false;
+    }
+    uintptr_t base = (uintptr_t)databytes;
+    if (base > UINT64_C(0xfffffffffffffff6)) {
+        return false;
+    }
+    if (offsetIntSize <= 7 && (offsetTableOffset >> (8 * offsetIntSize)) != 0) {
+        return false;
+    }
+    uintptr_t table = 0;
+    if (__builtin_add_overflow(base, (uintptr_t)offsetTableOffset, &table)) {
+        return false;
+    }
+    uintptr_t tableLast = 0;
+    if (__builtin_add_overflow(table, (uintptr_t)(tableSize - 1), &tableLast)) {
+        return false;
+    }
+    const uint8_t *entry = (const uint8_t *)table;
+    for (uint64_t index = 0; index < numObjects; ++index) {
+        uint64_t value = 0;
+        for (uint8_t byte = 0; byte < offsetIntSize; ++byte) {
+            value = (value << 8) | entry[byte];
+        }
+        if (offsetTableOffset - 1 < value) {
+            return false;
+        }
+        entry += offsetIntSize;
+    }
+    const uint8_t *topEntry = (const uint8_t *)(table + topObject * offsetIntSize);
+    uint64_t topOffset = 0;
+    for (uint8_t byte = 0; byte < offsetIntSize; ++byte) {
+        topOffset = (topOffset << 8) | topEntry[byte];
+    }
+    if (topOffset < 8 || offsetTableOffset <= topOffset) {
+        return false;
+    }
+    if (trailer != NULL) {
+        uint32_t leading = 0;
+        uint16_t following = 0;
+        __builtin_memcpy(&leading, end - 32, 4);
+        __builtin_memcpy(&following, end - 28, 2);
+        __builtin_memcpy(trailer->unused + 4, &following, 2);
+        __builtin_memcpy(trailer->unused, &leading, 4);
+        trailer->offsetIntSize = offsetIntSize;
+        trailer->objectRefSize = objectRefSize;
+        trailer->numObjects = numObjects;
+        trailer->topObject = topObject;
+        trailer->offsetTableOffset = offsetTableOffset;
+    }
+    if (offset != NULL) {
+        *offset = topOffset;
+    }
+    if (marker != NULL) {
+        *marker = databytes[topOffset];
+    }
+    return true;
+}

@@ -21,6 +21,9 @@
 #include "CoreFoundation/PlugIn/BundleHelperStandaloneTests.h"
 #include "CoreFoundation/URL/URLHelperStandaloneTests.h"
 #include "CoreFoundation/CharacterSet/CharacterSetHelperStandaloneTests.h"
+#include "CoreFoundation/Date/YMDStandaloneTests.h"
+#include "CoreFoundation/PropertyList/TopLevelInfoStandaloneTests.h"
+#include "CoreFoundation/Base/UtilitiesStandaloneTests.h"
 
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
@@ -102,6 +105,18 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationCharacterSetHelperStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationYMDStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationTopLevelInfoStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationUtilitiesStandaloneTests();
     if (status != 0) {
         return status;
     }

@@ -6915,6 +6915,150 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Date/OCFDate.c",
+      "symbol": "__CFAbsoluteFromYMD",
+      "native_symbol": "__CFAbsoluteFromYMD",
+      "kind": "function",
+      "address": "0x1c018dee0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Date/YMDTests.c",
+        "StandaloneTests/CoreFoundation/Date/YMDStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFAbsoluteFromYMD",
+        "address": "0x1806d56e4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The month leap flag tests run in another order; floating-point operations, their order and results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Date/OCFDate.c",
+      "symbol": "daysBeforeMonth",
+      "native_symbol": "daysBeforeMonth",
+      "kind": "data",
+      "address": "0x1c0373534",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Date/YMDTests.c",
+        "StandaloneTests/CoreFoundation/Date/YMDStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "daysBeforeMonth",
+        "address": "0x18082f764",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "All thirty-two table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFBinaryPList.c",
+      "symbol": "__OCFBinaryPlistGetTopLevelInfo",
+      "native_symbol": "__CFBinaryPlistGetTopLevelInfo",
+      "kind": "function",
+      "address": "0x1c0163b94",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/TopLevelInfoTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/TopLevelInfoStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFBinaryPlistGetTopLevelInfo",
+        "address": "0x18061ce78",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: adds a stack guard and moves the 8-byte and 4-byte top-object offset reads to .cold.1 (0x1807b9410, B _OUTLINED_FUNCTION_2_0) and .cold.2 (0x18070d4d4, B _OUTLINED_FUNCTION_1_2), LDR + REV stored through the caller's slot. Checks, order and stores agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFUtilities.c",
+      "symbol": "_OCFBuildVersionForCFSystemVersion",
+      "native_symbol": "_CFBuildVersionForCFSystemVersion",
+      "kind": "function",
+      "address": "0x1c0256b10",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/UtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/UtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBuildVersionForCFSystemVersion",
+        "address": "0x18060c1c8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Branches are laid out in another order; every input yields the same result."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFUtilities.c",
+      "symbol": "macos_map",
+      "native_symbol": "_CFBuildVersionForCFSystemVersion.macos_map",
+      "kind": "data",
+      "address": "0x1c0456ae0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/UtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/UtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBuildVersionForCFSystemVersion.macos_map",
+        "address": "0x1809651d8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "All sixty-four table bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFUtilities.c",
+      "symbol": "versionMap1005",
+      "native_symbol": "(unnamed table read by _CFBuildVersionForCFSystemVersion)",
+      "kind": "data",
+      "address": "0x1c0456b28",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/UtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/UtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "(unnamed table read by _CFBuildVersionForCFSystemVersion)",
+        "address": "0x180965220",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "All forty-four bytes read agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [

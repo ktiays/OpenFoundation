@@ -10,19 +10,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// Binary property-list trailer fields read by __CFBinaryPlistGetOffsetForValueFromArray2,
-// iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified for the four
-// fields read: the offset-table entry width (byte at 6), the object-reference width (byte at 7), the
-// object count (64 bits at 8) and the offset-table offset (64 bits at 24), all host-endian. Bytes 0..5
-// and 16..23 are unread here; the 32-byte size is the extent of the fields read, not a measurement of
-// the producer. BinaryPlistTrailer and its field names are local descriptive spellings.
+// Binary property-list trailer, as __CFBinaryPlistGetTopLevelInfo (iOS Simulator 24A434, 0x1c0163b94,
+// UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified) fills it: the six leading bytes of
+// the file trailer copied unchanged (a 4-byte store at 0, a 2-byte store at 4), the offset-table entry
+// width (byte at 6), the object-reference width (byte at 7), the object count (64 bits at 8), the top
+// object index (64 bits at 16) and the offset-table offset (64 bits at 24), all host-endian.
+// __CFBinaryPlistGetOffsetForValueFromArray2 reads the widths, the count and the table offset. The 32
+// bytes are the extent of the fields written; BinaryPlistTrailer and its field names are local
+// descriptive spellings.
 // Reading: Documentation/Reference/Research/CoreFoundationLeafHelpers.md.
 typedef struct {
-    uint8_t unread0[6];
+    uint8_t unused[6];
     uint8_t offsetIntSize;
     uint8_t objectRefSize;
     uint64_t numObjects;
-    uint64_t unread1;
+    uint64_t topObject;
     uint64_t offsetTableOffset;
 } BinaryPlistTrailer;
 
@@ -46,4 +48,8 @@ OF_EXPORT bool __OCFBinaryPlistParseASCIIString(
 
 OF_EXPORT bool __OCFBinaryPlistParseUnicode16String(
     const uint8_t *base, uint64_t limit, const uint8_t *marker, BinaryPlistStringBlock block
+);
+
+OF_EXPORT bool __OCFBinaryPlistGetTopLevelInfo(
+    const uint8_t *databytes, uint64_t datalen, uint8_t *marker, uint64_t *offset, BinaryPlistTrailer *trailer
 );

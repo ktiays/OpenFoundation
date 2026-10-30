@@ -17,6 +17,7 @@
     "Source/CoreFoundation/Base/OCFFileUtilities.c",
     "Source/CoreFoundation/PlugIn/OCFBundle.c",
     "Source/CoreFoundation/URL/OCFURL.c",
-    "Source/CoreFoundation/CharacterSet/OCFCharacterSet.c"
+    "Source/CoreFoundation/CharacterSet/OCFCharacterSet.c",
+    "Source/CoreFoundation/Date/OCFDate.c"
   ]
 }

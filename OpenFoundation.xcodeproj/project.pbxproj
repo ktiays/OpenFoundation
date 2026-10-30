@@ -502,8 +502,8 @@
             membershipExceptions = (
                 Base/OCFBase.c,
                 Base/OCFHashBytes.c,
+                Base/OCFUtilities.c,
                 Bootstrap.c,
-                Date/OCFDate.c,
                 Number/OCFBigNumber.c,
                 PropertyList/OCFBinaryPList.c,
                 StringEncoding/OCFStringEncodings.c,
@@ -641,8 +641,8 @@
             membershipExceptions = (
                 Base/OCFBase.c,
                 Base/OCFHashBytes.c,
+                Base/OCFUtilities.c,
                 Bootstrap.c,
-                Date/OCFDate.c,
                 Number/OCFBigNumber.c,
                 PropertyList/OCFBinaryPList.c,
                 StringEncoding/OCFStringEncodings.c,

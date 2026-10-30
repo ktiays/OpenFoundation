@@ -21,3 +21,7 @@ typedef struct {
 } OCFGregorianDate;
 
 OF_EXPORT uint8_t OCFGregorianDateIsValid(OCFGregorianDate gdate, OCFOptionFlags unitFlags);
+
+// Original non-external name is preserved; no process-shared symbol is exported. The 8-bit month and
+// day follow the callers, which sign-extend 8-bit fields (SBFX #8) into W1 and W2.
+OF_EXTERN double __CFAbsoluteFromYMD(int64_t year, int8_t month, int8_t day);

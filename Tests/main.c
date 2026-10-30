@@ -20,6 +20,9 @@
 #include "CoreFoundation/PlugIn/BundleHelperTests.h"
 #include "CoreFoundation/URL/URLHelperTests.h"
 #include "CoreFoundation/CharacterSet/CharacterSetHelperTests.h"
+#include "CoreFoundation/Date/YMDTests.h"
+#include "CoreFoundation/PropertyList/TopLevelInfoTests.h"
+#include "CoreFoundation/Base/UtilitiesTests.h"
 #include "Foundation/Decimal/DecimalDifferentialTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
@@ -103,6 +106,18 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runCoreFoundationCharacterSetHelperDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationYMDDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationTopLevelInfoDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationUtilitiesDifferentialTests();
         if (status != 0) {
             return status;
         }

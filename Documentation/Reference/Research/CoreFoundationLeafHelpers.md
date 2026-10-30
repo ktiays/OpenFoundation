@@ -4,11 +4,14 @@
 
 This reading restores sixteen small CoreFoundation functions from five
 subsystems (string formatting, property lists, file-path utilities, bundles and
-URLs) plus one character-set comparator. Each is a leaf of the scope: it calls
+URLs) plus one character-set comparator, and a second batch of three: the
+Gregorian day count `__CFAbsoluteFromYMD`, the binary-plist header and trailer
+validation `__CFBinaryPlistGetTopLevelInfo` and the system-version mapping
+`_CFBuildVersionForCFSystemVersion`, with their three tables. Each is a leaf of the scope: it calls
 nothing but `memcmp`, `strncmp` (libsystem, external) or a block its caller
 passes, and it reads or writes no CF/NS object. It is not a restoration of
 string formatting, the binary, XML or old-style property-list parsers, CFBundle,
-CFURL or CFCharacterSet.
+CFURL, CFCharacterSet, CFDate or the linked-on-or-after checks.
 
 | Reference | Identity |
 | --- | --- |
@@ -20,7 +23,11 @@ and `batch2-iphone-device.json`, group `leaf-helpers`: function boundaries,
 complete disassembly, Hex-Rays pseudocode, every caller with its call-site
 instructions, and the bytes of each referenced datum. The disassembly is the
 authority; the pseudocode located questions only. Linkage is from `nm -m` on the
-canonical images. No IDA session was opened for this track.
+canonical images. No IDA session was opened for the first batch. The second
+batch is `batch3-iphone-simulator.json` and `batch3-iphone-device.json`, group
+`scalar-leaves`, captured with the same script through IDA on APFS clones under
+`Local/Scratch/cf-scalar-leaves`, plus `iphone-device-toplevel-cold.json` for the
+Device cold entries of `__CFBinaryPlistGetTopLevelInfo`.
 
 | Native function | Linkage | iOS Simulator | iOS Device | Source | Confidence |
 | --- | --- | --- | --- | --- | --- |
@@ -40,10 +47,18 @@ canonical images. No IDA session was opened for this track.
 | `_CFBundleNormalizedPath` | non-external (was a private external) | 0x1c016a39c | 0x18063e8d4 | `PlugIn/OCFBundle.c` | verified |
 | `_netLocationRange` | non-external | 0x1c0244938 | 0x180712ef4 | `URL/OCFURL.c` | verified |
 | `chcompar` | non-external | 0x1c0174a34 | 0x180718e44 | `CharacterSet/OCFCharacterSet.c` | verified |
+| `__CFAbsoluteFromYMD` | non-external | 0x1c018dee0 | 0x1806d56e4 | `Date/OCFDate.c` | verified |
+| `daysBeforeMonth` (data, 16 entries) | non-external | 0x1c0373534 | 0x18082f764 | `Date/OCFDate.c` | verified |
+| `__CFBinaryPlistGetTopLevelInfo` | external | 0x1c0163b94 | 0x18061ce78 | `PropertyList/OCFBinaryPList.c` | verified |
+| `_CFBuildVersionForCFSystemVersion` | external | 0x1c0256b10 | 0x18060c1c8 | `Base/OCFUtilities.c` | verified |
+| `_CFBuildVersionForCFSystemVersion.macos_map` (data) | non-external | 0x1c0456ae0 | 0x1809651d8 | `Base/OCFUtilities.c` | verified |
+| unnamed version table (data, 11 entries) | no symbol | 0x1c0456b28 | 0x180965220 | `Base/OCFUtilities.c` | verified |
 
-The three external functions are exported as `__OCFBinaryPlist...` (prefixed) or
-under their native names (system-names mode); the others keep their native
-spelling and stay hidden.
+The five external functions are exported as `__OCFBinaryPlist...` and
+`_OCFBuildVersionForCFSystemVersion` (prefixed) or under their native names
+(system-names mode); the others keep their native spelling and stay hidden.
+`OCFDate.c` now holds an exported and a hidden function, so it joins
+`Configuration/InternalTestSources.json` as `OCFUniChar.c` did.
 
 Source paths. Only the bundle path is recovered: the `__cstring` bytes that
 follow the two literals of `_CFBundleNormalizedPath` name
@@ -61,11 +76,17 @@ and `lineNumberStrings` among the old-style parser
 `_CFAppendPathComponent2` and the other file utilities (`Base/OCFFileUtilities.c`);
 `_netLocationRange` beside `CFURLCopyNetLocation` (`URL/OCFURL.c`); `chcompar`
 between `CFCharacterSetCreateWithCharactersInString` and
-`CFCharacterSetCreateMutable` (`CharacterSet/OCFCharacterSet.c`). The directory and
-file names are inferred.
+`CFCharacterSetCreateMutable` (`CharacterSet/OCFCharacterSet.c`);
+`__CFAbsoluteFromYMD` between `CFGregorianDateGetAbsoluteTime` and
+`CFAbsoluteTimeGetGregorianDate`, beside the restored `CFGregorianDateIsValid`
+(`Date/OCFDate.c`); `__CFBinaryPlistGetTopLevelInfo` among the binary-plist
+functions; `_CFBuildVersionForCFSystemVersion` between
+`_CFOperatingSystemVersionGetCurrent` and `_CFExecutableLinkedOnOrAfter`
+(`Base/OCFUtilities.c`, a new file). The directory and file names are inferred.
 
-Unread and unbuilt: the producers of the format-spec buffers, the binary-plist
-trailer and both parser contexts; the callers' string blocks; four iOS Device
+Unread and unbuilt: the producers of the format-spec buffers and both parser
+contexts; the callers of `__CFBinaryPlistGetTopLevelInfo` and of
+`_CFBuildVersionForCFSystemVersion`; the callers' string blocks; four iOS Device
 linker-outlined bodies reached from the `.cold` entries listed below.
 
 ## Native implementation
@@ -118,17 +139,35 @@ ranges are equal; it is an address-taken callback with no direct caller.
 
 ### Binary property-list trailer and array lookup
 
-`__CFBinaryPlistGetOffsetForValueFromArray2` reads four trailer fields:
+`__CFBinaryPlistGetTopLevelInfo` fills the 32-byte trailer record and
+`__CFBinaryPlistGetOffsetForValueFromArray2` reads four of its fields:
 
 | Offset | Size | Content |
 | --- | --- | --- |
+| 0 | 6 | The file trailer's first six bytes, copied (4-byte store at 0, 2-byte at 4) |
 | 6 | 1 | Offset-table entry width |
 | 7 | 1 | Object-reference width |
 | 8 | 8 | Object count |
+| 16 | 8 | Top object index |
 | 24 | 8 | Offset-table offset |
 
-Bytes 0..5 and 16..23 are unread here; the fields are host-endian.
-`BinaryPlistTrailer` is a local spelling.
+The fields are host-endian. `BinaryPlistTrailer` is a local spelling.
+
+`__CFBinaryPlistGetTopLevelInfo(data, length, marker, offset, trailer)` checks,
+in order, each failing with 0 and no store: null data or `length < 41`; the
+header `bplist0` (32-bit compares at 0 and 3, so the version digit is free); the
+big-endian trailer in the last 32 bytes: a zero count, a count or table offset
+with bit 63 set, `count <= top`, `tableOffset < 9`, `length - 32 <= tableOffset`,
+a zero entry or reference width; `count * entryWidth` overflowing (`UMULH`) or
+zero; `tableOffset + tableSize > 2^64 - 33`; `tableOffset > ~tableSize`;
+`length != tableOffset + tableSize + 32`; a reference width at most 7 too narrow
+for the count; data above `2^64 - 10`; an entry width at most 7 too narrow for the
+table offset; `data + tableOffset` or the table's last byte wrapping. Every entry
+must then be at most `tableOffset - 1`, and the top object's entry must lie in
+`[8, tableOffset)`. On success it stores the trailer, then `*offset`, then
+`*marker` (the byte at that offset), each only when nonnull, and returns 1. The
+1/2/4/8-byte `REV` loads and the byte loop of other widths all yield the
+big-endian value the restoration's byte loop reads.
 
 The function never reads its second argument (the data length) or X6, which one
 of its two callers sets. Checks, in order, each failing with 0 and no store:
@@ -231,9 +270,42 @@ later one sets the length to its location minus the start plus its length, with
 `chcompar(first, second)` returns the first UTF-16 unit minus the second as a
 32-bit int; it is an address-taken `qsort` comparator.
 
+### Gregorian day count
+
+`__CFAbsoluteFromYMD(year, month, day)` takes the year relative to 2001 and 8-bit
+month and day (its callers sign-extend 8-bit fields with `SBFX #8`). It starts at
+`fma(year / 400, 146097.0, +0.0)` (a fused `FMADD` with a zero addend; the
+quotient truncates). With `r = year % 400`, it adds 365.0 or 366.0 for each of
+years 1..r when r > 0, or subtracts them for years `-r - 1` down to 0 when r < 0,
+in wrapping unsigned arithmetic modulo 400; a year y is leap when `y % 400` is a
+multiple of 4 other than 100, 200 and 300. If the month, as unsigned 32 bits, is
+at most 15, `daysBeforeMonth[month]` plus the leap flag of `|(r + 1) % 400|` (only
+after February) is added unless its low 16 bits are 0xffff. The table is
+0xffff, 0, 31, ..., 334, 365, 0xffff, 0xffff, so month 0 adds nothing, month 13
+a whole year and month 14 or 15 adds 0.0 in a leap year (0xffff + 1 wraps).
+Last, `day - 1` is added. The restoration keeps each addition in this order.
+
+### System-version mapping
+
+`_CFBuildVersionForCFSystemVersion(version, platform)` returns, in X0, a platform
+(low 32 bits) and a packed version (high 32 bits), the layout of dyld's
+build-version pair (`OCFBuildVersion` is a local spelling). The version is
+compared as 64 bits, the platform as 32 (1 macOS, 2 iOS, 6 Mac Catalyst): 0..4
+give version 0 with Mac Catalyst rewritten to iOS; 5..20 index `macos_map`
+(10.5 ... 10.16, 12 ... 15) for macOS and Mac Catalyst, and otherwise give 0 below
+10 and 0xffff0000 from 10; 1005..1015 index an unnamed eleven-entry table for
+macOS only, and 1000..1004 or any other platform in that range give version 0;
+every other version passes its low 32 bits through. Mac Catalyst then maps the
+macOS version to iOS: `macos_map` entries below index 11 and versions below
+10.15.1 to 13.0, 10.15.1 to 13.2, 10.16 and 11.0 to 14.0, anything else to
+0xffff0000. The unnamed table lies eight bytes into the span `nm` assigns to
+`_CFLog_os_trace_type_map`; the function's bound reads only its 44 bytes. A
+native fallback after that bound (macOS, 0xffff0000) is unreachable because the
+range check admits at most index 10; it is kept.
+
 ## Dependencies and naming
 
-`memcmp` and `strncmp` are libsystem functions, external cuts called with raw
+The second batch calls nothing. `memcmp` and `strncmp` are libsystem functions, external cuts called with raw
 bytes. The string parsers invoke the caller's block through the Block ABI; no
 runtime call is made. No function exchanges a CF/NS object, reads run-time
 global state or makes an unresolved indirect call. The record and context types
@@ -280,6 +352,16 @@ captured through IDA in `Local/Evidence/below-core-capture/iphone-device-leaf-co
   and 2 otherwise, selecting the same units as the simulator. Confidence:
   verified.
 
+Second batch: `__CFAbsoluteFromYMD` computes the month leap flag with the tests
+in another order and the same floating-point operations; `daysBeforeMonth` and
+both version tables agree byte for byte. `_CFBuildVersionForCFSystemVersion`
+lays its branches out in another order, with the same result for every input; its
+only Device caller is `_CFPlatformExecutableLinkedOnOrAfter`.
+`__CFBinaryPlistGetTopLevelInfo` adds a stack guard and moves the 8-byte and
+4-byte reads of the top object's offset to `.cold.1` (0x1807b9410, `B
+_OUTLINED_FUNCTION_2_0`) and `.cold.2` (0x18070d4d4, `B _OUTLINED_FUNCTION_1_2`),
+the same `LDR` + `REV` bodies that serve the array lookup. Confidence: verified.
+
 No Device trap replaces a simulator read.
 
 ## Verification and limits
@@ -307,6 +389,17 @@ compared exactly.
   drive colon; bundle paths over every prefix cut and last byte of both
   literals; `_netLocationRange` over all low 16 flag bits with random high bits
   and 64 range arrays; `chcompar` over 33 million unit pairs.
+
+- Second batch: `__CFAbsoluteFromYMD` over years -4000..4000 with every 8-bit
+  month, years -60..60 with every month and day, the 64-bit year extremes and
+  1,000,000 random years up to 2^40, compared as bit patterns (10,979,392 cases);
+  `__CFBinaryPlistGetTopLevelInfo` over 400,000 generated lists (entry widths
+  1..9, 12, 16, arbitrary reference widths) and their perturbations, with every
+  null/nonnull output combination, prefilled outputs and all 32 trailer bytes
+  compared (2,000,008 cases, 1,065,774 accepted); `_CFBuildVersionForCFSystemVersion`
+  over versions 0..4095 and the macOS-version edges with clear, single and random
+  high bits, over 64 small and random platforms, and 1,000,000 random pairs
+  (1,887,976 cases). Standalone: 13, 10 and 19 known answers.
 
 Standalone cases check the layouts and known answers in both naming modes.
 Coverage is finite. Pointer-wrap paths of the binary-plist checks are reachable
