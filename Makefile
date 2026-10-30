@@ -15,10 +15,19 @@ PYTHON ?= python3
 
 BUILD = $(PYTHON) Tools/build.py --target $(TARGET) --match $(MATCH) --configuration $(CONFIGURATION) --system-names $(OF_SYSTEM_NAMES)
 
-.PHONY: framework test validate coexistence check prefix-check progress format format-check project project-check xcode verify clean help
+.PHONY: framework test validate coexistence trace trace-record trace-compare check prefix-check progress format format-check project project-check xcode verify clean help
 
 framework test validate coexistence:
 	$(BUILD) $@
+
+trace:
+	$(PYTHON) Tools/trace.py check --target $(TARGET) --match $(MATCH) --configuration $(CONFIGURATION)
+
+trace-record:
+	$(PYTHON) Tools/trace.py record --target $(TARGET) --match $(MATCH) --configuration $(CONFIGURATION)
+
+trace-compare:
+	$(PYTHON) Tools/trace.py compare --target $(TARGET) --match $(MATCH) --configuration $(CONFIGURATION)
 
 check: format-check project-check
 	$(PYTHON) Tools/check.py
@@ -51,6 +60,6 @@ clean:
 	$(PYTHON) Tools/build.py clean
 
 help:
-	@echo 'make [framework|test|validate|coexistence|check|format|project|xcode|verify|clean]'
+	@echo 'make [framework|test|validate|coexistence|trace|trace-record|trace-compare|check|format|project|xcode|verify|clean]'
 	@echo 'TARGET=iphonesimulator MATCH=iphonesimulator CONFIGURATION=Debug|Release OF_SYSTEM_NAMES=NO|YES'
 	@echo 'See Configuration/Restoration.json for restored definitions and Documentation/Method.md for limits.'

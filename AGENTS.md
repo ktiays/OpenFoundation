@@ -270,6 +270,22 @@ compiles.
   own simulator. Never share another investigation's booted simulator or derived
   data. System-name tests run without native Foundation/CoreFoundation loaded;
   differential tests run in prefixed mode.
+- **Trace comparison** (owner decision, 2026-10-30). Object-runtime groups
+  are never run beside the system implementation in one process: per-thread
+  keys, tagged-pointer classes and the Objective-C class table are process
+  global. They are compared across processes instead. One scenario source
+  under `TraceTests`, written with native names, builds once against the
+  system frameworks (reference) and once in `OF_SYSTEM_NAMES=YES` against the
+  restored frameworks with no native Foundation/CoreFoundation loaded
+  (replacement). Each run prints a normalized trace (values, bytes, type IDs,
+  retain counts, descriptions, callback order, failures; object identities as
+  first-seen indices, never addresses), and the two traces must match exactly.
+  The reference traces are recorded per MATCH under `TraceTests/Recorded` with
+  their image identity and serve as the expected traces of port TARGETs.
+  Prefixed mode stays the in-process differential for pure functions and the
+  compile/link coexistence check for object groups. No scenario observes
+  pointer values, timing or other nondeterminism; one that needs it is recorded
+  as unsupported, never normalized away.
 - Resolve native and replacement functions independently. Verify their owning
   images and native UUID before calling; never compare the oracle with itself.
   Guard missing functions and fixtures. Setup failures exit 77, incompatibilities

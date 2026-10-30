@@ -157,6 +157,35 @@ never change one merely to pass. Ownership changes also require static
 analysis, memory guards/leak checks and ASan. Performance claims require
 Release and an iOS Device.
 
+## Trace comparison
+
+Object-runtime groups are compared across processes (AGENTS.md, "Trace
+comparison"), because per-thread keys, tagged-pointer classes and the
+Objective-C class table are process global. `TraceTests` holds scenarios written
+with native names; `TraceTests/Support/TraceInterface.h` selects the system
+CoreFoundation for the reference build and the restored framework for the
+replacement build.
+
+```sh
+make trace-record     # reference side, three fresh processes, must be identical
+make trace            # reference side against TraceTests/Recorded/<match>/Traces.trace
+make trace-compare    # replacement side (OF_SYSTEM_NAMES=YES products) against it
+```
+
+The reference side verifies the pinned CoreFoundation UUID and that no restored
+framework is loaded; the replacement side verifies that OpenCoreFoundation is
+loaded and no native Foundation/CoreFoundation image is. Lines starting with `#`
+carry that identity and are not compared. Objects appear as first-seen indices
+(`@n`), registered type IDs as `dynamic#n`; deallocation and allocation sizes
+are observed through a logging allocator, callback order through logging
+callbacks. A scenario never prints addresses, timing or another nondeterministic
+value; one that needs it is recorded as unsupported. `trace-compare` is a setup
+failure (77) while the restored frameworks do not export every CoreFoundation
+symbol the reference side imports, and it never counts as a result until then.
+
+The recorded trace is the expected trace of every port TARGET with the same MATCH.
+The trace tool is built by `Tools/trace.py` only; it has no Xcode target yet.
+
 ## Native Swift units
 
 The raw Decimal reading establishes the actual C wrappers, Swift arithmetic and

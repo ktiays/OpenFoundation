@@ -1,0 +1,104 @@
+# side reference
+# CoreFoundation D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC
+== runtime.type-ids
+  constant-string @1 type 7 getter equal tagged 0
+  short-string @2 type 7 getter equal tagged 1
+  long-string @3 type 7 getter equal tagged 0
+  number-7 @4 type 22 getter equal tagged 1
+  number-2^62 @5 type 22 getter equal tagged 0
+  number-0.5 @6 type 22 getter equal tagged 0
+  boolean-true @7 type 21 getter equal tagged 0
+  null @8 type 16 getter equal tagged 0
+  date-0 @9 type 42 getter equal tagged 1
+  date-1e9.125 @10 type 42 getter equal tagged 1
+  data @11 type 20 getter equal tagged 0
+  empty-array @12 type 19 getter equal tagged 0
+  second-empty-array @12 type 19 getter equal tagged 0
+  array @13 type 19 getter equal tagged 0
+  dictionary @14 type 18 getter equal tagged 0
+  set @15 type 17 getter equal tagged 0
+  allocator-default @16 type 2 getter equal tagged 0
+  allocator-system-default @16 type 2 getter equal tagged 0
+  allocator-malloc @17 type 2 getter equal tagged 0
+  allocator-null @18 type 2 getter equal tagged 0
+  default-is-system-default 1
+== runtime.retain-counts
+  heap-number @1 count 1
+  after two retains 3
+  after one release 2
+  tagged-number count 9223372036854775807
+  constant-string count 1152921504606846975
+  boolean-true count 1152921504606846975
+  null count 1152921504606846975
+  allocator-system-default count 1152921504606846975
+  retain returns argument 1
+== runtime.hashes
+  number 0 hash 0x0
+  number 1 hash 0x9e3779b1
+  number -1 hash 0x9e3779b1
+  number 7 hash 0x4538453d7
+  number 1099511627776 hash 0x3779b10000000000
+  number 4611686018427387904 hash 0x4000000000000000
+  number -9223372036854775808 hash 0x8000000000000000
+  number 9223372036854775807 hash 0x8000000000000000
+  real 0x0p+0 hash 0x0
+  real -0x0p+0 hash 0x0
+  real 0x1p-1 hash 0x800000009e3779b1
+  real 0x1p+0 hash 0x9e3779b1
+  real -0x1.8p+0 hash 0x800000013c6ef362
+  real 0x1.7e43c8800759cp+996 hash 0x0
+  real inf hash 0x0
+  real -inf hash 0x0
+  real nan hash 0x0
+  string "" hash 0x0
+  string "a" hash 0x426
+  string "ab" hash 0xbfcd9
+  string "abc" hash 0x1ec49f71
+  string "constant" hash 0x185f77c7e0578272
+  string "a string that is too long for any tagged representation" hash 0x1a167c8248549acc
+  constant-string hash 0x185f77c7e0578272
+  data length 0 hash 0x0
+  data length 1 hash 0x0
+  data length 2 hash 0x1
+  data length 3 hash 0x12
+  data length 4 hash 0x123
+  data length 5 hash 0x132f
+  array [1, 2] hash 0x2
+  dictionary {1: 1, 2: 2} hash 0x2
+== runtime.allocator-lifecycle
+  context retain info
+  allocator @1 type 2 count 1
+  allocate block#1 size 96 hint 0x0 info
+  data @2 allocator @1 data-count 1 allocator-count 2
+  data bytes 1 2 3 4
+  release data
+  deallocate block#1 info
+  after data allocator-count 1
+  release allocator
+  context release info
+  done
+== runtime.callback-order
+  create
+  array retain 10
+  array retain 20
+  array retain 30
+  count 3
+  contains 20
+  array equal 20 10
+  array equal 20 20
+  result 1
+  release
+  array release 10
+  array release 20
+  array release 30
+  done
+== runtime.autorelease
+  context retain info
+  allocate block#1 size 96 hint 0x0 info
+  data @1 count 1
+  autorelease returns argument 1 count 1
+  pop
+  deallocate block#1 info
+  release allocator
+  context release info
+  done

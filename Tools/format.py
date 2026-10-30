@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    roots = [ROOT / name for name in ("Source", "Tests", "StandaloneTests")]
+    roots = [ROOT / name for name in ("Source", "Tests", "StandaloneTests", "TraceTests")]
     paths = sorted(path for root in roots for path in root.rglob("*") if path.suffix in FORMAT_SUFFIXES)
     formatter = shutil.which("clang-format")
     if not formatter:
