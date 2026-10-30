@@ -63,6 +63,14 @@ images have not been closed yet.
    resolved), and `__CFStreamCreate` receives the read- or write-stream type ID
    from its callers, so the CFStream callbacks stay unread. These edges extend
    the closure; components and levels still use call edges only.
+   Load-time code is a root of every consumer that reaches the image: the entries
+   of `__init_offsets` and `__mod_init_func` and every `+load` method (the linker
+   lists their classes and categories in `__objc_nlclslist` and
+   `__objc_nlcatlist`). CoreFoundation has one initializer, `__CFInitialize`
+   (0x1c01e7bd4, the single `__init_offsets` entry 0x9dbd4), and
+   `+[NSObject(NSObject) load]`; Foundation has `+[NSNotificationCenter load]` and
+   `+[NSObject(NSObject) load]`. They are listed as `initializers` in the closure
+   evidence. One more alternating pass reached the fixpoint.
 6. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
    name-based family label, computes strongly connected components and
    bottom-up levels over call edges, marks already restored definitions by
@@ -85,11 +93,11 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,728 | 959,820 | 2,139 | 805 | 784 | 73 |
-| Foundation | 3,376 | 575,604 | 26 | 1,300 | 2,050 | 26 |
+| CoreFoundation | 3,798 | 970,072 | 2,187 | 807 | 804 | 73 |
+| Foundation | 3,384 | 577,628 | 35 | 1,297 | 2,052 | 26 |
 
 The scope is about 51% of CoreFoundation's `__text` and about 5% of Foundation's.
-The `symbol` tier, about 670 KB in total, is required by evidence. The two
+The `symbol` tier, about 680 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
 One hundred of the 142 restored function definitions (99 native addresses) fall
@@ -105,8 +113,8 @@ outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
 
-- CoreFoundation has 1,235 leaf functions (level 0) and depth 38. Foundation
-  has 2,063 leaves and depth 34.
+- CoreFoundation has 1,272 leaf functions (level 0) and depth 38. Foundation
+  has 2,068 leaves and depth 34.
 - **One strongly connected group dominates CoreFoundation**: 396 functions,
   273,224 bytes at level 13. It ties CFString (78), CFBundle (50), CFURL (30),
   CFCharacterSet, the number formatter, the collections, property lists and
@@ -258,9 +266,16 @@ unresolved site, and static instances (for example CFNull, CFBoolean and constan
 dates) are not creation sites; both are read with the runtime. A builtin slot
 whose class no consumer reaches is left empty and classified as a **downgraded**
 cut through the native code's own empty-slot path; the native table already has
-empty slots (5, 6 and 8-15). This holds only once the runtime reading establishes
-what lookup and dispatch do for an empty slot; if that behavior is not well
-defined, the decision returns to the owner.
+empty slots (5, 6 and 8-15). The condition, that lookup and dispatch have a defined result for an empty slot,
+is settled by the runtime reading (iOS Simulator, verified): of the 24 functions
+that read the class tables, those that take the type ID from an object reach an
+empty slot only through an object of that type, which no restored code can
+create; `_CFRuntimeGetClassWithTypeID` and `_CFGetTypeIDDescription` return NULL,
+`_CFRuntimeSetInstanceTypeID` traps, and `CFCopyTypeIDDescription` dereferences
+the empty record, as it does for the native holes. An emptied slot therefore
+behaves as a native hole; the only difference from the native image is a caller
+passing the literal type ID of an unreached class, which no consumer obtains
+([reading](Research/RuntimePrerequisites.md)).
 
 ## Next steps
 

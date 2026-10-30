@@ -23,6 +23,9 @@
 # address in X0 to __CFRuntimeRegisterClass registers that record. Every function pointer in such a record's
 # callback slots (offsets 16-80) is reached with the site's tier and consumers. A site whose argument is not a
 # constant or a record address in the same basic block is reported in `unresolved_class_sites`.
+#
+# Image initializers (__init_offsets and __mod_init_func entries) and +load methods are roots of every consumer
+# in the request, because they run whenever the image is loaded; they are listed in `initializers`.
 
 import json
 import re
@@ -105,6 +108,7 @@ class Closure:
         self.data_roots = []
         self.selectors_sent = {}
         self.unresolved_class_sites = []
+        self.initializers = []
         self.class_callbacks = {}
 
     def import_of(self, ea):
@@ -300,6 +304,38 @@ class Closure:
             else:
                 self.data_roots.append({"symbol": symbol, "address": "0x%x" % ea, "section": segment_name(ea),
                                        "ida_name": ida_name.get_name(ea), "reached_from": sources})
+        # Image initializers run whenever a consumer loads the image, so they are roots of every consumer
+        # that reaches it: __init_offsets holds 32-bit offsets from the image base, __mod_init_func pointers.
+        consumers = set()
+        for sources in list(self.request["symbols"].values()) + list(self.request["classes"].values()):
+            consumers.update(sources)
+        self.initializers = []
+        base = ida_nalt.get_imagebase()
+        for segment_ea in idautils.Segments():
+            name = segment_name(segment_ea)
+            if name not in ("__init_offsets", "__mod_init_func"):
+                continue
+            width = 4 if name == "__init_offsets" else 8
+            for slot in range(segment_ea, ida_segment.getseg(segment_ea).end_ea, width):
+                if width == 4:
+                    target = base + (ida_bytes.get_dword(slot) & 0xffffffff)
+                else:
+                    target = ida_bytes.get_qword(slot)
+                if segment_name(target) == "__text" and function_start(target) == target:
+                    result.setdefault(target, ["symbol", set()])[1].update(consumers)
+                    self.initializers.append({"function": ida_name.get_name(target), "address": "0x%x" % target,
+                                              "section": name, "slot": "0x%x" % slot})
+                else:
+                    self.unresolved.append({"symbol": "%s+0x%x" % (name, slot - segment_ea),
+                                            "reached_from": sorted(consumers)})
+        # +load methods run when the image is loaded (the linker lists their classes and categories in
+        # __objc_nlclslist and __objc_nlcatlist), so they are roots of the same consumers.
+        for ea in idautils.Functions():
+            match = METHOD_NAME.match(ida_name.get_name(ea) or "")
+            if match and match.group(1) == "+" and match.group(4) == "load":
+                result.setdefault(ea, ["symbol", set()])[1].update(consumers)
+                self.initializers.append({"function": ida_name.get_name(ea), "address": "0x%x" % ea,
+                                          "section": "+load", "slot": None})
         classes = set(self.request["classes"])
         lineage = {}
         all_classes = set()
@@ -446,6 +482,7 @@ def main():
               "database": idc.get_idb_path(), "functions": functions,
               "unresolved_roots": closure.unresolved, "data_roots": closure.data_roots,
               "unresolved_class_sites": closure.unresolved_class_sites,
+              "initializers": closure.initializers,
               "imports": [{"module": module, "name": name, "callers": len(callers)}
                           for (module, name), callers in sorted(closure.imports.items())],
               "selectors_sent": dict(sorted(closure.selectors_sent.items()))}
@@ -458,6 +495,7 @@ def main():
     return {"functions": len(functions), "tiers": tiers, "unresolved_roots": len(closure.unresolved),
             "data_roots": len(closure.data_roots), "class_callbacks": sum(map(len, closure.class_callbacks.values())),
             "unresolved_class_sites": len(closure.unresolved_class_sites),
+            "initializers": [row["function"] for row in closure.initializers],
             "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"])}
 
 
