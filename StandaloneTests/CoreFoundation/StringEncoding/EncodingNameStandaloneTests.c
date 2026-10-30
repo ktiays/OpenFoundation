@@ -141,6 +141,43 @@ int runStringEncodingNameStandaloneTests(void) {
         return 1;
     }
     assertions += 2;
+
+    static const struct {
+        uint16_t characters[2];
+        OCFIndex numChars;
+        OCFIndex maxByteLen;
+        OCFIndex result;
+        OCFIndex used;
+        const char *bytes;
+    } toBytes[] = {
+        {{0x0041, 0}, 1, 1, 1, 1, "\xc1"},   {{0x009f, 0}, 1, 1, 1, 1, "\x1f"},
+        {{0x00c6, 0}, 1, 0, 1, 2, ""},       {{0x00c6, 0}, 1, 1, 1, 1, "A"},
+        {{0x00c6, 0}, 1, 5, 1, 2, "AE"},     {{0x00be, 0}, 1, 0, 1, 3, ""},
+        {{0x00be, 0}, 1, 4, 1, 3, "3/4"},    {{0x00a7, 0}, 1, 4, 1, 0, ""},
+        {{0x00e9, 0}, 1, -1, 1, 0, ""},      {{0xd800, 0xdc00}, 2, 1, 2, 1, "?"},
+        {{0xd800, 0xdc00}, 1, 1, 1, 1, "?"}, {{0xd800, 0xe000}, 2, 1, 1, 1, "?"},
+        {{0xdc00, 0xdc01}, 2, 1, 2, 1, "?"}, {{0xdc01, 0xdc00}, 2, 1, 1, 1, "?"},
+        {{0x2026, 0}, 1, 0, 1, 3, ""},       {{0x2026, 0}, 1, 3, 1, 3, "..."},
+        {{0x2026, 0}, 1, 2, 1, 1, "?"},      {{0x3000, 0}, 1, 1, 1, 1, " "},
+        {{0x2028, 0}, 1, 1, 1, 1, "\n"},     {{0x0100, 0}, 1, 1, 1, 1, "A"},
+        {{0x4e00, 0}, 1, 1, 1, 1, "?"},
+    };
+
+    for (size_t index = 0; index < sizeof(toBytes) / sizeof(toBytes[0]); ++index) {
+        uint8_t bytes[8];
+        memset(bytes, 0xa5, sizeof(bytes));
+        used = -1;
+        OCFIndex result = __CFDefaultToBytesFallbackProc(
+            toBytes[index].characters, toBytes[index].numChars, bytes, toBytes[index].maxByteLen, &used
+        );
+        size_t written = strlen(toBytes[index].bytes);
+        if (result != toBytes[index].result || used != toBytes[index].used ||
+            memcmp(bytes, toBytes[index].bytes, written) != 0 || bytes[written] != 0xa5) {
+            fprintf(stderr, "To-bytes fallback standalone mismatch: %04x.\n", toBytes[index].characters[0]);
+            return 1;
+        }
+        ++assertions;
+    }
     if (__CFStringEncodingPlatformUnicodeToBytes(0, 0, NULL, 0, NULL, NULL, 0, NULL) != 3 ||
         __CFStringEncodingPlatformBytesToUnicode(0, 0, NULL, 0, NULL, NULL, 0, NULL) != 3 ||
         __CFStringEncodingPlatformCharLengthForBytes(0, 0, NULL, 0) != 0) {

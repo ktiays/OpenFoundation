@@ -25,6 +25,8 @@ typedef const char *(*ICUName)(uint32_t encoding);
 
 typedef OCFIndex (*FallbackProc)(const uint8_t *, OCFIndex, uint16_t *, OCFIndex, OCFIndex *);
 
+typedef OCFIndex (*ToBytesFallbackProc)(const uint16_t *, OCFIndex, uint8_t *, OCFIndex, OCFIndex *);
+
 typedef uint32_t (*PlatformConversion)(
     uint32_t, uint32_t, const void *, OCFIndex, OCFIndex *, void *, OCFIndex, OCFIndex *
 );
@@ -368,6 +370,60 @@ static int compareFallbackAndPlatform(size_t *cases) {
     return 0;
 }
 
+// Every UTF-16 unit with each count and capacity; surrogate units also with every class of second unit.
+// Output buffers carry guard bytes on both sides; a native write outside them is reported as a mismatch.
+static int compareToBytesFallback(size_t *cases) {
+    void *native = NULL;
+    int status = resolvePair(UINT64_C(0x1c022bf68), (void *)__CFDefaultToBytesFallbackProc, &native);
+    if (status != 0) {
+        return status;
+    }
+    ToBytesFallbackProc nativeFallback = (ToBytesFallbackProc)native;
+    const OCFIndex capacities[] = {0, 1, 2, 3, 4, 5, -1, INT64_MIN};
+    const OCFIndex counts[] = {1, 2, 0, -1};
+    const uint16_t ordinarySecond[] = {0x0041};
+    const uint16_t surrogateSecond[] = {0x0041, 0xd7ff, 0xd800, 0xdbff, 0xdc00, 0xdfff, 0xe000, 0xffff};
+    for (uint32_t unit = 0; unit <= 0xffff; ++unit) {
+        bool surrogate = (unit >> 11) == 0x1b;
+        const uint16_t *seconds = surrogate ? surrogateSecond : ordinarySecond;
+        size_t secondCount = surrogate ? sizeof(surrogateSecond) / sizeof(surrogateSecond[0]) : 1;
+        for (size_t second = 0; second < secondCount; ++second) {
+            const uint16_t characters[2] = {(uint16_t)unit, seconds[second]};
+            for (size_t count = 0; count < sizeof(counts) / sizeof(counts[0]); ++count) {
+                for (size_t capacity = 0; capacity < sizeof(capacities) / sizeof(capacities[0]); ++capacity) {
+                    uint8_t expected[16];
+                    uint8_t actual[16];
+                    memset(expected, 0xa5, sizeof(expected));
+                    memset(actual, 0xa5, sizeof(actual));
+                    OCFIndex expectedUsed = -77;
+                    OCFIndex actualUsed = -77;
+                    OCFIndex expectedResult = nativeFallback(
+                        characters, counts[count], expected + 6, capacities[capacity], &expectedUsed
+                    );
+                    OCFIndex actualResult = __CFDefaultToBytesFallbackProc(
+                        characters, counts[count], actual + 6, capacities[capacity], &actualUsed
+                    );
+                    if (expectedResult != actualResult || expectedUsed != actualUsed ||
+                        memcmp(expected, actual, sizeof(expected)) != 0) {
+                        fprintf(
+                            stderr,
+                            "To-bytes fallback mismatch: unit %04" PRIx32 ", second %04x, count %ld, "
+                            "capacity %ld.\n",
+                            unit,
+                            seconds[second],
+                            counts[count],
+                            capacities[capacity]
+                        );
+                        return 1;
+                    }
+                    ++*cases;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 static int compareToBytes(
     const char *name,
     ToBytesWrapper native,
@@ -589,7 +645,8 @@ static int compareWrappers(size_t *cases) {
 }
 
 // Native CFStringConvertEncodingToNSStringEncoding 0x1c02340fc (exported); hidden functions resolved by IDA
-// offset: the nine converter wrappers 0x1c022b484-0x1c022bdd4, __CFDefaultToUnicodeFallbackProc 0x1c022c174,
+// offset: the nine converter wrappers 0x1c022b484-0x1c022bdd4, __CFDefaultToBytesFallbackProc 0x1c022bf68,
+// __CFDefaultToUnicodeFallbackProc 0x1c022c174,
 // the platform converter functions 0x1c01cecc4/0x1c01ceccc/0x1c01cecd4, __CFStringEncodingGetWindowsCodePage
 // 0x1c02ae7c4,
 // __CFStringEncodingGetCanonicalName 0x1c02aea2c and __CFStringEncodingGetICUName 0x1c02ad994.
@@ -608,13 +665,16 @@ int runStringEncodingNameDifferentialTests(void) {
         status = compareFallbackAndPlatform(&cases);
     }
     if (status == 0) {
+        status = compareToBytesFallback(&cases);
+    }
+    if (status == 0) {
         status = compareWrappers(&cases);
     }
     if (status != 0) {
         return status;
     }
     printf(
-        "String-encoding name/converter differential cases passed: %zu (seventeen functions; finite "
+        "String-encoding name/converter differential cases passed: %zu (eighteen functions; finite "
         "coverage).\n",
         cases
     );

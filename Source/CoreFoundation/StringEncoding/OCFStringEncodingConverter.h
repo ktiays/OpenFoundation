@@ -142,6 +142,10 @@ OF_EXTERN OCFIndex __CFToCanonicalUnicodeCheapMultiByteWrapper(
     OCFIndex *usedCharLen
 );
 
+OF_EXTERN OCFIndex __CFDefaultToBytesFallbackProc(
+    const uint16_t *characters, OCFIndex numChars, uint8_t *bytes, OCFIndex maxByteLen, OCFIndex *usedByteLen
+);
+
 OF_EXTERN OCFIndex __CFDefaultToUnicodeFallbackProc(
     const uint8_t *bytes, OCFIndex numBytes, uint16_t *characters, OCFIndex maxCharLen, OCFIndex *usedCharLen
 );

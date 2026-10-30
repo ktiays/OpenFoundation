@@ -5406,6 +5406,54 @@
     },
     {
       "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "_toLossyASCIITable",
+      "native_symbol": "_toLossyASCIITable",
+      "kind": "data",
+      "address": "0x1c03a2f54",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_toLossyASCIITable",
+        "address": "0x18089edc4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "The 384 bytes agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
+      "symbol": "__CFDefaultToBytesFallbackProc",
+      "native_symbol": "__CFDefaultToBytesFallbackProc",
+      "kind": "function",
+      "address": "0x1c022bf68",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationStringEncoding.md",
+      "tests": [
+        "Tests/CoreFoundation/StringEncoding/EncodingNameTests.c",
+        "StandaloneTests/CoreFoundation/StringEncoding/EncodingNameStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFDefaultToBytesFallbackProc",
+        "address": "0x180769f88",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "PACIBSP/RETAB return-address signing, the table address formed before the length limit, LSL instead of UBFIZ for the table index (equal for units up to 0xff) and the two surrogate CSELs in the other order; behavior identical."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c",
       "symbol": "__CFDefaultToUnicodeFallbackProc",
       "native_symbol": "__CFDefaultToUnicodeFallbackProc",
       "kind": "function",

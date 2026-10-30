@@ -8,10 +8,12 @@
 
 #include <string.h>
 
-// Inferred organization: the nine wrappers (0x1c022b484-0x1c022bf68) and __CFDefaultToUnicodeFallbackProc
-// (0x1c022c174) are contiguous in the iOS Simulator __text section and are kept in one translation unit.
-// The native source path is not in the evidence. __CFStrConvertBytesToUnicode (0x1c022c2a4), which follows
-// them, is an open group: its character table is rewritten at run time by unread code.
+// Inferred organization: the nine wrappers (0x1c022b484-0x1c022bf68), __CFDefaultToBytesFallbackProc
+// (0x1c022bf68) and __CFDefaultToUnicodeFallbackProc (0x1c022c174) are contiguous in the iOS Simulator
+// __text section and are kept in one translation unit. The native source path is not in the evidence.
+// __CFStrConvertBytesToUnicode (0x1c022c2a4), which follows them, is an open group: its character table is
+// rewritten at run time by the function at 0x1c022c1a4, which calls the unrestored
+// CFStringEncodingGetConverter.
 
 // Native __CFToBytesCheapEightBitWrapper, iOS Simulator 24A434, 0x1c022b484,
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external.
@@ -505,6 +507,108 @@ OCFIndex __CFToCanonicalUnicodeCheapMultiByteWrapper(
     }
     *usedCharLen = usedLength;
     return processedByteLen;
+}
+
+// Native _toLossyASCIITable, iOS Simulator 24A434, 0x1c03a2f54 (__TEXT,__const, 96 four-byte entries for
+// U+00A0-U+00FF, NUL-padded), UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external;
+// referenced only by __CFDefaultToBytesFallbackProc.
+// iOS Device 24A446: 0x18089edc4, UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified; the 384
+// bytes agree. Reading: Documentation/Reference/Research/CoreFoundationStringEncoding.md.
+static const char _toLossyASCIITable[96][4] = {
+    " ",  "!",  "c", "L", "$", "Y", "|",  "",  "",  "(C)", "a", "<<", "",    "-",   "(R)", "",
+    "",   "+-", "2", "3", "",  "",  "",   "",  "",  "1",   "o", ">>", "1/4", "1/2", "3/4", "?",
+    "A",  "A",  "A", "A", "A", "A", "AE", "C", "E", "E",   "E", "E",  "I",   "I",   "I",   "I",
+    "TH", "N",  "O", "O", "O", "O", "O",  "X", "O", "U",   "U", "U",  "U",   "Y",   "th",  "s",
+    "a",  "a",  "a", "a", "a", "a", "ae", "c", "e", "e",   "e", "e",  "i",   "i",   "i",   "i",
+    "TH", "n",  "o", "o", "o", "o", "o",  "/", "o", "u",   "u", "u",  "u",   "y",   "th",  "y",
+};
+
+// Native __CFDefaultToBytesFallbackProc, iOS Simulator 24A434, 0x1c022bf68,
+// UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external; its address is taken by
+// __CFGetConverter (0x1c022a8ac, at 0x1c022aa20), and it calls itself once for a non-ASCII decomposition.
+// iOS Device 24A446: 0x180769f88, UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified.
+// iOS Device divergence: __CFDefaultToBytesFallbackProc at 0x180769f88 signs its return address
+// (PACIBSP/RETAB), forms the table address before the length limit, scales the unit with LSL instead of
+// UBFIZ (equal for units up to 0xff) and orders the two surrogate CSELs differently; behavior is identical.
+// Units below U+00A0 map to unit ^ 0x80, so ASCII input yields bytes 0x80-0xff. A unit of U+DC00 is treated
+// as a leading surrogate. A negative maxByteLen stores one byte on the single-byte paths, as the native code
+// tests only for zero.
+// Reading: Documentation/Reference/Research/CoreFoundationStringEncoding.md.
+OCFIndex __CFDefaultToBytesFallbackProc(
+    const uint16_t *characters, OCFIndex numChars, uint8_t *bytes, OCFIndex maxByteLen, OCFIndex *usedByteLen
+) {
+    uint16_t character = characters[0];
+    uint8_t byte;
+    OCFIndex result;
+    if (character <= 0x9f) {
+        byte = (uint8_t)(character ^ 0x80);
+        result = 1;
+    } else if (character <= 0xff) {
+        OCFIndex limit = maxByteLen < 4 ? maxByteLen : 4;
+        if (maxByteLen == 0) {
+            limit = 4;
+        }
+        OCFIndex length = 0;
+        if (limit >= 1) {
+            const char *entry = _toLossyASCIITable[character - 0xa0];
+            for (; length != limit; ++length) {
+                if (entry[length] == 0) {
+                    break;
+                }
+                if (maxByteLen != 0) {
+                    bytes[length] = (uint8_t)entry[length];
+                }
+            }
+        }
+        *usedByteLen = length;
+        return 1;
+    } else if ((character >> 11) == 0x1b) {
+        byte = '?';
+        result = 1;
+        if (numChars >= 2 && character <= 0xdc00) {
+            uint16_t next = characters[1];
+            if ((next >> 10) >= 0x37) {
+                result = next < 0xe000 ? 2 : 1;
+            }
+        }
+    } else if ((OCFUniCharIsMemberOf(character, 2) & 1) != 0) {
+        byte = ' ';
+        result = 1;
+    } else if ((OCFUniCharIsMemberOf(characters[0], 3) & 1) != 0) {
+        byte = '\n';
+        result = 1;
+    } else if (characters[0] == 0x2026) {
+        if (maxByteLen == 0) {
+            *usedByteLen = 3;
+            return 1;
+        }
+        if (maxByteLen >= 3) {
+            bytes[2] = '.';
+            bytes[0] = '.';
+            bytes[1] = '.';
+            *usedByteLen = 3;
+            return 1;
+        }
+        byte = '?';
+        result = 1;
+    } else if (OCFUniCharIsMemberOf(characters[0], 9) == 0) {
+        byte = '?';
+        result = 1;
+    } else {
+        uint32_t decomposed[10];
+        OCFUniCharDecomposeCharacter(characters[0], decomposed, 10);
+        if (decomposed[0] > 0x7f) {
+            uint16_t unit = (uint16_t)decomposed[0];
+            return __CFDefaultToBytesFallbackProc(&unit, 1, bytes, maxByteLen, usedByteLen);
+        }
+        byte = (uint8_t)decomposed[0];
+        result = 1;
+    }
+    if (maxByteLen != 0) {
+        *bytes = byte;
+    }
+    *usedByteLen = 1;
+    return result;
 }
 
 // Native __CFDefaultToUnicodeFallbackProc, iOS Simulator 24A434, 0x1c022c174,

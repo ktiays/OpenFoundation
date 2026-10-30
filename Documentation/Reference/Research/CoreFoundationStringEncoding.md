@@ -197,7 +197,8 @@ callback returning several units can write past `maxCharLen`. Both are kept as
 native behavior: the image establishes them, and whether a native converter
 reaches the overrun is outside this evidence (no defect fix is applied).
 
-**Fallback and platform.** `__CFDefaultToUnicodeFallbackProc` writes `?`
+**Fallback and platform.** `__CFDefaultToUnicodeFallbackProc` (its to-bytes
+counterpart is in its own section below) writes `?`
 only for a nonzero capacity, publishes one used unit and returns one. The three
 platform functions ignore their arguments and return 3, 3 and 0; their parameter
 lists follow their only callers' argument registers.
@@ -217,9 +218,16 @@ contents are the identity mapping in both images; and
 referenced by any function of this group. In a test process with the native
 framework loaded, the native table differs from the static identity contents in
 123 of 256 entries (byte 0x80 maps to U+00C4, a MacRoman mapping), so it is
-rewritten at run time. The writer, and whether it also repoints
-`___CFCharToUniCharTable` (for example to the idempotent table), is **unread**; this
-group is reopened when that code is read.
+rewritten at run time. The writer is the non-external function at 0x1c022c1a4,
+read in disassembly only (2026-10-30, **medium** confidence, iOS Device side
+unread): given the current `___CFCharToUniCharFunc` it returns at once; given NULL
+it points `___CFCharToUniCharTable` at `___CFIdempotentCharToUniCharTable`; when
+`CFStringEncodingGetConverter(0)` exists and its offset-8 callback is the given
+function it points the table at `___CFMacRomanCharToUnicharTable`; otherwise it
+points the table at `___CFMutableCharToUniCharTable` and fills entries 0x80-0xff
+through the callback, storing 0xfffd for a failing byte. It then records the
+function. Because it calls `CFStringEncodingGetConverter`, which is unrestored,
+this group stays open.
 
 **Names and code pages.** `CFStringConvertEncodingToNSStringEncoding` maps the two
 exact values 0x8000100 and 0x600, then the low twelve bits (a zero field maps to
@@ -274,3 +282,62 @@ inputs, non-writing successes, nonzero results with zero low bits, multi-unit
 results, decompositions to one to four values and to supplementary values, ten
 capacities, negative counts where the native code rejects them). The standalone
 suite adds 46 hand-checked assertions in both naming modes.
+
+## Default to-bytes fallback
+
+`__CFDefaultToBytesFallbackProc` (0x1c022bf68, non-external; iOS Device
+0x180769f88) and its table `_toLossyASCIITable` (0x1c03a2f54, `__TEXT,__const`,
+non-external; iOS Device 0x18089edc4) are restored with **verified** confidence on
+both images, read in IDA on APFS clones under `Local/Scratch/cf-to-bytes-fallback`.
+The function lies between the converter wrappers and
+`__CFDefaultToUnicodeFallbackProc` and is kept in `OCFStringEncodingConverter.c`.
+`__CFGetConverter` (0x1c022a8ac) takes its address at 0x1c022aa20; its only direct
+caller is its own recursion. The table has no other reference.
+
+**Signature.** `(const UniChar *characters, CFIndex numChars, uint8_t *bytes,
+CFIndex maxByteLen, CFIndex *usedByteLen) -> CFIndex`, from the argument registers
+and the 64-bit result (`CSEL X0` on the surrogate path). The result is the number
+of units consumed; `*usedByteLen` is always written.
+
+**Behavior,** on the first unit `c`, in branch order:
+
+- `c <= 0x9f`: one byte `c ^ 0x80` (so ASCII yields 0x80-0xff and C1 controls
+  yield 0x00-0x1f). Result 1, one byte used.
+- `c <= 0xff`: copies the NUL-terminated entry `_toLossyASCIITable[c - 0xa0]`
+  (96 entries of four bytes, at most three characters such as `(C)`, `1/4`, `AE`,
+  `th`) up to a limit of `min(maxByteLen, 4)`, or 4 when `maxByteLen` is zero.
+  Bytes are stored only for a nonzero `maxByteLen`; the used count is the copied
+  length, which is 0 for the empty entries (U+00A7, U+00A8, U+00AC, U+00AF, U+00B0,
+  U+00B4-U+00B8) and
+  for a negative `maxByteLen`. Result 1.
+- `c >> 11 == 0x1b` (U+D800-U+DFFF): `?`. With `numChars >= 2` and `c <= 0xdc00`
+  (unsigned), the result is 2 when the second unit is U+DC00-U+DFFF and 1
+  otherwise. U+DC00 itself is therefore paired like a leading surrogate; this is
+  the native comparison and is kept.
+- `CFUniCharIsMemberOf(c, 2)` (bit 0 tested): a space. `CFUniCharIsMemberOf(c, 3)`
+  (bit 0): a line feed.
+- U+2026: with `maxByteLen == 0`, three bytes used and nothing stored; with
+  `maxByteLen >= 3`, `...` (byte 2 stored first, then bytes 0-1 as one halfword);
+  otherwise `?`.
+- Not in set 9 (the whole 32-bit result tested): `?`.
+- Otherwise `CFUniCharDecomposeCharacter(c, buffer, 10)`: a first value at or
+  below 0x7f is the byte; a larger one is truncated to 16 bits and passed back to
+  the function with a count of 1, whose result is returned.
+
+The single-byte paths store when `maxByteLen` is nonzero, so a negative capacity
+stores one byte; this is native behavior and is kept. The native code reads the
+first decomposed value without checking the decomposition's count. Every one of
+the 12,665 BMP members of set 9 decomposes to at least one value (probe through the
+restored decomposer, 2026-10-30), so the read is always initialized; no defect is
+recorded.
+
+**iOS Device comparison.** The Device body adds `PACIBSP`/`RETAB`, forms the
+table address before the length limit, scales the unit with `LSL` instead of
+`UBFIZ ... #0xe` (equal for units up to 0xff), and orders the two surrogate `CSEL`s
+the other way; the branches, constants and stores agree. The 384 table bytes agree.
+
+**Verification.** The differential suite compares 2,555,904 cases: every UTF-16
+unit with counts 1, 2, 0 and -1 and capacities 0-5, -1 and `INT64_MIN`, and each
+surrogate unit with eight classes of second unit, into buffers with guard bytes
+on both sides. The standalone suite adds 21 hand-checked assertions. Both run in
+both naming modes.

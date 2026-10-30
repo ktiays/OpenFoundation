@@ -69,19 +69,19 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 72 |
+| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 73 |
 | Foundation | 3,375 | 575,568 | 26 | 1,298 | 2,051 | 26 |
 
 The scope is about 49% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 646 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
-Ninety-nine of the 141 restored function definitions (98 native addresses) fall
+One hundred of the 142 restored function definitions (99 native addresses) fall
 inside the scope: the
 UTF-8 encoder, Unicode membership/decomposition, the Unicode plane/property/priority
 group (the first group below the core), the case-mapping and compatibility-decomposition group, the BigNum initializer/text group with
 `emit128`, the encoding-name, NSStringEncoding-mapping and
-converter-wrapper group, the locale-identifier canonicalization helpers, the four CFBundle file-type
+converter-wrapper group with both default fallbacks, the locale-identifier canonicalization helpers, the four CFBundle file-type
 sniffers, the sixteen leaf helpers (format specs, binary-plist arrays and strings,
 parser line numbers, paths, bundle paths, URL net location, `chcompar`), the Gregorian
 day count, binary-plist top-level validation, system-version mapping, the linked-on-or-after checks, `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are

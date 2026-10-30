@@ -103,7 +103,7 @@
     "message-candidate": 806,
     "message-reachable": 772
    },
-   "restored_count": 72,
+   "restored_count": 73,
    "strongly_connected": [
     {"component":47,"functions":3,"level":9},
     {"component":329,"functions":2,"level":0},
@@ -303,7 +303,7 @@
     "CFDateFormatterCorrect": {"functions":2,"bytes":536,"restored":0,"tiers":{"symbol":2},"max_level":1},
     "CFSimpleMerge": {"functions":1,"bytes":528,"restored":0,"tiers":{"symbol":1},"max_level":0},
     "CFGetFileProperties": {"functions":1,"bytes":524,"restored":0,"tiers":{"symbol":1},"max_level":13},
-    "CFDefaultToBytes": {"functions":1,"bytes":524,"restored":0,"tiers":{"symbol":1},"max_level":2},
+    "CFDefaultToBytes": {"functions":1,"bytes":524,"restored":1,"tiers":{"symbol":1},"max_level":2},
     "CFCopyFormattingDescription": {"functions":1,"bytes":516,"restored":0,"tiers":{"symbol":1},"max_level":13},
     "CFPreferencesRedactedContainer": {"functions":1,"bytes":516,"restored":0,"tiers":{"message-reachable":1},"max_level":14},
     "CFCreateCharacter": {"functions":1,"bytes":512,"restored":0,"tiers":{"symbol":1},"max_level":13},
@@ -2086,7 +2086,7 @@
     {"name":"___CFToBytesCheapMultiByteWrapper","address":"0x1c022bba4","size":284,"tier":"symbol","family":"CFToBytesCheap","component":119,"level":0,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":true},
     {"name":"___CFToUnicodeCheapMultiByteWrapper","address":"0x1c022bcc0","size":276,"tier":"symbol","family":"CFToUnicodeCheap","component":125,"level":0,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":true},
     {"name":"___CFToCanonicalUnicodeCheapMultiByteWrapper","address":"0x1c022bdd4","size":404,"tier":"symbol","family":"CFToCanonicalUnicode","component":122,"level":2,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":true},
-    {"name":"___CFDefaultToBytesFallbackProc","address":"0x1c022bf68","size":524,"tier":"symbol","family":"CFDefaultToBytes","component":116,"level":2,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":false},
+    {"name":"___CFDefaultToBytesFallbackProc","address":"0x1c022bf68","size":524,"tier":"symbol","family":"CFDefaultToBytes","component":116,"level":2,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":true},
     {"name":"___CFDefaultToUnicodeFallbackProc","address":"0x1c022c174","size":28,"tier":"symbol","family":"CFDefaultToUnicode","component":117,"level":0,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":true},
     {"name":"___CFSetCharToUniCharFunc","address":"0x1c022c1a4","size":256,"tier":"symbol","family":"CFSetCharTo","component":625,"level":13,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":false},
     {"name":"___CFStrConvertBytesToUnicode","address":"0x1c022c2a4","size":40,"tier":"symbol","family":"CFStr","component":135,"level":0,"consumers":["OpenCoreAnimation","OpenCoreGraphics"],"restored":false},
