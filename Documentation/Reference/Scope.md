@@ -47,7 +47,23 @@ images have not been closed yet.
 4. **Both images.** Each image's closure contributes its imports, classes and
    sent selectors to the other's roots. Three alternating passes reached a
    fixpoint: the last CoreFoundation pass added no Foundation symbol or selector.
-5. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
+   The class-callback pass of 2026-10-30 (step 5) added one Foundation method and
+   left the CoreFoundation request unchanged.
+5. **Class callbacks.** A closure function that passes a constant type ID in W1
+   to `_CFRuntimeCreateInstance`, `_CFRuntimeInitStaticInstance`,
+   `_CFRuntimeSetInstanceTypeID` or `_CFRuntimeSetInstanceTypeIDAndIsa`
+   instantiates the builtin class at that index of `__CFRuntimeBuiltinClassTable`
+   (0x2227a40c8, 72 entries); one that passes a record address in X0 to
+   `_CFRuntimeRegisterClass` registers that record. The function pointers in the
+   record's callback slots (offsets 16-80 of the 96-byte class record) are reached
+   with the site's tier and consumers, and the pass repeats with the message
+   expansion to a fixpoint. The argument is read in the call's basic block only.
+   Two sites are unresolved and listed in the closure evidence:
+   `_CFRuntimeSetInstanceTypeIDAndIsa` forwards its own argument (its callers are
+   resolved), and `__CFStreamCreate` receives the read- or write-stream type ID
+   from its callers, so the CFStream callbacks stay unread. These edges extend
+   the closure; components and levels still use call edges only.
+6. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
    name-based family label, computes strongly connected components and
    bottom-up levels over call edges, marks already restored definitions by
    native address and lists cuts per external library.
@@ -69,11 +85,11 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 73 |
-| Foundation | 3,375 | 575,568 | 26 | 1,298 | 2,051 | 26 |
+| CoreFoundation | 3,728 | 959,820 | 2,139 | 805 | 784 | 73 |
+| Foundation | 3,376 | 575,604 | 26 | 1,300 | 2,050 | 26 |
 
-The scope is about 49% of CoreFoundation's `__text` and about 5% of Foundation's.
-The `symbol` tier, about 646 KB in total, is required by evidence. The two
+The scope is about 51% of CoreFoundation's `__text` and about 5% of Foundation's.
+The `symbol` tier, about 670 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
 One hundred of the 142 restored function definitions (99 native addresses) fall
@@ -89,8 +105,8 @@ outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
 
-- CoreFoundation has 1,214 leaf functions (level 0) and depth 38. Foundation
-  has 2,062 leaves and depth 34.
+- CoreFoundation has 1,235 leaf functions (level 0) and depth 38. Foundation
+  has 2,063 leaves and depth 34.
 - **One strongly connected group dominates CoreFoundation**: 396 functions,
   273,224 bytes at level 13. It ties CFString (78), CFBundle (50), CFURL (30),
   CFCharacterSet, the number formatter, the collections, property lists and
@@ -139,8 +155,9 @@ the candidate tiers.
 
 ### Not followed yet (unresolved indirect edges)
 
-- CF callbacks stored in data: runtime class tables, collection callback
-  structures, run-loop source contexts and allocator contexts.
+- CF callbacks stored in data other than runtime class records: collection
+  callback structures, run-loop source contexts and allocator contexts, and the
+  class records of CFStream (type ID passed through `__CFStreamCreate`).
 - Blocks invoked through pointers, and C++ virtual calls.
 - Swift protocol witnesses and generic metadata accessors.
 - Messages to receivers outside the related class families, including
@@ -211,13 +228,47 @@ functions. On a port TARGET, `_NSGetExecutablePath`, `_NSGetMachExecuteHeader`,
 how `_CFBundleDYLDCopyLoadedImagePathsIfChanged` behaves with an empty image
 list.
 
+### The core cycle lands as one track (2026-10-30)
+
+Owner decision. The runtime's instance creation (`_CFRuntimeCreateInstance`,
+`_CFRuntimeSetInstanceTypeID`), `CFEqual`, `CFCopyDescription` and `CFLog` are
+members of the 396-function component (component 625, level 13) together with
+CFString, CFArray, CFDictionary, CFData, CFNumber descriptions, CFURL and
+CFBundle. `CFRetain`, `CFRelease`, `CFGetTypeID`, `CFGetRetainCount`,
+`CFAutorelease`, `CFHash` and `CFAllocatorGetDefault` lie below it; their call
+closure without the component is 53 functions (9,676 bytes), including the
+per-thread data and simple-log paths. The below-cycle runtime and the whole
+component are restored on one track branch, `codex/cf-core`, which lands on main
+only when the group is complete and tested. Family sub-tracks may write into it
+in parallel when the owner authorizes them. No definition of the group is
+counted as restored before it lands.
+
+### Uninstantiated builtin class slots are empty (2026-10-30)
+
+Owner decision. With class callbacks followed, closure functions instantiate 31
+builtin types with constant type IDs: 2 (CFAllocator), 3 (CFBasicHash), 4 (CFBag),
+7 (CFString), 17-20 (CFSet, CFDictionary, CFArray, CFData), 22 (CFNumber),
+25 (CFCharacterSet), 26 (CFStorage), 27 (CFError), 29 (CFURL), 31 (CFBundle),
+32 (CFPFactory), 34 (CFUUID), 36 (CFMachPort), 40 (CFStringTokenizer),
+41 (CFKeyedArchiverUID), 43-47 (CFRunLoop and its mode, observer, source and
+timer), 52 (CFNotificationCenter), 56 (CFDateFormatter), 57 (CFNumberFormatter),
+62 (CFAttributedString), 63 (CFRunArray), 66 (CFDateComponents) and
+70 (CFXNotificationRegistrar). CFStream (38, 39) is reached through an
+unresolved site, and static instances (for example CFNull, CFBoolean and constant
+dates) are not creation sites; both are read with the runtime. A builtin slot
+whose class no consumer reaches is left empty and classified as a **downgraded**
+cut through the native code's own empty-slot path; the native table already has
+empty slots (5, 6 and 8-15). This holds only once the runtime reading establishes
+what lookup and dispatch do for an empty slot; if that behavior is not well
+defined, the decision returns to the owner.
+
 ## Next steps
 
 1. Owner decision on the CoreServicesInternal cut.
 2. Narrow the message tiers by reading consumer receivers, starting with the
    over-approximation families above.
-3. Resolve data-stored callbacks for the runtime class table and collection
-   callbacks; they are needed for the runtime group anyway.
+3. Resolve the remaining data-stored callbacks (collection callback structures,
+   run-loop and allocator contexts); the runtime class records are followed.
 4. Close the iOS Device images with the same tooling.
 5. Restore bottom up from the leaves, with the RUNTIME track first, then the
    strings group once its cuts are decided.

@@ -15,6 +15,14 @@
 # consumer's own messages: a method whose selector the consumer references and whose class is a root class,
 # one of its superclasses, a category on one of them, or a subclass of a root class in this image, is a
 # `message-candidate` root. Those roots are an over-approximation that readings narrow.
+#
+# CF runtime class callbacks are followed through the native class records: a closure function that passes a
+# constant type ID to an instance-creating runtime entry (W1 of __CFRuntimeCreateInstance and
+# __CFRuntimeInitStaticInstance, W1 of __CFRuntimeSetInstanceTypeID and __CFRuntimeSetInstanceTypeIDAndIsa)
+# instantiates the builtin class at that index of ___CFRuntimeBuiltinClassTable, and one that passes a record
+# address in X0 to __CFRuntimeRegisterClass registers that record. Every function pointer in such a record's
+# callback slots (offsets 16-80) is reached with the site's tier and consumers. A site whose argument is not a
+# constant or a record address in the same basic block is reported in `unresolved_class_sites`.
 
 import json
 import re
@@ -29,6 +37,12 @@ import idc
 
 METHOD_NAME = re.compile(r"^([-+])\[([^ (\]]+)(?:\(([^)]*)\))? (.+)\]$")
 TIER_RANK = {"message-reachable": 1, "message-candidate": 2, "symbol": 3}
+TYPE_ID_ENTRIES = ("__CFRuntimeCreateInstance", "__CFRuntimeInitStaticInstance", "__CFRuntimeSetInstanceTypeID",
+                   "__CFRuntimeSetInstanceTypeIDAndIsa")
+REGISTER_ENTRY = "__CFRuntimeRegisterClass"
+BUILTIN_TABLE = "___CFRuntimeBuiltinClassTable"
+BUILTIN_COUNT = 72
+CALLBACK_OFFSETS = range(16, 88, 8)
 
 
 def segment_name(ea):
@@ -90,6 +104,8 @@ class Closure:
         self.unresolved = []
         self.data_roots = []
         self.selectors_sent = {}
+        self.unresolved_class_sites = []
+        self.class_callbacks = {}
 
     def import_of(self, ea):
         """Name and module of an imported symbol reached through a stub, a __got entry or UNDEF."""
@@ -175,6 +191,81 @@ class Closure:
         if segment and not segment.startswith("__text"):
             name = ida_name.get_name(target) or ("%s+0x%x" % (segment, target))
             row["data"].add(name)
+
+    def runtime_entries(self):
+        """Addresses of the type-ID entries and the registration entry present in this image."""
+        entries = {}
+        for name in TYPE_ID_ENTRIES + (REGISTER_ENTRY,):
+            ea = ida_name.get_name_ea(idc.BADADDR, name)
+            if ea != idc.BADADDR and segment_name(ea) == "__text":
+                entries[ea] = name
+        table = ida_name.get_name_ea(idc.BADADDR, BUILTIN_TABLE)
+        return entries, (table if table != idc.BADADDR else None)
+
+    def argument(self, call, register):
+        """The value written to W/X<register> before `call` in its basic block: ('constant', value),
+        ('address', ea) or None."""
+        names = ("W%d" % register, "X%d" % register)
+        function = ida_funcs.get_func(call)
+        if not function:
+            return None
+        head = call
+        # A branch target (an instruction with a code reference other than fall-through) starts the block.
+        block_start = bool(list(idautils.CodeRefsTo(call, False)))
+        while not block_start:
+            head = idc.prev_head(head, function.start_ea)
+            if head == idc.BADADDR or head < function.start_ea:
+                return None
+            block_start = bool(list(idautils.CodeRefsTo(head, False))) or head == function.start_ea
+            mnemonic = idc.print_insn_mnem(head)
+            if mnemonic in ("BL", "BLR", "B", "BR", "RET", "CBZ", "CBNZ", "TBZ", "TBNZ") or mnemonic.startswith("B."):
+                return None
+            if idc.print_operand(head, 0) not in names:
+                continue
+            if mnemonic in ("MOV", "MOVZ") and idc.get_operand_type(head, 1) == idc.o_imm:
+                return ("constant", idc.get_operand_value(head, 1) & 0xffffffff)
+            if mnemonic in ("ADRL", "ADR", "ADD"):
+                targets = [target for target in idautils.DataRefsFrom(head) if segment_name(target) != "__text"]
+                if targets:
+                    return ("address", targets[-1])
+            return None
+        return None
+
+    def record_callbacks(self, record):
+        callbacks = []
+        for offset in CALLBACK_OFFSETS:
+            pointer = ida_bytes.get_qword(record + offset)
+            if pointer and segment_name(pointer) == "__text" and function_start(pointer) == pointer:
+                callbacks.append(pointer)
+        return callbacks
+
+    def class_edges(self, ea, entries, table):
+        """Callback functions of the classes `ea` instantiates or registers, and its unresolved sites."""
+        callbacks = set()
+        unresolved = []
+        function = ida_funcs.get_func(ea)
+        if not function or not entries:
+            return callbacks, unresolved
+        for head in idautils.FuncItems(ea):
+            for target in idautils.CodeRefsFrom(head, False):
+                if target not in entries:
+                    continue
+                name = entries[target]
+                if name == REGISTER_ENTRY:
+                    value = self.argument(head, 0)
+                    if value and value[0] == "address":
+                        callbacks.update(self.record_callbacks(value[1]))
+                        continue
+                else:
+                    value = self.argument(head, 1)
+                    if value and value[0] == "constant" and table is not None and value[1] < BUILTIN_COUNT:
+                        record = ida_bytes.get_qword(table + 8 * value[1])
+                        if record:
+                            callbacks.update(self.record_callbacks(record))
+                        continue
+                unresolved.append({"function": ida_name.get_name(ea), "site": "0x%x" % head, "entry": name,
+                                   "argument": value[0] if value else None})
+        return callbacks, unresolved
 
     def method_index(self):
         methods = []
@@ -266,6 +357,8 @@ class Closure:
             work.append(ea)
         rows = {}
         self.propagate(work, tier, reach, rows)
+        entries, table = self.runtime_entries()
+        scanned = set()
         # Bounded message expansion: a selector sent inside the closure reaches its implementations only in
         # classes the closure already relates to (root classes and their families, and classes referenced
         # by closure functions with their families). Repeat until no implementation is added.
@@ -288,6 +381,21 @@ class Closure:
                 for sender in senders[selector]:
                     reach[ea] |= reach[sender]
                 added.append(ea)
+            # Class callbacks of the classes closure functions instantiate or register.
+            for ea in [ea for ea in rows if ea not in scanned]:
+                scanned.add(ea)
+                callbacks, unresolved = self.class_edges(ea, entries, table)
+                self.unresolved_class_sites.extend(unresolved)
+                if callbacks:
+                    self.class_callbacks[ea] = callbacks
+                for target in callbacks:
+                    previous = tier.get(target)
+                    if previous is None or TIER_RANK[tier[ea]] > TIER_RANK[previous]:
+                        tier[target] = tier[ea]
+                    before = len(reach.setdefault(target, set()))
+                    reach[target] |= reach[ea]
+                    if tier[target] != previous or len(reach[target]) != before or target not in rows:
+                        added.append(target)
             if not added:
                 break
             self.propagate(added, tier, reach, rows)
@@ -320,6 +428,9 @@ class Closure:
                            "calls": sorted(rows[target]["name"] for target in row["calls"] if target in rows),
                            "address_taken": sorted(rows[target]["name"] for target in row["address_taken"]
                                                    if target in rows),
+                           "class_callbacks": sorted(rows[target]["name"]
+                                                     for target in self.class_callbacks.get(ea, ())
+                                                     if target in rows),
                            "imports": sorted("%s:%s" % (module, name) for name, module in row["imports"]),
                            "selectors": sorted(row["selectors"]), "classes": sorted(row["classes"]),
                            "cfstrings": row["cfstrings"], "data": sorted(row["data"])})
@@ -334,6 +445,7 @@ def main():
               "uuid": image_identity(), "sha256": ida_nalt.retrieve_input_file_sha256().hex(),
               "database": idc.get_idb_path(), "functions": functions,
               "unresolved_roots": closure.unresolved, "data_roots": closure.data_roots,
+              "unresolved_class_sites": closure.unresolved_class_sites,
               "imports": [{"module": module, "name": name, "callers": len(callers)}
                           for (module, name), callers in sorted(closure.imports.items())],
               "selectors_sent": dict(sorted(closure.selectors_sent.items()))}
@@ -344,7 +456,8 @@ def main():
     for row in functions:
         tiers[row["tier"]] = tiers.get(row["tier"], 0) + 1
     return {"functions": len(functions), "tiers": tiers, "unresolved_roots": len(closure.unresolved),
-            "data_roots": len(closure.data_roots),
+            "data_roots": len(closure.data_roots), "class_callbacks": sum(map(len, closure.class_callbacks.values())),
+            "unresolved_class_sites": len(closure.unresolved_class_sites),
             "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"])}
 
 

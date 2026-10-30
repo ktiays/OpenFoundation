@@ -319,9 +319,11 @@ def assemble(arguments):
                         "selectors of linked consumer binaries) closed in IDA over direct and tail calls, taken "
                         "function addresses and __got targets, across both images to a fixpoint. Objective-C "
                         "messages expand only to methods of classes the closure relates to (tiers "
-                        "message-candidate and message-reachable); CF callbacks stored in data, blocks invoked "
-                        "through pointers and Swift witnesses are not followed. Families are name-derived "
-                        "planning labels; components and levels use call edges only.",
+                        "message-candidate and message-reachable). CF runtime class callbacks are followed "
+                        "through the class records of classes instantiated with a constant type ID or "
+                        "registered with a record address inside the closure; other CF callbacks stored in "
+                        "data, blocks invoked through pointers and Swift witnesses are not followed. Families "
+                        "are name-derived planning labels; components and levels use call edges only.",
               "consumers": [{key: row[key] for key in ("consumer", "commit", "build", "sha256", "uuid")}
                             | {"root_symbols": {library: len(symbols) for library, symbols in row["imports"].items()},
                                "selectors": len(row["selectors"])}
