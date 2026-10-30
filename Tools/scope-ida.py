@@ -24,6 +24,11 @@
 # callback slots (offsets 16-80) is reached with the site's tier and consumers. A site whose argument is not a
 # constant or a record address in the same basic block is reported in `unresolved_class_sites`.
 #
+# Functions whose addresses are stored in data that closure functions or data roots reference (to the next
+# named address, following data-to-data pointers three levels) are reached with the referencing tier and are
+# listed in `data_callbacks`; Objective-C metadata, string sections and the runtime class tables and records
+# are excluded.
+#
 # Image initializers (__init_offsets and __mod_init_func entries) and +load methods are roots of every consumer
 # in the request, because they run whenever the image is loaded; they are listed in `initializers`.
 
@@ -46,6 +51,7 @@ REGISTER_ENTRY = "__CFRuntimeRegisterClass"
 BUILTIN_TABLE = "___CFRuntimeBuiltinClassTable"
 BUILTIN_COUNT = 72
 CALLBACK_OFFSETS = range(16, 88, 8)
+DATA_SKIPPED = ("__objc_", "__cfstring", "__cstring", "__ustring", "__oslogstring", "__const_cfobj2")
 
 
 def segment_name(ea):
@@ -109,6 +115,7 @@ class Closure:
         self.selectors_sent = {}
         self.unresolved_class_sites = []
         self.initializers = []
+        self.data_callbacks = {}
         self.class_callbacks = {}
 
     def import_of(self, ea):
@@ -142,7 +149,7 @@ class Closure:
         row = {"name": ida_name.get_name(start), "address": "0x%x" % start,
                "size": function.end_ea - function.start_ea if function else 0,
                "calls": set(), "address_taken": set(), "imports": set(), "selectors": set(),
-               "classes": set(), "cfstrings": 0, "data": set()}
+               "classes": set(), "cfstrings": 0, "data": set(), "data_addresses": set()}
         if not function:
             return row
         for head in idautils.FuncItems(start):
@@ -195,6 +202,7 @@ class Closure:
         if segment and not segment.startswith("__text"):
             name = ida_name.get_name(target) or ("%s+0x%x" % (segment, target))
             row["data"].add(name)
+            row["data_addresses"].add(target)
 
     def runtime_entries(self):
         """Addresses of the type-ID entries and the registration entry present in this image."""
@@ -270,6 +278,31 @@ class Closure:
                 unresolved.append({"function": ida_name.get_name(ea), "site": "0x%x" % head, "entry": name,
                                    "argument": value[0] if value else None})
         return callbacks, unresolved
+
+    def data_functions(self, address, excluded, depth=0, seen=None):
+        """Functions whose addresses are stored in the data object at `address` (to the next named address,
+        at most 4 KB), following pointers into other data objects up to three levels."""
+        seen = set() if seen is None else seen
+        if address in seen or address in excluded or depth > 3:
+            return set()
+        seen.add(address)
+        segment = segment_name(address)
+        if not segment or segment.startswith(DATA_SKIPPED) or segment in ("__text", "__stubs", "__got", "UNDEF"):
+            return set()
+        end = address + 8
+        while end < address + 4096 and not ida_name.get_name(end) and segment_name(end) == segment:
+            end += 8
+        functions = set()
+        start = address - address % 8
+        for slot in range(start, end, 8):
+            pointer = ida_bytes.get_qword(slot)
+            target_segment = segment_name(pointer)
+            if target_segment == "__text":
+                if function_start(pointer) == pointer:
+                    functions.add(pointer)
+            elif target_segment and pointer not in excluded:
+                functions |= self.data_functions(pointer, excluded, depth + 1, seen)
+        return functions
 
     def method_index(self):
         methods = []
@@ -395,6 +428,31 @@ class Closure:
         self.propagate(work, tier, reach, rows)
         entries, table = self.runtime_entries()
         scanned = set()
+        data_scanned = set()
+        excluded_data = set()
+        for name in (BUILTIN_TABLE, "___CFRuntimeBuiltinObjCClassTable", "___CFRuntimeClassTables"):
+            ea = ida_name.get_name_ea(idc.BADADDR, name)
+            if ea != idc.BADADDR:
+                excluded_data.add(ea)
+        if table is not None:
+            for index in range(BUILTIN_COUNT):
+                record = ida_bytes.get_qword(table + 8 * index)
+                if record:
+                    excluded_data.add(record)
+        # Data roots are referenced by the consumers themselves.
+        root_functions = set()
+        for row in self.data_roots:
+            root_functions |= self.data_functions(int(row["address"], 16), excluded_data)
+        consumers = set()
+        for sources in list(self.request["symbols"].values()):
+            consumers.update(sources)
+        seeded = []
+        for target in root_functions:
+            if target not in tier:
+                tier[target] = "symbol"
+                reach[target] = set(consumers)
+                seeded.append(target)
+        self.propagate(seeded, tier, reach, rows)
         # Bounded message expansion: a selector sent inside the closure reaches its implementations only in
         # classes the closure already relates to (root classes and their families, and classes referenced
         # by closure functions with their families). Repeat until no implementation is added.
@@ -417,6 +475,25 @@ class Closure:
                 for sender in senders[selector]:
                     reach[ea] |= reach[sender]
                 added.append(ea)
+            # Functions stored in data the closure references (allocator objects, callback tables). The
+            # builtin class tables and their records are excluded: class callbacks are reached through
+            # instantiation sites only.
+            for ea in [ea for ea in rows if ea not in data_scanned]:
+                data_scanned.add(ea)
+                functions = set()
+                for address in rows[ea]["data_addresses"]:
+                    functions |= self.data_functions(address, excluded_data)
+                functions.discard(ea)
+                if functions:
+                    self.data_callbacks[ea] = functions
+                for target in functions:
+                    previous = tier.get(target)
+                    if previous is None or TIER_RANK[tier[ea]] > TIER_RANK[previous]:
+                        tier[target] = tier[ea]
+                    before = len(reach.setdefault(target, set()))
+                    reach[target] |= reach[ea]
+                    if tier[target] != previous or len(reach[target]) != before or target not in rows:
+                        added.append(target)
             # Class callbacks of the classes closure functions instantiate or register.
             for ea in [ea for ea in rows if ea not in scanned]:
                 scanned.add(ea)
@@ -467,6 +544,9 @@ class Closure:
                            "class_callbacks": sorted(rows[target]["name"]
                                                      for target in self.class_callbacks.get(ea, ())
                                                      if target in rows),
+                           "data_callbacks": sorted(rows[target]["name"]
+                                                    for target in self.data_callbacks.get(ea, ())
+                                                    if target in rows),
                            "imports": sorted("%s:%s" % (module, name) for name, module in row["imports"]),
                            "selectors": sorted(row["selectors"]), "classes": sorted(row["classes"]),
                            "cfstrings": row["cfstrings"], "data": sorted(row["data"])})
@@ -494,6 +574,7 @@ def main():
         tiers[row["tier"]] = tiers.get(row["tier"], 0) + 1
     return {"functions": len(functions), "tiers": tiers, "unresolved_roots": len(closure.unresolved),
             "data_roots": len(closure.data_roots), "class_callbacks": sum(map(len, closure.class_callbacks.values())),
+            "data_callbacks": sum(map(len, closure.data_callbacks.values())),
             "unresolved_class_sites": len(closure.unresolved_class_sites),
             "initializers": [row["function"] for row in closure.initializers],
             "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"])}

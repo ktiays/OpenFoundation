@@ -71,6 +71,17 @@ images have not been closed yet.
    `+[NSObject(NSObject) load]`; Foundation has `+[NSNotificationCenter load]` and
    `+[NSObject(NSObject) load]`. They are listed as `initializers` in the closure
    evidence. One more alternating pass reached the fixpoint.
+   Function pointers stored in data are followed too: for each data object a
+   closure function or a consumer data root references (to the next named
+   address, at most 4 KB), every pointer to a function start is reached with the
+   referencing tier and consumers, and pointers into other data objects are
+   followed three levels deep. Objective-C metadata, string sections, the builtin
+   class tables and the class records reachable from them are excluded, so class
+   callbacks still come only from instantiation sites. This reaches the static
+   allocator objects' zone and context functions, collection callback tables,
+   converter tables and block literals and descriptors; the edges are listed as
+   `data_callbacks`. Two more alternating passes reached the fixpoint
+   (2026-10-31).
 6. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
    name-based family label, computes strongly connected components and
    bottom-up levels over call edges, marks already restored definitions by
@@ -93,14 +104,14 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,798 | 970,072 | 2,187 | 807 | 804 | 73 |
-| Foundation | 3,384 | 577,628 | 35 | 1,297 | 2,052 | 26 |
+| CoreFoundation | 4,563 | 1,110,776 | 2,726 | 809 | 1,028 | 86 |
+| Foundation | 3,598 | 632,164 | 52 | 1,411 | 2,135 | 26 |
 
-The scope is about 51% of CoreFoundation's `__text` and about 5% of Foundation's.
-The `symbol` tier, about 680 KB in total, is required by evidence. The two
+The scope is about 59% of CoreFoundation's `__text` and about 5% of Foundation's.
+The `symbol` tier, about 788 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
-One hundred of the 142 restored function definitions (99 native addresses) fall
+One hundred thirteen of the 144 restored function definitions (112 native addresses) fall
 inside the scope: the
 UTF-8 encoder, Unicode membership/decomposition, the Unicode plane/property/priority
 group (the first group below the core), the case-mapping and compatibility-decomposition group, the BigNum initializer/text group with
@@ -113,8 +124,8 @@ outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure
 
-- CoreFoundation has 1,272 leaf functions (level 0) and depth 38. Foundation
-  has 2,068 leaves and depth 34.
+- CoreFoundation has 1,631 leaf functions (level 0) and depth 38. Foundation
+  has 2,184 leaves and depth 34.
 - **One strongly connected group dominates CoreFoundation**: 396 functions,
   273,224 bytes at level 13. It ties CFString (78), CFBundle (50), CFURL (30),
   CFCharacterSet, the number formatter, the collections, property lists and
@@ -126,7 +137,7 @@ outside it. They are kept and reported separately ("Progress and Verification").
   (downgraded through the native code's own path, for example no main bundle)
   was the first owner decision the scope needed; see "Decisions".
 - A second group of 14 joins CFError and CFBundle. Foundation's call graph has no
-  group larger than 3. Its coupling is through messages, which the components do
+  group larger than 9. Its coupling is through messages, which the components do
   not model.
 
 ### Largest families
@@ -163,10 +174,12 @@ the candidate tiers.
 
 ### Not followed yet (unresolved indirect edges)
 
-- CF callbacks stored in data other than runtime class records: collection
-  callback structures, run-loop source contexts and allocator contexts, and the
-  class records of CFStream (type ID passed through `__CFStreamCreate`).
-- Blocks invoked through pointers, and C++ virtual calls.
+- CF callbacks stored at run time: collection callback structures, run-loop
+  source contexts and allocator contexts a caller builds on the stack or the heap
+  (static ones are followed as data), and the class records of CFStream (type ID
+  passed through `__CFStreamCreate`).
+- Blocks passed in from callers and invoked through pointers (block literals the
+  image builds itself are followed as data), and C++ virtual calls.
 - Swift protocol witnesses and generic metadata accessors.
 - Messages to receivers outside the related class families, including
   `CF_OBJC_FUNCDISPATCH`-style bridging dispatch into Foundation classes.
