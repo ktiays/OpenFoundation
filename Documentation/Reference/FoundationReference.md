@@ -1,7 +1,7 @@
 # Foundation and CoreFoundation reference
 
 The compatibility target is the pinned iOS implementation, not an API-compatible
-redesign, limited to the consumer-derived [scope](Scope.md). One hundred twenty-two function definitions, one hundred thirty-one data definitions and two Swift support types have complete per-group readings and
+redesign, limited to the consumer-derived [scope](Scope.md). One hundred thirty-eight function definitions, one hundred thirty-one data definitions and two Swift support types have complete per-group readings and
 tests. Initial object-runtime entry readings identify further dependencies; no
 complete object runtime, collection algorithm, constant-string representation,
 tagged-pointer encoding or bridge is restored.
@@ -18,6 +18,7 @@ tagged-pointer encoding or bridge is restored.
 | BigNum initialization and text | [BigNum reading](Research/CoreFoundationBigNum.md) | Seven functions (signed initializers, C-string formatting, `emit128`) and two power tables; unsigned initializers, arithmetic and parsing unbuilt |
 | Locale-identifier helpers | [Locale-identifier reading](Research/CoreFoundationLocaleIdentifier.md) | Seven hidden canonicalization helpers and two mapping tables; one CoreFoundation defect fixed; the public canonicalization entry points and their other tables unbuilt |
 | Bundle file-type sniffing | [Bundle grok reading](Research/CoreFoundationBundleGrok.md) | Four hidden helpers (zip, OLE, X11, Objective-C image information) and three tables; three CoreFoundation defects fixed; `_CFBundleGrokFileType` and the Mach-O/fat callers unbuilt |
+| CoreFoundation leaf helpers | [Leaf-helper reading](Research/CoreFoundationLeafHelpers.md) | Sixteen functions: format-spec lookup/validation, binary-plist array offsets and string counts, XML/old-style line numbers and whitespace, path components, bundle paths, URL net location, two callbacks; Device cold entries and outlined bodies read and compared |
 | String-encoding kernels | [Encoding reading](Research/CoreFoundationStringEncoding.md) | Fourteen hidden kernels and nine tables; seventeen wrapper/name/code-page functions and five tables; dispatcher/cache, concrete converters and the byte-conversion group with its unread character-table writer remain unbuilt |
 | Allocator and CF runtime | [Initial dependency boundary](Research/RuntimePrerequisites.md) | Full runtime group in progress; unbuilt |
 | NSObject/NS classes, runtime ownership and CF bridge | No implementation reading | Unread |

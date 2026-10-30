@@ -14,6 +14,12 @@
 #include "CoreFoundation/Locale/LocaleIdentifierTests.h"
 #include "CoreFoundation/Unicode/UnicodeTests.h"
 #include "CoreFoundation/PlugIn/BundleGrokTests.h"
+#include "CoreFoundation/String/StringHelperTests.h"
+#include "CoreFoundation/PropertyList/PropertyListHelperTests.h"
+#include "CoreFoundation/Base/FileUtilitiesTests.h"
+#include "CoreFoundation/PlugIn/BundleHelperTests.h"
+#include "CoreFoundation/URL/URLHelperTests.h"
+#include "CoreFoundation/CharacterSet/CharacterSetHelperTests.h"
 #include "Foundation/Decimal/DecimalDifferentialTests.h"
 #include "ReferencePins.h"
 #include "Support/NativeReference.h"
@@ -73,6 +79,30 @@ int main(int argc, const char *argv[]) {
             return status;
         }
         status = runCoreFoundationBundleGrokDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationStringHelperDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationPropertyListHelperDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationFileUtilitiesDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationBundleHelperDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationURLHelperDifferentialTests();
+        if (status != 0) {
+            return status;
+        }
+        status = runCoreFoundationCharacterSetHelperDifferentialTests();
         if (status != 0) {
             return status;
         }

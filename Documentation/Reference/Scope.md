@@ -69,20 +69,21 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 51 |
+| CoreFoundation | 3,593 | 933,000 | 2,015 | 806 | 772 | 67 |
 | Foundation | 3,375 | 575,568 | 26 | 1,298 | 2,051 | 26 |
 
 The scope is about 49% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 646 KB in total, is required by evidence. The two
 message tiers over-approximate and must be narrowed by readings.
 
-Seventy-eight of the 120 restored function definitions (77 native addresses) fall
+Ninety-four of the 136 restored function definitions (93 native addresses) fall
 inside the scope: the
 UTF-8 encoder, Unicode membership/decomposition, the Unicode plane/property/priority
 group (the first group below the core), the case-mapping and compatibility-decomposition group, the BigNum initializer/text group with
 `emit128`, the encoding-name, NSStringEncoding-mapping and
 converter-wrapper group, the locale-identifier canonicalization helpers, the four CFBundle file-type
-sniffers, `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are
+sniffers, the sixteen leaf helpers (format specs, binary-plist arrays and strings,
+parser line numbers, paths, bundle paths, URL net location, `chcompar`), `CFHashBytes` and the raw Decimal group. The range, Gregorian validation and single-byte codec units are
 outside it. They are kept and reported separately ("Progress and Verification").
 
 ### Dependency structure

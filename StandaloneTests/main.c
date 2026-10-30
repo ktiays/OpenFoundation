@@ -15,6 +15,12 @@
 #include "CoreFoundation/Locale/LocaleIdentifierStandaloneTests.h"
 #include "CoreFoundation/Unicode/UnicodeStandaloneTests.h"
 #include "CoreFoundation/PlugIn/BundleGrokStandaloneTests.h"
+#include "CoreFoundation/String/StringHelperStandaloneTests.h"
+#include "CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.h"
+#include "CoreFoundation/Base/FileUtilitiesStandaloneTests.h"
+#include "CoreFoundation/PlugIn/BundleHelperStandaloneTests.h"
+#include "CoreFoundation/URL/URLHelperStandaloneTests.h"
+#include "CoreFoundation/CharacterSet/CharacterSetHelperStandaloneTests.h"
 
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
@@ -72,6 +78,30 @@ int main(void) {
         return status;
     }
     status = runCoreFoundationBundleGrokStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationStringHelperStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationPropertyListHelperStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationFileUtilitiesStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationBundleHelperStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationURLHelperStandaloneTests();
+    if (status != 0) {
+        return status;
+    }
+    status = runCoreFoundationCharacterSetHelperStandaloneTests();
     if (status != 0) {
         return status;
     }

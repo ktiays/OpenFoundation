@@ -505,6 +505,7 @@
                 Bootstrap.c,
                 Date/OCFDate.c,
                 Number/OCFBigNumber.c,
+                PropertyList/OCFBinaryPList.c,
                 StringEncoding/OCFStringEncodings.c,
             );
         };
@@ -643,6 +644,7 @@
                 Bootstrap.c,
                 Date/OCFDate.c,
                 Number/OCFBigNumber.c,
+                PropertyList/OCFBinaryPList.c,
                 StringEncoding/OCFStringEncodings.c,
             );
         };

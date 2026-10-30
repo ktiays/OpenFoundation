@@ -10,6 +10,13 @@
     "Source/CoreFoundation/StringEncoding/OCFStringEncodingDatabase.c",
     "Source/CoreFoundation/StringEncoding/OCFPlatformConverter.c",
     "Source/CoreFoundation/Locale/OCFLocaleIdentifier.c",
-    "Source/CoreFoundation/PlugIn/OCFBundleGrok.c"
+    "Source/CoreFoundation/PlugIn/OCFBundleGrok.c",
+    "Source/CoreFoundation/String/OCFString.c",
+    "Source/CoreFoundation/PropertyList/OCFPropertyList.c",
+    "Source/CoreFoundation/PropertyList/OCFOldStylePList.c",
+    "Source/CoreFoundation/Base/OCFFileUtilities.c",
+    "Source/CoreFoundation/PlugIn/OCFBundle.c",
+    "Source/CoreFoundation/URL/OCFURL.c",
+    "Source/CoreFoundation/CharacterSet/OCFCharacterSet.c"
   ]
 }

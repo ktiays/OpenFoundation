@@ -6531,6 +6531,390 @@
       },
       "exported": false,
       "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/String/OCFString.c",
+      "symbol": "__CFStringValidateFormatSpecBuffers",
+      "native_symbol": "__CFStringValidateFormatSpecBuffers",
+      "kind": "function",
+      "address": "0x1c02242fc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/String/StringHelperTests.c",
+        "StandaloneTests/CoreFoundation/String/StringHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringValidateFormatSpecBuffers",
+        "address": "0x1806ba570",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device indexes records by a counter and authenticates its return; comparisons, calls and the type mask agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/String/OCFString.c",
+      "symbol": "__CFStringFindTypeAndSizeForArgumentIndex",
+      "native_symbol": "__CFStringFindTypeAndSizeForArgumentIndex",
+      "kind": "function",
+      "address": "0x1c022452c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/String/StringHelperTests.c",
+        "StandaloneTests/CoreFoundation/String/StringHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFStringFindTypeAndSizeForArgumentIndex",
+        "address": "0x1806d64a8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device indexes records by a counter; comparisons, sequential numbering and stores agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/String/OCFString.c",
+      "symbol": "__rangeEqual",
+      "native_symbol": "__rangeEqual",
+      "kind": "function",
+      "address": "0x1c0218d64",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/String/StringHelperTests.c",
+        "StandaloneTests/CoreFoundation/String/StringHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__rangeEqual",
+        "address": "0x180764320",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFBinaryPList.c",
+      "symbol": "__OCFBinaryPlistGetOffsetForValueFromArray2",
+      "native_symbol": "__CFBinaryPlistGetOffsetForValueFromArray2",
+      "kind": "function",
+      "address": "0x1c0163e48",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFBinaryPlistGetOffsetForValueFromArray2",
+        "address": "0x180733140",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: the 8-byte and 4-byte reference reads and the 4-byte offset-table read are moved to .cold.1 (0x1807b9414), .cold.2 (0x1807b9418) and .cold.3 (0x1807b941c), each one unconditional B into _OUTLINED_FUNCTION_2_0 (0x18061363c: 8-byte LDR + REV) or _OUTLINED_FUNCTION_1_2 (0x180613ac4: 4-byte LDR + REV), stored through the caller's slot. Inline checks, order and reads agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFBinaryPList.c",
+      "symbol": "__OCFBinaryPlistParseASCIIString",
+      "native_symbol": "__CFBinaryPlistParseASCIIString",
+      "kind": "function",
+      "address": "0x1c01667dc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFBinaryPlistParseASCIIString",
+        "address": "0x18061f684",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device reorders the integer-width cases and tail-calls the block with BRAA; checks and results agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFBinaryPList.c",
+      "symbol": "__OCFBinaryPlistParseUnicode16String",
+      "native_symbol": "__CFBinaryPlistParseUnicode16String",
+      "kind": "function",
+      "address": "0x1c01668f4",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFBinaryPlistParseUnicode16String",
+        "address": "0x18068035c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: adds a stack guard and moves the 8-byte count read to .cold.1 (0x1807b955c), one unconditional B into _OUTLINED_FUNCTION_0_5 (0x18065c54c), which assembles the eight bytes at marker + 2 big-endian. The bit-63 test, the other checks, their order and the BRAA block tail call agree."
+      },
+      "exported": true,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFPropertyList.c",
+      "symbol": "__CFPropertyListKeyBufferMatchesFilterBuffer",
+      "native_symbol": "__CFPropertyListKeyBufferMatchesFilterBuffer",
+      "kind": "function",
+      "address": "0x1c01d446c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "__CFPropertyListKeyBufferMatchesFilterBuffer",
+        "address": "0x18068f8c4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device reorders the blocks and authenticates its return; comparisons and memcmp calls agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFPropertyList.c",
+      "symbol": "lineNumber",
+      "native_symbol": "lineNumber",
+      "kind": "function",
+      "address": "0x1c01d84dc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "lineNumber",
+        "address": "0x1806f6734",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFOldStylePList.c",
+      "symbol": "advanceToNonSpace",
+      "native_symbol": "advanceToNonSpace",
+      "kind": "function",
+      "address": "0x1c02d4e94",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "advanceToNonSpace",
+        "address": "0x180702bac",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device reorders the comment blocks; comparisons, bounds and stores agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PropertyList/OCFOldStylePList.c",
+      "symbol": "lineNumberStrings",
+      "native_symbol": "lineNumberStrings",
+      "kind": "function",
+      "address": "0x1c02d54e0",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PropertyList/PropertyListHelperTests.c",
+        "StandaloneTests/CoreFoundation/PropertyList/PropertyListHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "lineNumberStrings",
+        "address": "0x18070d188",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device merges the two CR-LF bound tests into one CCMP; results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFFileUtilities.c",
+      "symbol": "_CFGetSlash",
+      "native_symbol": "_CFGetSlash",
+      "kind": "function",
+      "address": "0x1c019cefc",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/FileUtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/FileUtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFGetSlash",
+        "address": "0x18066f0b8",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFFileUtilities.c",
+      "symbol": "_CFStartOfLastPathComponent",
+      "native_symbol": "_CFStartOfLastPathComponent",
+      "kind": "function",
+      "address": "0x1c019d374",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/FileUtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/FileUtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFStartOfLastPathComponent",
+        "address": "0x180698360",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: the no-slash drive test is moved to .cold.1 (0x1807bd49c, 44 bytes), yielding bit 0 clear exactly for 'X:' with (unit & ~0x20) - 'A' <= 25, and ends in the shared _OUTLINED_FUNCTION_0_19 (0x18065c694: AND W0, W8, #1). The scan and its results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/Base/OCFFileUtilities.c",
+      "symbol": "_CFLengthAfterDeletingLastPathComponent",
+      "native_symbol": "_CFLengthAfterDeletingLastPathComponent",
+      "kind": "function",
+      "address": "0x1c019d458",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/Base/FileUtilitiesTests.c",
+        "StandaloneTests/CoreFoundation/Base/FileUtilitiesStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFLengthAfterDeletingLastPathComponent",
+        "address": "0x18069ab0c",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "iOS Device divergence: the no-slash drive test is moved to .cold.1 (0x1807bd4c8, 44 bytes), the same instructions as _CFStartOfLastPathComponent.cold.1, ending in the shared _OUTLINED_FUNCTION_0_19 (AND W0, W8, #1). The scan, the slash-at-2 drive test and their results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/PlugIn/OCFBundle.c",
+      "symbol": "_CFBundleNormalizedPath",
+      "native_symbol": "_CFBundleNormalizedPath",
+      "kind": "function",
+      "address": "0x1c016a39c",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/PlugIn/BundleHelperTests.c",
+        "StandaloneTests/CoreFoundation/PlugIn/BundleHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_CFBundleNormalizedPath",
+        "address": "0x18063e8d4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Same literals and lengths; strncmp through a stub and an authenticated frame; results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/URL/OCFURL.c",
+      "symbol": "_netLocationRange",
+      "native_symbol": "_netLocationRange",
+      "kind": "function",
+      "address": "0x1c0244938",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/URL/URLHelperTests.c",
+        "StandaloneTests/CoreFoundation/URL/URLHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "_netLocationRange",
+        "address": "0x180712ef4",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Device indexes the collected ranges by a counter and authenticates its return; results agree."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
+    },
+    {
+      "path": "Source/CoreFoundation/CharacterSet/OCFCharacterSet.c",
+      "symbol": "chcompar",
+      "native_symbol": "chcompar",
+      "kind": "function",
+      "address": "0x1c0174a34",
+      "reference_uuid": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
+      "confidence": "verified",
+      "reading": "Documentation/Reference/Research/CoreFoundationLeafHelpers.md",
+      "tests": [
+        "Tests/CoreFoundation/CharacterSet/CharacterSetHelperTests.c",
+        "StandaloneTests/CoreFoundation/CharacterSet/CharacterSetHelperStandaloneTests.c"
+      ],
+      "ios_device": {
+        "status": "compared",
+        "native_symbol": "chcompar",
+        "address": "0x180718e44",
+        "reference_uuid": "9426FC9A-B36C-3096-B836-D17D6744A75B",
+        "confidence": "verified",
+        "differences": "Identical instructions."
+      },
+      "exported": false,
+      "product": "OpenCoreFoundation"
     }
   ],
   "exclusions": [
