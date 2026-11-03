@@ -28,6 +28,24 @@ SCOPE = ROOT / "Configuration/Scope.json"
 NATIVE = ("CoreFoundation", "Foundation")
 IMPORT_LINE = re.compile(r"^\s+0x[0-9A-F]+\s+(\S+)\s+\(from ([^)]+)\)")
 LOAD_SEGMENT64 = 0x19
+# Owner decision of 2026-11-03 (Documentation/Reference/Scope.md, "Decisions") on the Objective-C classes whose
+# methods are implemented in Swift: admitted classes join the closure; the others are cuts with this
+# classification. A Swift-implemented class not listed stays an open cut.
+SWIFT_CLASS_DECISIONS = {
+    "_NSSwiftProcessInfo": "admitted",
+    "_NSFileManagerBridge": "admitted",
+    "_NSSwiftCharacterSet": "admitted",
+    "_TtC10Foundation34_NSSwiftImmortalCharacterSetBridge": "admitted",
+    "__NSConcreteUUID": "admitted",
+    "NSMorphology": "admitted",
+    "NSMorphologyPronoun": "admitted",
+    "NSMutableCharacterSet": "admitted",
+    "_NSSwiftBundle": "downgraded",
+    # Instantiated through their metadata accessors by the admitted Swift code (the same criterion).
+    "_NSSwiftLocale": "admitted",
+    "_TtC10Foundation11_BridgedURL": "admitted",
+    "_TtC10Foundation13__NSSwiftData": "admitted",
+}
 # The dyld shared cache each platform's reference images were extracted from: relative method lists of the
 # extracted images name selectors by offsets into it (Tools/scope-ida.py verifies it against the image).
 SHARED_CACHE = {
@@ -159,6 +177,8 @@ def frontier(arguments):
                "classes": {name: sorted(value) for name, value in sorted(classes.items())},
                "selectors": {name: sorted(value) for name, value in sorted(selectors.items())},
                "output": str(EVIDENCE / ("closure-%s-%s.json" % (arguments.platform, image)))}
+    request["admitted_swift_classes"] = sorted(
+        name for name, decision in SWIFT_CLASS_DECISIONS.items() if decision == "admitted")
     cache = SHARED_CACHE.get(arguments.platform)
     if cache and Path(cache).exists():
         request["shared_cache"] = cache
@@ -386,7 +406,7 @@ def assemble(arguments):
                           "symbols": sorted(names)} for module, names in sorted(cuts.items())},
                 # Swift-implemented methods of Objective-C classes held at the message rule until the owner
                 # decides each class (Tools/scope-ida.py, `admitted_swift_classes`).
-                **{"swift-class:" + name: {"classification": "open",
+                **{"swift-class:" + name: {"classification": SWIFT_CLASS_DECISIONS.get(name, "open"),
                                            "symbols": sorted(row["implementation"] for row in rows.values()),
                                            "selectors": sorted(rows)}
                    for name, rows in sorted(closure.get("open_boundaries", {}).items())}),

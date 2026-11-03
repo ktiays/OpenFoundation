@@ -128,8 +128,8 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 5,075 | 1,172,792 | 2,738 | 829 | 1,508 | 86 |
-| Foundation | 3,886 | 689,788 | 52 | 1,415 | 2,419 | 26 |
+| CoreFoundation | 5,126 | 1,178,680 | 2,775 | 848 | 1,503 | 86 |
+| Foundation | 5,724 | 1,733,044 | 52 | 2,179 | 3,493 | 26 |
 
 The scope is about 59% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 788 KB in total, is required by evidence. The two
@@ -226,11 +226,10 @@ the candidate tiers.
 | Foundation | libswiftCore | 58 | Swift strings, arrays, hashing |
 | Foundation | libicucore | 22 | regular expressions, plural rules |
 
-Foundation also has nine **open** cuts (2026-11-03): Objective-C classes whose
-methods are implemented in Swift, held at the message rule until each gate is
-read. Admitting them all would add about 3,500 Foundation functions (about
-2.3 MB, mostly Swift Foundation: CharacterSet, AttributedString, URL, Bundle,
-FileManager, PropertyListDecoder, Locale).
+Objective-C classes whose methods are implemented in Swift are held at the
+message rule until the owner decides each one (2026-11-03). Admitting all of
+them would add about 3,500 Foundation functions (about 2.3 MB, mostly Swift
+Foundation). The gates read for the decision ("Decisions") were:
 
 | Class | Methods held | Admitting it adds | Gate (Foundation 49FCDA5F, IDA, verified) |
 | --- | --- | --- | --- |
@@ -258,6 +257,21 @@ counterparts to the `_4CF` interfaces have not been checked against these
 call sites.
 
 ## Decisions
+
+### Swift-implemented Foundation classes (2026-11-03)
+
+Owner decision: admit the Swift-implemented classes the consumer's paths take
+always or by default, and classify `_NSSwiftBundle` as **downgraded**. Its gate,
+the `CoreFoundation/CFSwiftBundle` feature flag, is undeclared in the 24A434
+runtime, so the native default is the CFBundle path the scope already restores.
+Admitted: `_NSSwiftProcessInfo`, `_NSFileManagerBridge`, `_NSSwiftCharacterSet`
+and `_NSSwiftImmortalCharacterSetBridge`, `__NSConcreteUUID`, `NSMorphology`,
+`NSMorphologyPronoun`, `NSMutableCharacterSet`, and, by the same criterion,
+`_NSSwiftLocale`, `_BridgedURL` and `__NSSwiftData`, which the admitted Swift code
+instantiates through their metadata accessors. `Tools/scope.py`
+(`SWIFT_CLASS_DECISIONS`) records the decision. Foundation's scope grows by
+1,838 functions (1.04 MB, 1,737 of them Swift); two alternating passes reached the
+fixpoint, and the only Swift-implemented cut left is `_NSSwiftBundle`.
 
 ### CFBundle is retained (2026-10-29)
 
