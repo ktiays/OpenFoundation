@@ -232,17 +232,23 @@ read. Admitting them all would add about 3,500 Foundation functions (about
 2.3 MB, mostly Swift Foundation: CharacterSet, AttributedString, URL, Bundle,
 FileManager, PropertyListDecoder, Locale).
 
-| Class | Methods held | Gate |
-| --- | --- | --- |
-| `_NSSwiftBundle` | 40 | unread |
-| `_NSSwiftCharacterSet` | 28 | unread |
-| `_NSSwiftImmortalCharacterSetBridge` | 19 | unread |
-| `__NSConcreteUUID` | 11 | unread |
-| `_NSSwiftProcessInfo` | 10 | unread |
-| `_NSFileManagerBridge` | 9 | unread |
-| `NSMorphology` | 2 | unread |
-| `NSMorphologyPronoun` | 1 | unread |
-| `NSMutableCharacterSet` | 1 | unread |
+| Class | Methods held | Admitting it adds | Gate (Foundation 49FCDA5F, IDA, verified) |
+| --- | --- | --- | --- |
+| `_NSSwiftBundle` | 40 | 2,940 functions, 1.8 MB | `+[NSBundle findBundleResourceURLsCallingMethod:baseURL:passingTest:]` (0x1c04cdb30) takes it when `os_feature_enabled_impl("CoreFoundation", "CFSwiftBundle")`; the runtime declares no such flag (no `CoreFoundation.plist` in the 24A434 FeatureFlags), so the native default is `_CFBundleCopyFindResources` |
+| `_NSFileManagerBridge` | 9 | 903, 543 KB | none: `-[NSFileManager init]` (0x1c050dee4) always creates the bridge |
+| `_NSSwiftProcessInfo` | 10 | 506, 213 KB | none for the class itself: `+[NSProcessInfo processInfo]` (0x1c05a1bcc) answers `+[_NSSwiftProcessInfo processInfo]`; `+allocWithZone:` (0x1c05a19f8) is gated by the `NSSwiftProcessInfo` environment variable |
+| `_NSSwiftCharacterSet` | 28 | 262, 182 KB | `_foundation_swift_characterSet_enabled` (0x1c0fdc9cc): `os_feature_enabled_impl("Foundation", "SwiftNSCharacterSet")`, else the `SwiftNSCharacterSet` environment variable; the flag is `FeatureComplete` in the runtime's `Foundation.plist`, so the native default is Swift; otherwise CFCharacterSet |
+| `_NSSwiftImmortalCharacterSetBridge` | 19 | 204, 112 KB | reached only from the Swift character set |
+| `NSMorphology` | 2 | 45, 24 KB | none: Swift-implemented methods (`_heuristicMorphologyForLocale:...`, `_morphunConstraints`) |
+| `__NSConcreteUUID` | 11 | 30, 11 KB | none: `+[NSUUID allocWithZone:]` (0x1c06b1248) always allocates it |
+| `NSMorphologyPronoun` | 1 | 9, 3 KB | none: `_morphunConstraints` |
+| `NSMutableCharacterSet` | 1 | 4, 0.2 KB | none: `_newMutableCharacterSet` |
+
+OpenCoreAnimation imports `NSProcessInfo`, `NSFileManager`, `NSUUID`, `NSCharacterSet`
+and `NSBundle` and references `processInfo`, `defaultManager`, `UUID`, `mainBundle`
+and `bundleForClass:`. Costs are measured one class at a time
+(`Local/Evidence/scope/swift-class-costs-iphone-simulator.json`); classes share code, so
+admitting several adds less than the sum.
 
 The libSystem, ICU, libobjc and Swift runtime cuts are **external**: libraries
 the native images link, which a port TARGET supplies (AGENTS.md, "Porting").
