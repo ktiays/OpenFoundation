@@ -81,6 +81,8 @@ def discover(root):
         literals = re.sub(r"//[^\n]*|/\*[\s\S]*?\*/", "", text)
         if path.suffix == ".swift":
             literals = re.sub(r'@_(?:cdecl|silgen_name)\(\s*"[^"\n]+"\s*\)', "", literals)
+        # An environment variable key is not a runtime name: it keeps its spelling in both naming modes.
+        literals = re.sub(r'\bgetenv\(\s*"[^"\n]*"\s*\)', "", literals)
         for literal in re.findall(r'"(?:\\.|[^"\\])*"', literals):
             if literal[1:-1] in declarations or literal[1:-1] in {native_name(name) for name in declarations}:
                 errors.append(f"{path}: use OF_NAME_STRING for a mapped runtime name: {literal}")

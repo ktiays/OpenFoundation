@@ -77,6 +77,11 @@ def self_test(prefix):
             else:
                 raise SystemExit("Prefix checker accepted an invalid declaration or runtime name.")
             implementation.unlink()
+        environment = root / "Example.c"
+        environment.write_text('const char *zombies = getenv("NSString");\n')
+        if prefix.discover(root) != expected:
+            raise SystemExit("Prefix checker rejected an environment variable key.")
+        environment.unlink()
         source = root / "Source/CoreFoundation"
         source.mkdir(parents=True)
         (root / "Configuration").mkdir()
