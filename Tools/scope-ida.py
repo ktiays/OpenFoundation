@@ -33,6 +33,21 @@
 #
 # Image initializers (__init_offsets and __mod_init_func entries) and +load methods are roots of every consumer
 # in the request, because they run whenever the image is loaded; they are listed in `initializers`.
+#
+# Methods are indexed from the image's Objective-C metadata (class, metaclass and category method lists, plain
+# and relative), so a method whose implementation carries no `-[Class selector]` name (a Swift @objc thunk or a
+# Swift class's method) is found by its class and selector; IDA's method names are the fallback. An image
+# extracted from a dyld shared cache stores relative selectors as offsets from the cache's selector base (list
+# flag 0x40000000) and its selector strings outside the image: the request's `shared_cache` (the pinned
+# runtime's cache, verified against the image's own __text bytes) supplies the strings, and the base is derived
+# from methods whose `-[Class selector]` names IDA knows.
+#
+# Swift-implemented Objective-C methods (an implementation whose IDA name is a Swift symbol) do not join through
+# the message rule unless the request admits their class (`admitted_swift_classes`, an owner decision): they are
+# recorded per class in `open_boundaries`, the classes whose gates are still to be read. The runtime
+# sends some selectors itself (RUNTIME_SELECTORS: deallocation, C++ ivar construction and destruction,
+# +initialize, and the custom reference-counting overrides objc_retain/objc_release dispatch to), so they count
+# as sent by every closure function for the message rule.
 
 import json
 import re
@@ -54,6 +69,9 @@ BUILTIN_TABLE = "___CFRuntimeBuiltinClassTable"
 BUILTIN_COUNT = 72
 CALLBACK_OFFSETS = range(16, 88, 8)
 DATA_SKIPPED = ("__objc_", "__cfstring", "__cstring", "__ustring", "__oslogstring")
+RUNTIME_SELECTORS = ("dealloc", ".cxx_destruct", ".cxx_construct", "initialize", "retain", "release",
+                     "autorelease", "retainCount", "_tryRetain", "_isDeallocating", "allowsWeakReference",
+                     "retainWeakReference")
 
 
 def segment_name(ea):
@@ -101,6 +119,34 @@ def c_string(ea):
     return value.decode("utf-8", "replace") if value else None
 
 
+class SharedCache:
+    """C strings at virtual addresses of a dyld shared cache and its numbered subcaches (dyld_cache_header
+    mappingOffset 0x10, mappingCount 0x14; 32-byte mapping records of address, size and file offset)."""
+
+    def __init__(self, main_path):
+        import glob
+        self.files = []
+        for path in [main_path] + sorted(p for p in glob.glob(main_path + ".*") if p[-2:].isdigit()):
+            data = open(path, "rb").read()
+            if data.startswith(b"dyld_v1"):
+                offset, count = struct.unpack_from("<II", data, 0x10)
+                self.files.append((data, [struct.unpack_from("<QQQ", data, offset + 32 * index)
+                                          for index in range(count)]))
+
+    def bytes_at(self, address, length):
+        for data, mappings in self.files:
+            for start, size, file_offset in mappings:
+                if start <= address < start + size:
+                    return data[file_offset + address - start:file_offset + address - start + length]
+        return None
+
+    def string(self, address):
+        chunk = self.bytes_at(address, 4096)
+        if not chunk or b"\0" not in chunk:
+            return None
+        return chunk[:chunk.index(b"\0")].decode("utf-8", "replace")
+
+
 def function_start(ea):
     function = ida_funcs.get_func(ea)
     return function.start_ea if function else None
@@ -109,6 +155,8 @@ def function_start(ea):
 class Closure:
     def __init__(self, request):
         self.request = request
+        self.cache, self.selector_base = None, None
+        self.open_methods = {}
         self.modules = import_modules()
         self.functions = {}
         self.imports = {}
@@ -181,7 +229,7 @@ class Closure:
             return
         if segment == "__objc_selrefs":
             pointer = ida_bytes.get_qword(target)
-            row["selectors"].add(c_string(pointer) or ida_name.get_name(target))
+            row["selectors"].add(self.selector_string(pointer) or ida_name.get_name(target))
             return
         if segment in ("__objc_classrefs", "__objc_superrefs"):
             pointer = ida_bytes.get_qword(target)
@@ -333,13 +381,135 @@ class Closure:
                 functions |= self.data_functions(pointer, excluded, depth + 1, seen)
         return functions
 
+    def method_entries(self, address):
+        """(kind, name word, implementation) of a method_list_t: kind "direct" for a cache-relative selector
+        offset (flags 0x80000000 and 0x40000000), "selref" for a relative offset to a selector reference,
+        "pointer" for a plain list's selector pointer."""
+        if not address or segment_name(address) in ("UNDEF", ""):
+            return []
+        flags = ida_bytes.get_dword(address)
+        count = ida_bytes.get_dword(address + 4)
+        size = flags & 0xfffc
+        entries = []
+        for index in range(min(count, 4096)):
+            entry = address + 8 + index * size
+            if flags & 0x80000000:
+                name_offset = struct.unpack("<i", struct.pack("<I", ida_bytes.get_dword(entry)))[0]
+                imp_offset = struct.unpack("<i", struct.pack("<I", ida_bytes.get_dword(entry + 8)))[0]
+                if flags & 0x40000000:
+                    entries.append(("direct", name_offset, entry + 8 + imp_offset))
+                else:
+                    entries.append(("selref", ida_bytes.get_qword(entry + name_offset), entry + 8 + imp_offset))
+            else:
+                entries.append(("pointer", ida_bytes.get_qword(entry), ida_bytes.get_qword(entry + 16)))
+        return entries
+
+    def selector_string(self, address):
+        return c_string(address) or (self.cache.string(address) if self.cache else None)
+
+    def method_list(self, address):
+        """(selector, implementation) pairs of a method_list_t."""
+        pairs = []
+        for kind, word, implementation in self.method_entries(address):
+            if kind == "direct":
+                selector = self.selector_string(self.selector_base + word) if self.selector_base else None
+            else:
+                selector = self.selector_string(word)
+            if selector and segment_name(implementation) == "__text":
+                pairs.append((selector, implementation))
+        return pairs
+
+    def open_shared_cache(self):
+        """The request's shared cache, kept only when it holds this image's __text bytes; then the selector
+        base of cache-relative method lists, derived from methods IDA names -[Class selector]: the address of
+        that selector's string (found through the image's own selector references) minus its offset."""
+        self.cache, self.selector_base = None, None
+        path = self.request.get("shared_cache")
+        if not path:
+            return
+        cache = SharedCache(path)
+        text = next(ea for ea in idautils.Segments() if segment_name(ea) == "__text")
+        sample = ida_bytes.get_bytes(text, 4096)
+        if cache.bytes_at(text, 4096) != sample:
+            raise SystemExit("shared cache %s does not hold this image's __text" % path)
+        self.cache = cache
+        strings = {}
+        for segment_ea in idautils.Segments():
+            if segment_name(segment_ea) == "__objc_selrefs":
+                for slot in range(segment_ea, ida_segment.getseg(segment_ea).end_ea, 8):
+                    value = ida_bytes.get_qword(slot)
+                    selector = self.selector_string(value)
+                    if selector:
+                        strings.setdefault(selector, value)
+        votes = {}
+        for segment_ea in idautils.Segments():
+            if segment_name(segment_ea) != "__objc_methlist":
+                continue
+            cursor, end = segment_ea, ida_segment.getseg(segment_ea).end_ea
+            while cursor + 8 <= end and len(votes) < 64:
+                flags, count = ida_bytes.get_dword(cursor), ida_bytes.get_dword(cursor + 4)
+                size = flags & 0xfffc
+                if not (flags & 0xc0000000 == 0xc0000000 and size == 12 and 0 < count < 4096):
+                    cursor += 4
+                    continue
+                for kind, word, implementation in self.method_entries(cursor):
+                    match = METHOD_NAME.match(ida_name.get_name(implementation) or "")
+                    if match and match.group(4) in strings:
+                        base = strings[match.group(4)] - word
+                        votes[base] = votes.get(base, 0) + 1
+                cursor += 8 + count * size
+        if votes:
+            self.selector_base = max(votes, key=votes.get)
+
+    def class_ro(self, class_address):
+        return ida_bytes.get_qword(class_address + 32) & ~7
+
+    def class_label(self, class_address, ro):
+        name = ida_name.get_name(class_address) or ""
+        if name.startswith("_OBJC_CLASS_$_"):
+            return name[len("_OBJC_CLASS_$_"):]
+        return c_string(ida_bytes.get_qword(ro + 24)) or name
+
     def method_index(self):
-        methods = []
+        """(implementation, sign, class, category, selector) from the Objective-C metadata, with IDA's
+        -[Class selector] names added for any implementation the metadata walk did not cover."""
+        methods = {}
+        for segment_ea in idautils.Segments():
+            name = segment_name(segment_ea)
+            end = ida_segment.getseg(segment_ea).end_ea
+            if name == "__objc_classlist":
+                for slot in range(segment_ea, end, 8):
+                    cls = ida_bytes.get_qword(slot)
+                    ro = self.class_ro(cls)
+                    label = self.class_label(cls, ro)
+                    for selector, imp in self.method_list(ida_bytes.get_qword(ro + 32)):
+                        methods.setdefault((imp, "-", label, selector), (imp, "-", label, None, selector))
+                    meta = ida_bytes.get_qword(cls)
+                    if meta and segment_name(meta) not in ("UNDEF", ""):
+                        for selector, imp in self.method_list(ida_bytes.get_qword(self.class_ro(meta) + 32)):
+                            methods.setdefault((imp, "+", label, selector), (imp, "+", label, None, selector))
+            elif name == "__objc_catlist":
+                for slot in range(segment_ea, end, 8):
+                    category = ida_bytes.get_qword(slot)
+                    category_name = c_string(ida_bytes.get_qword(category)) or ""
+                    cls = ida_bytes.get_qword(category + 8)
+                    label = ida_name.get_name(cls) or ""
+                    if not label:
+                        imported = self.import_of(category + 8)
+                        label = imported[0] if imported else ""
+                    if label.startswith("_OBJC_CLASS_$_"):
+                        label = label[len("_OBJC_CLASS_$_"):]
+                    for offset, sign in ((16, "-"), (24, "+")):
+                        for selector, imp in self.method_list(ida_bytes.get_qword(category + offset)):
+                            methods.setdefault((imp, sign, label, selector),
+                                               (imp, sign, label, category_name, selector))
+        covered = {key[0] for key in methods}
         for ea in idautils.Functions():
             match = METHOD_NAME.match(ida_name.get_name(ea) or "")
-            if match:
-                methods.append((ea,) + match.groups())
-        return methods
+            if match and ea not in covered:
+                sign, label, category, selector = match.groups()
+                methods.setdefault((ea, sign, label, selector), (ea, sign, label, category, selector))
+        return sorted(methods.values())
 
     def superclass(self, name):
         ea = ida_name.get_name_ea(idc.BADADDR, "_OBJC_CLASS_$_" + name)
@@ -427,8 +597,12 @@ class Closure:
         self.methods = self.method_index()
         self.related = related
         selectors = self.request["selectors"]
+        admitted = set(self.request.get("admitted_swift_classes", []))
         for ea, _, class_name, category, selector in self.methods:
             if class_name in related and selector in selectors:
+                if (ida_name.get_name(ea) or "").startswith(("_$s", "$s")) and class_name not in admitted:
+                    self.open_methods.setdefault(class_name, {})[selector] = ea
+                    continue
                 entry = result.setdefault(ea, ["message-candidate", set()])
                 entry[1].update(set(selectors[selector]) & related[class_name] or related[class_name])
         return result
@@ -445,6 +619,7 @@ class Closure:
         return family
 
     def run(self):
+        self.open_shared_cache()
         roots = self.roots()
         tier = {}
         reach = {}
@@ -496,9 +671,15 @@ class Closure:
             for ea, row in rows.items():
                 for selector in row["selectors"]:
                     senders.setdefault(selector, set()).add(ea)
+                for selector in RUNTIME_SELECTORS:
+                    senders.setdefault(selector, set()).add(ea)
             added = []
+            admitted = set(self.request.get("admitted_swift_classes", []))
             for ea, _, class_name, category, selector in self.methods:
                 if ea in tier or class_name not in classes or selector not in senders:
+                    continue
+                if (ida_name.get_name(ea) or "").startswith(("_$s", "$s")) and class_name not in admitted:
+                    self.open_methods.setdefault(class_name, {})[selector] = ea
                     continue
                 tier[ea] = "message-reachable"
                 reach[ea] = set()
@@ -597,6 +778,14 @@ def main():
               "imports": [{"module": module, "name": name, "callers": len(callers)}
                           for (module, name), callers in sorted(closure.imports.items())],
               "selectors_sent": dict(sorted(closure.selectors_sent.items()))}
+    reached = {row["address"] for row in functions}
+    result["shared_cache"] = {"path": request.get("shared_cache"),
+                              "selector_base": "0x%x" % closure.selector_base if closure.selector_base else None}
+    result["open_boundaries"] = {
+        name: {selector: {"implementation": ida_name.get_name(ea), "address": "0x%x" % ea}
+               for selector, ea in sorted(methods.items()) if "0x%x" % ea not in reached}
+        for name, methods in sorted(closure.open_methods.items())}
+    result["open_boundaries"] = {name: rows for name, rows in result["open_boundaries"].items() if rows}
     with open(request["output"], "w") as handle:
         json.dump(result, handle, indent=1)
         handle.write("\n")
@@ -609,7 +798,8 @@ def main():
             "unresolved_class_sites": len(closure.unresolved_class_sites),
             "initializers": [row["function"] for row in closure.initializers],
             "static_instance_types": sorted(closure.static_instances),
-            "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"])}
+            "imports": len(result["imports"]), "selectors_sent": len(result["selectors_sent"]),
+            "open_boundaries": len(result["open_boundaries"])}
 
 
 SCOPE_RESULT = main()

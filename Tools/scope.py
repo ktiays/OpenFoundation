@@ -28,6 +28,13 @@ SCOPE = ROOT / "Configuration/Scope.json"
 NATIVE = ("CoreFoundation", "Foundation")
 IMPORT_LINE = re.compile(r"^\s+0x[0-9A-F]+\s+(\S+)\s+\(from ([^)]+)\)")
 LOAD_SEGMENT64 = 0x19
+# The dyld shared cache each platform's reference images were extracted from: relative method lists of the
+# extracted images name selectors by offsets into it (Tools/scope-ida.py verifies it against the image).
+SHARED_CACHE = {
+    "iphone-simulator": "/Library/Developer/CoreSimulator/Volumes/iOS_24A434/Library/Developer/CoreSimulator/"
+                        "Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/"
+                        "Caches/com.apple.dyld/dyld_sim_shared_cache_arm64",
+}
 LOAD_UUID = 0x1B
 
 
@@ -152,6 +159,9 @@ def frontier(arguments):
                "classes": {name: sorted(value) for name, value in sorted(classes.items())},
                "selectors": {name: sorted(value) for name, value in sorted(selectors.items())},
                "output": str(EVIDENCE / ("closure-%s-%s.json" % (arguments.platform, image)))}
+    cache = SHARED_CACHE.get(arguments.platform)
+    if cache and Path(cache).exists():
+        request["shared_cache"] = cache
     path = EVIDENCE / ("request-%s-%s.json" % (arguments.platform, image))
     write_changed(path, json.dumps(request, indent=1) + "\n")
     print("%s: %d symbols, %d classes, %d selectors -> %s" % (
@@ -371,8 +381,15 @@ def assemble(arguments):
                                     "level": level[identifier]} for identifier in large],
             "families": {name: dict(value, tiers=dict(value["tiers"])) for name, value in
                          sorted(families.items(), key=lambda item: -item[1]["bytes"])},
-            "cuts": {module: {"classification": "external" if module in EXTERNAL_MODULES else "unclassified",
-                              "symbols": sorted(names)} for module, names in sorted(cuts.items())},
+            "cuts": dict(
+                {module: {"classification": "external" if module in EXTERNAL_MODULES else "unclassified",
+                          "symbols": sorted(names)} for module, names in sorted(cuts.items())},
+                # Swift-implemented methods of Objective-C classes held at the message rule until the owner
+                # decides each class (Tools/scope-ida.py, `admitted_swift_classes`).
+                **{"swift-class:" + name: {"classification": "open",
+                                           "symbols": sorted(row["implementation"] for row in rows.values()),
+                                           "selectors": sorted(rows)}
+                   for name, rows in sorted(closure.get("open_boundaries", {}).items())}),
             "selectors_sent": len(closure["selectors_sent"]),
             "functions": functions})
     text = compact_json(result)

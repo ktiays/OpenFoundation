@@ -86,7 +86,27 @@ images have not been closed yet.
    `kCFNull` (16), `kCFBooleanTrue`/`False` (21), static numbers (22) and static
    character sets (25), listed as `static_instances`. Two more alternating passes
    reached the fixpoint (2026-10-31).
-6. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
+6. **Methods from metadata, and messages the runtime sends** (2026-11-03).
+   Methods are indexed from the image's Objective-C metadata (class, metaclass
+   and category method lists, plain and relative), with IDA's `-[Class selector]`
+   names as the fallback, so Swift `@objc` thunks and Swift class methods are
+   found by class and selector. The extracted images store relative selectors as
+   offsets from the shared cache's selector base and their selector strings
+   outside the image: `Tools/scope.py frontier` names the pinned runtime's cache
+   (`dyld_sim_shared_cache_arm64` of the iOS 27.0 24A434 simulator runtime), the
+   tool verifies the cache against the image's `__text` bytes and derives the base
+   (0x2387a9f48 for Foundation) from methods whose names IDA knows. Selectors sent
+   through `__objc_selrefs` (for example `[super dealloc]`) are read from the same
+   cache; before, they were recorded as data labels. The runtime's own sends
+   count as sent by every closure function: `dealloc`, `.cxx_destruct`,
+   `.cxx_construct`, `initialize` and the custom reference-counting overrides
+   (`retain`, `release`, `autorelease`, `retainCount`, `_tryRetain`,
+   `_isDeallocating`, `allowsWeakReference`, `retainWeakReference`), which
+   objc_release and objc_retain dispatch to. A Swift-implemented method of an
+   Objective-C class does not join through the message rules unless its class is
+   admitted by an owner decision; such classes are recorded as `open` cuts (see
+   "Cuts"). Two alternating passes reached the fixpoint.
+7. **Assembly.** `Tools/scope.py assemble` checks image identity, derives a
    name-based family label, computes strongly connected components and
    bottom-up levels over call edges, marks already restored definitions by
    native address and lists cuts per external library.
@@ -108,8 +128,8 @@ it is not part of `make check`.
 
 | Image | Functions | Code bytes | `symbol` | `message-candidate` | `message-reachable` | Already restored |
 | --- | --- | --- | --- | --- | --- | --- |
-| CoreFoundation | 4,571 | 1,111,060 | 2,734 | 809 | 1,028 | 86 |
-| Foundation | 3,598 | 632,164 | 52 | 1,411 | 2,135 | 26 |
+| CoreFoundation | 5,075 | 1,172,792 | 2,738 | 829 | 1,508 | 86 |
+| Foundation | 3,886 | 689,788 | 52 | 1,415 | 2,419 | 26 |
 
 The scope is about 59% of CoreFoundation's `__text` and about 5% of Foundation's.
 The `symbol` tier, about 788 KB in total, is required by evidence. The two
@@ -205,6 +225,24 @@ the candidate tiers.
 | Foundation | libobjc | 100 | runtime and property/protocol APIs |
 | Foundation | libswiftCore | 58 | Swift strings, arrays, hashing |
 | Foundation | libicucore | 22 | regular expressions, plural rules |
+
+Foundation also has nine **open** cuts (2026-11-03): Objective-C classes whose
+methods are implemented in Swift, held at the message rule until each gate is
+read. Admitting them all would add about 3,500 Foundation functions (about
+2.3 MB, mostly Swift Foundation: CharacterSet, AttributedString, URL, Bundle,
+FileManager, PropertyListDecoder, Locale).
+
+| Class | Methods held | Gate |
+| --- | --- | --- |
+| `_NSSwiftBundle` | 40 | unread |
+| `_NSSwiftCharacterSet` | 28 | unread |
+| `_NSSwiftImmortalCharacterSetBridge` | 19 | unread |
+| `__NSConcreteUUID` | 11 | unread |
+| `_NSSwiftProcessInfo` | 10 | unread |
+| `_NSFileManagerBridge` | 9 | unread |
+| `NSMorphology` | 2 | unread |
+| `NSMorphologyPronoun` | 1 | unread |
+| `NSMutableCharacterSet` | 1 | unread |
 
 The libSystem, ICU, libobjc and Swift runtime cuts are **external**: libraries
 the native images link, which a port TARGET supplies (AGENTS.md, "Porting").
