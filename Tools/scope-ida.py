@@ -190,6 +190,11 @@ class Closure:
         if segment == "__cfstring":
             row["cfstrings"] += 1
             return
+        # A class of the same image can be addressed directly (ADRP/ADD to its class object), without a
+        # class reference slot.
+        if segment == "__objc_data" and (ida_name.get_name(target) or "").startswith("_OBJC_CLASS_$_"):
+            row["classes"].add(ida_name.get_name(target))
+            return
         if segment == "__got":
             pointer = ida_bytes.get_qword(target)
             if segment_name(pointer) == "__objc_data":
