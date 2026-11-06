@@ -258,6 +258,52 @@ call sites.
 
 ## Decisions
 
+### Priority by consumer distance (2026-11-06)
+
+Owner decision: work inside the scope is ordered by how directly the consumers
+reach it, not by the tool's tiers. A recomputation from the same closure evidence
+(`Local/Evidence/scope/closure-iphone-simulator-*.json`, consumer roots and the
+pinned images' class and method metadata, read with `Tools/scope-ida.py`'s own
+indexer) keeps the tool's seeds and call edges, but sends each message only to
+the implementation that runtime lookup selects for a live class: one a consumer
+imports or that reached code names, walking its own superclass chain.
+Subclasses nothing names are not live. Callbacks stored in data tables form the
+second tier. The script and per-function lists are in
+`Local/Scratch/cf-core/scope-priority`.
+
+| Tier | Reached through | CoreFoundation (functions / bytes) | Foundation (functions / bytes) |
+| --- | --- | --- | --- |
+| P0 | consumer imports, calls, exact dispatch | 3,370 / 879,672 | 2,285 / 771,540 |
+| P1 | data-table callbacks only | 1,211 / 203,864 | 1,051 / 433,368 |
+| P2 | class-family expansion only | 545 / 95,144 | 2,388 / 528,136 |
+
+Order: (1) the symbols the consumers import directly, among them
+OpenCoreGraphics' `NSFastEnumerationIterator.next()`, `NSArray.makeIterator()`
+and `NSDictionary.init(dictionaryLiteral:)`; (2) the remaining P0 C and
+Objective-C, runtime and archiving first; (3) P0 Swift: CharacterSet, then
+FileManager with the URL core it needs (OpenCoreAnimation reaches them through
+`NSCharacterSet` factories and through `NSFileManager` on its CAML export and
+diagnostic paths); (4) P1, each data edge read before it is restored; (5) P2
+held. P2 is not proof of absence: objects created by name (keyed unarchiving,
+`NSClassFromString`), Swift witnesses and blocks called through pointers are
+followed by neither closure. Exact dispatch also selects 55 inherited
+implementations that the tool's closure lacks (NSOrderedSet, NSLocale,
+NSTimeZone, NSCalendar and NSDateComponents methods in CoreFoundation, among
+others); they are a tool finding to resolve.
+
+### Landing on main (2026-11-06)
+
+Owner decision, superseding the landing condition of "The core cycle lands as
+one track" below: `codex/cf-core` is not kept open until the whole group is
+complete. Completed work lands on main promptly and development continues on
+main; worktrees are temporary (AGENTS.md, "Tracks and History"). On 2026-11-06
+the branch holds about 7,000 implemented definitions that main's gates do not
+yet accept: `Configuration/Restoration.json` records 281 definitions, the
+remaining translation units have no ledger rows, tests or versioned readings,
+and OpenCoreFoundation does not link (libobjc, Foundation classes referenced
+from CoreFoundation, and CoreServices file-system and bookmark symbols are
+unresolved).
+
 ### Swift-implemented Foundation classes (2026-11-03)
 
 Owner decision: admit the Swift-implemented classes the consumer's paths take
@@ -360,5 +406,6 @@ passing the literal type ID of an unreached class, which no consumer obtains
 3. Resolve the remaining data-stored callbacks (collection callback structures,
    run-loop and allocator contexts); the runtime class records are followed.
 4. Close the iOS Device images with the same tooling.
-5. Restore bottom up from the leaves, with the RUNTIME track first, then the
-   strings group once its cuts are decided.
+5. Land `codex/cf-core` on main: first link, ledger rows and the decision on
+   how implemented but untested definitions are recorded.
+6. Restore in consumer-distance order ([Priority](#priority-by-consumer-distance-2026-11-06)).

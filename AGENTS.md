@@ -49,6 +49,13 @@ explicitly requests an exception. Conversation may use the user's language.
 - Indirect edges (Objective-C messages, CF callbacks, blocks, function
   pointers, Swift witnesses) are resolved by reading; an unresolved edge is
   recorded as unread and keeps its group open.
+- Work order follows consumer distance (owner decision, 2026-11-06): first the
+  symbols a consumer imports directly, then what they reach through calls and
+  exact message dispatch (the implementation runtime lookup selects for a class
+  a consumer imports or reached code names), then callbacks stored in data
+  tables, last what only the scope tool's class-family expansion reaches. The
+  scope stays the tool's superset; this orders the work inside it
+  ([Scope priority](Documentation/Reference/Scope.md#priority-by-consumer-distance-2026-11-06)).
 - Consumers' new requirements enter by regenerating the scope at their new
   revision. A scope reduction never removes a restored definition silently;
   record why it is no longer reached.
@@ -302,10 +309,14 @@ compiles.
 
 - `Documentation/Tracks.md` is the work ledger: scope, owned paths,
   dependencies and state. Keep status there, not in per-turn reports.
-- After the initial bootstrap, implementation tracks use isolated worktrees
-  and `codex/<track>` branches. Independent tracks may run in parallel when
-  authorized. Shared build configuration, public headers and integration belong
-  to the coordinating session. Share verified interfaces before consumers.
+- Development happens on `main` (owner decision, 2026-11-06). A worktree with
+  a `codex/<track>` branch is only for temporary parallel work: it is cut from
+  current main, kept small, and landed as soon as its group passes the gates,
+  then removed with its branch. No long-lived integration branch; completed
+  changes reach main promptly instead of accumulating on one worktree.
+  Independent tracks may run in parallel when authorized. Shared build
+  configuration, public headers and integration belong to the coordinating
+  session. Share verified interfaces before consumers.
 - `main` stays linear. Land a completed track with `git merge --squash` and
   `git commit`, never a merge commit or a pull that merges. Rebase a track when
   main moves, validate the squashed result, and remove finished worktrees.

@@ -1,8 +1,11 @@
 # Work tracks
 
-Implementation tracks use isolated `codex/<track>` branches and build directories.
-The coordinating session owns shared build policy, public-header registration,
-restoration records, test entry points and squash integration into linear main.
+Development happens on main (owner decision, 2026-11-06). A `codex/<track>`
+branch in a worktree is only for temporary parallel work and lands as soon as its
+group passes the gates. The coordinating session owns shared build policy,
+public-header registration, restoration records, test entry points and squash
+integration into linear main. Work inside the scope follows consumer distance
+([Scope priority](Reference/Scope.md#priority-by-consumer-distance-2026-11-06)).
 Since 2026-10-29 the restoration is limited to the consumer-derived scope in
 `Configuration/Scope.json` (AGENTS.md, "Scope"); a track takes its groups from
 that scope, bottom up.
@@ -15,7 +18,7 @@ that scope, bottom up.
 | CF-BASE | `codex/cf-base`; `Source/CoreFoundation/Base`, mirror tests, base reading | REF scalar closure | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
 | NS-RANGE | `codex/ns-range`; `Source/Foundation/Range`, mirror tests, range reading | REF scalar closure | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
 | CF-SCALAR | `codex/cf-scalar`; `Source/CoreFoundation/Date/OCFDate`, mirror tests, scalar reading | CF-BASE types | Complete: targeted and full combined Make/Xcode Debug/Release naming-mode matrix passed; included in the initial scalar batch |
-| RUNTIME | `codex/cf-core` (owner decision 2026-10-30: the below-cycle runtime and the 396-function core component land together, [Scope decisions](Reference/Scope.md#decisions)); allocator/type/ownership/initialization group under `Source/CoreFoundation/Runtime` and `Allocator`, mirror tests/readings | REF; SCOPE class-callback closure | In progress: reading started 2026-10-30 from the evidence in Local/Evidence/cf-runtime/Handoff.md; uninstantiated builtin slots empty as downgraded cuts once the empty-slot path is read |
+| RUNTIME | `codex/cf-core` (landing condition superseded 2026-11-06: land promptly, then develop on main, [Scope decisions](Reference/Scope.md#landing-on-main-2026-11-06)); the core component and the round 1-3 CoreFoundation and Foundation families, Foundation Swift process info, error types, String bridging, UUID, morphology constraints and Data | REF; SCOPE | Landing: about 7,000 definitions implemented from the simulator image (P0 CoreFoundation 3,311 of 3,370 functions, P0 Foundation C/Objective-C 1,202 of 1,480, P0 Foundation Swift 194 of 805); blocked on the first link (libobjc, Foundation classes referenced from CoreFoundation, CoreServices file-system and bookmark symbols), ledger rows, tests, versioned readings and iOS Device comparison |
 | NS-DECIMAL | `codex/ns-decimal`; complete raw decimal arithmetic under `Source/Foundation/Decimal`, mirrors/reading | REF; any native raw helper closure | Complete: 57 definitions with full Make/Xcode Debug/Release naming-mode matrix, 32,724 byte/error comparisons, 12,288 warmed error-lifetime paths, ASan and source-USR audit passed |
 | CF-ENCODING | `codex/cf-encoding`; complete raw converter/registry/backend groups under `Source/CoreFoundation/StringEncoding`, mirrors/reading | REF, Unicode and verified allocator/string boundaries | Complete kernel batch: 14 functions and 9 tables, 7,911,208 differential cases per prefixed run; full Make/Xcode matrix passed. Public dispatch/cache and additional backends remain unbuilt |
 | CF-UNICODE | `codex/cf-unicode`; complete normalization/property/table group under `Source/CoreFoundation/Unicode`, mirrors/reading | REF; exact native table/resource boundary | Complete raw primitive batch: 5 functions and 82 data definitions; 14,980,800 differential cases per prefixed configuration and full Make/Xcode matrix passed. Stream decomposition waits on allocator; 23 Device pointer bindings unread |
@@ -30,7 +33,7 @@ that scope, bottom up.
 | CF-TO-BYTES-FALLBACK | Coordinating checkout (no track branch); `__CFDefaultToBytesFallbackProc` and `_toLossyASCIITable` in `Source/CoreFoundation/StringEncoding/OCFStringEncodingConverter.c`, mirror tests and the encoding reading | CF-ENCODING-NAMES, CF-UNICODE; SCOPE below-core list | Complete: 1 function and 1 data definition; 2,555,904 differential (prefixed configurations) and 21 standalone cases; Device body and table compared. The table writer at 0x1c022c1a4 is read; `__CFStrConvertBytesToUnicode` stays open on the unrestored `CFStringEncodingGetConverter` |
 | CF-STRING | `codex/cf-string`; complete string objects/core/formatting under `Source/CoreFoundation/String`, mirrors/reading | Runtime ABI, encoding and Unicode | Evidence preserved; implementation deferred with its exact class/bridge dependencies |
 | CF-NUMBER-DATE | Independent worktree; complete number/boolean/date object callback group in coordinated new source paths, mirrors/readings | Runtime ABI and exact native dependencies | Evidence preserved; implementation deferred; separate from completed date-field scalar unit |
-| CONSUMER-SCOPE | Remaining groups of the scope after the runtime, string, number/date and encoding tracks: collections, data, run loop, property lists, keyed archiving, NS classes and bridging, each a track of its own when read | SCOPE, RUNTIME | Not started |
+| CONSUMER-SCOPE | In consumer-distance order: OpenCoreGraphics' direct Swift imports (NSFastEnumerationIterator, NSArray.makeIterator, NSDictionary(dictionaryLiteral:)); remaining P0 C/Objective-C (59 CoreFoundation, 278 Foundation functions); P0 Swift CharacterSet, then FileManager with its URL core; P1 after each data edge is read; P2 held | SCOPE, RUNTIME landed | Not started on main; ordered 2026-11-06 |
 | PORT | Port infrastructure (hook header, `Port/hooks.tsv`, `Configuration/PlatformDependencies.tsv` and its check), then the first port TARGET with its supplied libraries | SCOPE cut classification; restored groups | Not started; no port TARGET admitted |
 | INTEGRATION | Explicit replacement builds and dependency audits in the consumers, on Apple and port TARGETs | CONSUMER-SCOPE, PORT | Not started |
 | IOS-DEVICE | Device execution and admitted replacement build | Validated complete simulator groups and device ABI | Deferred; scalar image comparison is not device equivalence |
