@@ -607,7 +607,8 @@ OCFTypeRef _OCFRuntimeCreateInstance(
         }
         bzero(memory, size);
     } else {
-        memory = OCFAllocatorAllocateTyped(requested, (OCFIndex)size, mallocType, 0);
+        // 0x1c01e5970: an allocator that honors the zero hint is asked for zeroed memory (hint 1).
+        memory = OCFAllocatorAllocateTyped(requested, (OCFIndex)size, mallocType, 1);
     }
     if (memory == NULL) {
         return NULL;

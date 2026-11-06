@@ -170,9 +170,11 @@ an open decision.
 4. The size is `(extraBytes + 31 + (16 when the allocator is not the default)) &
    ~15`, with malloc type ID `(403 * (typeID ^ 0xC9DC5)) & 0xFFFFF | 0xCF000000`.
    Aligned classes use `malloc_type_zone_memalign` on the default zone with the
-   class's alignment (offset 88); otherwise `CFAllocatorAllocateTyped`, followed
-   by `bzero` unless the allocator honors the zero hint (system default or malloc
-   zone, `__CFAllocatorRespectsHintZeroWhenAllocating`).
+   class's alignment (offset 88); otherwise `CFAllocatorAllocateTyped`: an
+   allocator that honors the zero hint (system default or malloc zone,
+   `__CFAllocatorRespectsHintZeroWhenAllocating`) is asked with hint 1 for zeroed
+   memory (`MOV W3, #1` at 0x1c01e5970), any other with hint 0 followed by `bzero`.
+   Aligned allocations are not cleared.
 5. The allocation-event name is recorded when `__CFOASafe` is set (the category
    argument, else the class name).
 6. A non-default allocator is retained and stored in the 16 bytes before the
