@@ -8,6 +8,9 @@
 
 #include <string.h>
 
+// Native __CFUniCharPrioritySort, 0x1c0253324 (defined below).
+static void __CFUniCharPrioritySort(uint32_t *characters, OCFIndex length);
+
 // Native unnamed local table of CFUniCharGetBitmapForPlane, iOS Simulator 24A434, 0x1c03a46a8
 // (seven 16-bit newline characters and two bytes of padding before __CFUniCharCaseMappingTableCounts),
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified.
@@ -1006,6 +1009,248 @@ const uint8_t *OCFUniCharGetUnicodePropertyDataForPlane(uint32_t propertyType, u
     return 0;
 }
 
+// Native CFUniCharDecomposeWithErrorLocation, iOS Simulator 24A434, 0x1c0252b1c,
+// UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. External. iOS Device 24A446: unread.
+// The decomposition buffer starts as 32 UTF-32 units on the stack; it grows by 32 units
+// (CFAllocatorAllocateTyped with kCFAllocatorSystemDefault, type 0x100004052888210, the old contents moved,
+// a heap buffer released) when a combining character arrives with count + 1 at the capacity. The
+// decomposable test uses the HFS+ or canonical plane-0 bitmap of the decomposition data (or plane 9 bitmaps
+// above the BMP), and the combining test (needToReorder only, characters below 0x20000) the decomposition
+// priority table. A character below 0x80 flushes the buffer (sorted when it holds more than one character,
+// regardless of needToReorder) and is stored directly in the destination format (0 UTF-16, 2 a byte, 3
+// UTF-32, others only counted) while maxLength is 0 or not yet reached; reaching it stops. A surrogate pair
+// is joined; a lone high surrogate (with the destination format nonzero) stops with the error location after
+// it, a lone low surrogate with the error location at it; with format 0 they are decomposed as characters. A
+// non-combining character flushes the buffer, is decomposed (32-unit capacity) or stored, and filled at once
+// unless reordering keeps a multi-unit decomposition buffered. A failed fill in the loop proceeds to the
+// final flush (sorted from two characters), which subtracts the pending segment length on success.
+// *errorLocation starts at -1; *consumedLength is length minus the remaining length and *filledLength the
+// units written; the result is whether nothing remains. Reading:
+// Documentation/Reference/Research/CoreFoundationUnicode.md.
+bool OCFUniCharDecomposeWithErrorLocation(
+    const uint16_t *src,
+    OCFIndex length,
+    OCFIndex *consumedLength,
+    void *dst,
+    OCFIndex maxLength,
+    OCFIndex *filledLength,
+    bool needToReorder,
+    uint32_t dstFormat,
+    bool isHFSPlus,
+    OCFIndex *errorLocation
+) {
+    OCFIndex usedLength = 0;
+    void *destination = dst;
+    if (errorLocation != NULL) {
+        *errorLocation = -1;
+    }
+    OCFIndex remaining = length;
+    if (length < 1) {
+        goto done;
+    }
+    uint32_t buffer[32];
+    uint32_t *decompBuffer = buffer;
+    OCFIndex decompBufferSize = 32;
+    OCFIndex decompBufferLength = 0;
+    OCFIndex segmentLength = 0;
+    const uint8_t *planeBitmap = isHFSPlus
+                                     ? __CFUniCharDecompositionHfsPlusDecomposableCharacterSetBitmapPlane0
+                                     : __CFUniCharDecompositionCanonicalDecomposableCharacterSetBitmapPlane0;
+    OCFAllocatorRef allocator = kOCFAllocatorSystemDefault;
+    OCFIndex pending = length;
+    const uint16_t *cursor = src;
+    for (;;) {
+        const uint16_t *start = cursor;
+        uint32_t currentChar = *cursor++;
+        if (currentChar <= 0x7F) {
+            if (decompBufferLength >= 1) {
+                if (decompBufferLength != 1) {
+                    __CFUniCharPrioritySort(decompBuffer, decompBufferLength);
+                }
+                if (!OCFUniCharFillDestinationBuffer(
+                        decompBuffer, decompBufferLength, &destination, maxLength, &usedLength, dstFormat
+                    )) {
+                    goto flush;
+                }
+                decompBufferLength = 0;
+                segmentLength = 0;
+            } else {
+                pending = remaining;
+            }
+            OCFIndex filled = usedLength;
+            if (maxLength >= 1) {
+                if (filled >= maxLength) {
+                    remaining = pending;
+                    goto release;
+                }
+                if (dstFormat == 0) {
+                    *(uint16_t *)destination = (uint16_t)currentChar;
+                    destination = (uint8_t *)destination + 2;
+                } else if (dstFormat == 3) {
+                    *(uint32_t *)destination = currentChar;
+                    destination = (uint8_t *)destination + 4;
+                } else if (dstFormat == 2) {
+                    *(uint8_t *)destination = (uint8_t)currentChar;
+                    destination = (uint8_t *)destination + 1;
+                    filled = usedLength;
+                }
+            }
+            remaining = pending - 1;
+            usedLength = filled + 1;
+            pending = remaining - segmentLength;
+            if (pending > 0) {
+                continue;
+            }
+            goto flushPending;
+        }
+        if ((currentChar & 0xFC00) == 0xD800) {
+            uint32_t next;
+            if (pending != 1 && ((next = *cursor) & 0xFC00) == 0xDC00) {
+                cursor = start + 2;
+                currentChar = next + (currentChar << 10) + 0xFCA02400;
+            } else if (dstFormat != 0) {
+                start = cursor;
+                goto invalid;
+            }
+        } else if ((currentChar & 0xFC00) == 0xDC00 && dstFormat != 0) {
+            goto invalid;
+        }
+        if (needToReorder && (currentChar >> 17) == 0) {
+            const uint8_t *table = __CFUniCharDecompositionCombiningPriorityTable[currentChar >> 16];
+            uint8_t page = table[(currentChar >> 8) & 0xFF];
+            if (page != 0 && table[((uint32_t)page << 8) - 256 + (currentChar & 0xFF) + 256] != 0) {
+                OCFIndex newLength = decompBufferLength + 1;
+                OCFIndex capacity = decompBufferSize;
+                if (newLength >= capacity) {
+                    capacity = decompBufferSize + 32;
+                    uint32_t *grown =
+                        OCFAllocatorAllocateTyped(allocator, capacity << 2, 0x100004052888210, 0);
+                    memmove(grown, decompBuffer, (size_t)(decompBufferSize << 2));
+                    if (decompBuffer != buffer) {
+                        OCFAllocatorDeallocate(allocator, decompBuffer);
+                    }
+                    decompBuffer = grown;
+                }
+                const uint8_t *bitmap = planeBitmap;
+                if (currentChar >= 0x10000) {
+                    bitmap = OCFUniCharGetBitmapPtrForPlane(9, currentChar >> 16);
+                }
+                if (bitmap != NULL && ((bitmap[(currentChar >> 3) & 0x1FFF] >> (currentChar & 7)) & 1) != 0) {
+                    decompBufferLength += OCFUniCharDecomposeCharacter(
+                        currentChar, decompBuffer + decompBufferLength, capacity - decompBufferLength
+                    );
+                } else {
+                    decompBuffer[decompBufferLength] = currentChar;
+                    decompBufferLength = newLength;
+                }
+                segmentLength += (currentChar >> 16) != 0 ? 2 : 1;
+                decompBufferSize = capacity;
+                pending = remaining - segmentLength;
+                if (pending > 0) {
+                    continue;
+                }
+                goto flushPending;
+            }
+        }
+        if (decompBufferLength >= 1) {
+            if (decompBufferLength != 1) {
+                __CFUniCharPrioritySort(decompBuffer, decompBufferLength);
+            }
+            if (!OCFUniCharFillDestinationBuffer(
+                    decompBuffer, decompBufferLength, &destination, maxLength, &usedLength, dstFormat
+                )) {
+                goto flush;
+            }
+            segmentLength = 0;
+        } else {
+            pending = remaining;
+        }
+        {
+            const uint8_t *bitmap = planeBitmap;
+            if (currentChar >= 0x10000) {
+                bitmap = OCFUniCharGetBitmapPtrForPlane(9, (currentChar >> 16) & 0xFF);
+            }
+            if (bitmap != NULL && ((bitmap[(currentChar >> 3) & 0x1FFF] >> (currentChar & 7)) & 1) != 0) {
+                decompBufferLength = OCFUniCharDecomposeCharacter(currentChar, decompBuffer, 32);
+                if (needToReorder && decompBufferLength != 1) {
+                    remaining = pending;
+                    segmentLength += (currentChar >> 16) != 0 ? 2 : 1;
+                    pending = remaining - segmentLength;
+                    if (pending > 0) {
+                        continue;
+                    }
+                    goto flushPending;
+                }
+            } else {
+                decompBuffer[0] = currentChar;
+                decompBufferLength = 1;
+            }
+        }
+        if (!OCFUniCharFillDestinationBuffer(
+                decompBuffer, decompBufferLength, &destination, maxLength, &usedLength, dstFormat
+            )) {
+            remaining = pending;
+            goto flushPending;
+        }
+        decompBufferLength = 0;
+        remaining = pending + ((currentChar >> 16) == 0 ? -1 : -2);
+        pending = remaining - segmentLength;
+        if (pending > 0) {
+            continue;
+        }
+        goto release;
+    invalid:
+        if (errorLocation != NULL) {
+            *errorLocation = start - src;
+        }
+        goto flushPending;
+    }
+flushPending:
+    if (decompBufferLength < 1) {
+        goto release;
+    }
+flush:
+    if ((uint64_t)decompBufferLength >= 2) {
+        __CFUniCharPrioritySort(decompBuffer, decompBufferLength);
+    }
+    if (OCFUniCharFillDestinationBuffer(
+            decompBuffer, decompBufferLength, &destination, maxLength, &usedLength, dstFormat
+        )) {
+        remaining -= segmentLength;
+    }
+release:
+    if (decompBuffer != buffer) {
+        OCFAllocatorDeallocate(allocator, decompBuffer);
+    }
+done:
+    if (consumedLength != NULL) {
+        *consumedLength = length - remaining;
+    }
+    if (filledLength != NULL) {
+        *filledLength = usedLength;
+    }
+    return remaining < 1;
+}
+
+// Native CFUniCharDecompose, iOS Simulator 24A434, 0x1c0253040, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC;
+// confidence: verified. External. iOS Device 24A446: unread. CFUniCharDecomposeWithErrorLocation with the
+// same arguments and a NULL error location.
+bool OCFUniCharDecompose(
+    const uint16_t *src,
+    OCFIndex length,
+    OCFIndex *consumedLength,
+    void *dst,
+    OCFIndex maxLength,
+    OCFIndex *filledLength,
+    bool needToReorder,
+    uint32_t dstFormat,
+    bool isHFSPath
+) {
+    return OCFUniCharDecomposeWithErrorLocation(
+        src, length, consumedLength, dst, maxLength, filledLength, needToReorder, dstFormat, isHFSPath, NULL
+    );
+}
+
 // Native __CFUniCharRecursivelyCompatibilityDecomposeCharacter, iOS Simulator 24A434, 0x1c0253188,
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external.
 // iOS Device 24A446: 0x180700d14, UUID 9426FC9A-B36C-3096-B836-D17D6744A75B; confidence: verified;
@@ -1185,4 +1430,94 @@ static void __CFUniCharPrioritySort(uint32_t *characters, OCFIndex length) {
 // Reading: Documentation/Reference/Research/CoreFoundationUnicode.md.
 void OCFUniCharPrioritySort(uint32_t *characters, OCFIndex length) {
     __CFUniCharPrioritySort(characters, length);
+}
+
+// Native CFUniCharPrecomposeCharacter, iOS Simulator 24A434, 0x1c0254640,
+// UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Hidden (was private external). iOS Device
+// 24A446: unread. Combining characters outside [U+0300, U+16D68) answer U+FFFD. The combining character is
+// found by binary search in __CFUniCharPrecompSourceTable (the midpoint rounded down to an entry; pointers
+// compared unsigned); a zero descriptor answers U+FFFD. Bit 31 selects the non-BMP destination table (32-bit
+// base and result, entry count in bits 16-30); otherwise the BMP table is searched with the base truncated to
+// 16 bits (UXTH, also for a base above U+FFFF). The base must lie within the first and last entries; a
+// missing base or a zero result answers U+FFFD. Reading:
+// Documentation/Reference/Research/CoreFoundationUnicode.md.
+uint32_t CFUniCharPrecomposeCharacter(uint32_t base, uint32_t combining) {
+    if (combining + 0xFFFE9298 < 0xFFFE9598) {
+        return 0xFFFD;
+    }
+    const uint32_t *low = __CFUniCharPrecompSourceTable;
+    const uint32_t *high = __CFUniCharPrecompSourceTable + 142;
+    const uint32_t *entry;
+    for (;;) {
+        entry = low + 2 * ((uintptr_t)((const uint8_t *)high - (const uint8_t *)low) >> 4);
+        if (combining < entry[0]) {
+            high = entry - 2;
+        } else if (combining > entry[0]) {
+            low = entry + 2;
+        } else {
+            break;
+        }
+        if (low > high) {
+            return 0xFFFD;
+        }
+    }
+    uint32_t descriptor = entry[1];
+    if (descriptor == 0) {
+        return 0xFFFD;
+    }
+    uint32_t result;
+    if ((descriptor & 0x80000000) != 0) {
+        const uint32_t *first = __CFUniCharNonBMPPrecompDestinationTable + (descriptor & 0xFFFF);
+        if (base < first[0]) {
+            return 0xFFFD;
+        }
+        const uint32_t *last = first + 2 * (uint64_t)(uint32_t)(((descriptor >> 16) & 0x7FFF) - 1);
+        if (base > last[0]) {
+            return 0xFFFD;
+        }
+        for (;;) {
+            const uint32_t *middle =
+                first + 2 * ((uintptr_t)((const uint8_t *)last - (const uint8_t *)first) >> 4);
+            if (base < middle[0]) {
+                last = middle - 2;
+            } else if (base > middle[0]) {
+                first = middle + 2;
+            } else {
+                result = middle[1];
+                break;
+            }
+            if (first > last) {
+                return 0xFFFD;
+            }
+        }
+    } else {
+        const uint16_t *first = __CFUniCharBMPPrecompDestinationTable + 2 * (descriptor & 0xFFFF);
+        uint16_t character = (uint16_t)base;
+        if (first[0] > character) {
+            return 0xFFFD;
+        }
+        const uint16_t *last = first + 2 * (uint64_t)(uint32_t)((descriptor >> 16) - 1);
+        if (last[0] < character) {
+            return 0xFFFD;
+        }
+        for (;;) {
+            const uint16_t *middle =
+                first + 2 * ((uintptr_t)((const uint8_t *)last - (const uint8_t *)first) >> 3);
+            if (middle[0] > character) {
+                last = middle - 2;
+            } else if (middle[0] < character) {
+                first = middle + 2;
+            } else {
+                result = middle[1];
+                break;
+            }
+            if (first > last) {
+                return 0xFFFD;
+            }
+        }
+    }
+    if (result == 0) {
+        return 0xFFFD;
+    }
+    return result;
 }

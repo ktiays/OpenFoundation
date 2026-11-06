@@ -56,3 +56,31 @@ OF_EXTERN uint32_t CFUniCharGetConditionalCaseMappingFlags(
     const uint8_t *langCode,
     uint32_t lastFlags
 );
+
+OF_EXPORT bool OCFUniCharDecomposeWithErrorLocation(
+    const uint16_t *src,
+    OCFIndex length,
+    OCFIndex *consumedLength,
+    void *dst,
+    OCFIndex maxLength,
+    OCFIndex *filledLength,
+    bool needToReorder,
+    uint32_t dstFormat,
+    bool isHFSPlus,
+    OCFIndex *errorLocation
+);
+
+OF_EXPORT bool OCFUniCharDecompose(
+    const uint16_t *src,
+    OCFIndex length,
+    OCFIndex *consumedLength,
+    void *dst,
+    OCFIndex maxLength,
+    OCFIndex *filledLength,
+    bool needToReorder,
+    uint32_t dstFormat,
+    bool isHFSPath
+);
+
+// Native CFUniCharPrecomposeCharacter, 0x1c0254640 (was a private external).
+OF_EXTERN uint32_t CFUniCharPrecomposeCharacter(uint32_t base, uint32_t combining);

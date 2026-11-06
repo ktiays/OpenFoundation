@@ -14,9 +14,9 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef uint8_t (*ToByte)(uint32_t flags, uint16_t character, uint8_t *byte);
+typedef uint32_t (*ToByte)(uint32_t flags, uint16_t character, uint8_t *byte);
 
-typedef uint8_t (*FromByte)(uint32_t flags, uint8_t byte, uint16_t *character);
+typedef uint32_t (*FromByte)(uint32_t flags, uint8_t byte, uint16_t *character);
 
 typedef OCFIndex (*ToUTF8)(
     uint32_t flags,

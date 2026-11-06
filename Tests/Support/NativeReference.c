@@ -130,12 +130,25 @@ int resolveReferenceFunction(
     return resolveFrameworkFunction(path, path, expectedUUID, symbol, function);
 }
 
+// The test tool links both products' objects into its own image (Tools/build.py build_tests), so a
+// replacement is resolved in the main executable and must belong to it; the packaged frameworks' exports are
+// checked by the build's validation step.
 int resolveReplacementFunction(const char *framework, const char *symbol, void **function) {
-    char path[256];
-    char owner[256];
-    snprintf(path, sizeof(path), "@rpath/%s.framework/%s", framework, framework);
-    snprintf(owner, sizeof(owner), "/%s.framework/%s", framework, framework);
-    return resolveFrameworkFunction(path, owner, NULL, symbol, function);
+    *function = NULL;
+    void *address = dlsym(RTLD_MAIN_ONLY, symbol);
+    if (!address) {
+        fprintf(stderr, "Setup failure: cannot resolve %s (%s) in the test executable.\n", symbol, framework);
+        return 77;
+    }
+    Dl_info information;
+    if (!dladdr(address, &information) || information.dli_fbase != (const void *)_dyld_get_image_header(0)) {
+        fprintf(
+            stderr, "Setup failure: %s (%s) does not belong to the test executable.\n", symbol, framework
+        );
+        return 77;
+    }
+    *function = address;
+    return 0;
 }
 
 int resolveReferenceAddress(

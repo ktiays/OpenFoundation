@@ -10,3 +10,4 @@
 #include <stdint.h>
 
 OF_EXPORT unsigned long OCFStringConvertEncodingToNSStringEncoding(uint32_t encoding);
+OF_EXPORT uint32_t OCFStringConvertNSStringEncodingToEncoding(unsigned long encoding);

@@ -3,7 +3,7 @@
 //  Copyright (c) 2026 ktiays. All rights reserved.
 //
 
-#include "Foundation/Decimal/ONSDecimal.h"
+#include <OpenFoundation/Decimal/ONSDecimal.h>
 #include "Foundation/Decimal/ONSDecimalInternal.h"
 
 #include <stddef.h>

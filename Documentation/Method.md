@@ -122,9 +122,11 @@ Objective-C++. C/C++ clients use CoreFoundation headers; Objective-C/Objective-C
 clients additionally exercise Foundation headers, which require Objective-C syntax.
 The current scalar suites independently resolve native and replacement symbols,
 verify owning images and native UUIDs, and reject identical function addresses.
-Internal kernels retain their native hidden names. `Configuration/InternalTestSources.json`
-selects the same production source files for isolated/internal test-tool compilation
-in both build systems. Native counterparts are resolved from pinned image bases
+`Tools/ledger.py` records definitions that are built but not yet restored as `implemented` rows of
+`Configuration/Restoration.json`, each with its open issues, from the citation at the definition and the exports of
+frameworks built in both naming modes. Internal kernels retain their native hidden names. Each test tool links both products'
+own objects into one image in both build systems (the frameworks are not loaded), so
+hidden definitions are reachable by the tests. Native counterparts are resolved from pinned image bases
 and IDA offsets, checked against executable segments and image ownership; the
 replacement must belong to the test executable. No test-only production export
 is added. Object interoperability remains unbuilt.

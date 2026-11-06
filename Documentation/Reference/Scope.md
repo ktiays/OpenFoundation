@@ -220,7 +220,7 @@ the candidate tiers.
 | CoreFoundation | libSystem | 312 | `xpc_*` (63, preferences), `dispatch_*` and the `_4CF` run-loop SPI (`_dispatch_main_queue_callback_4CF`, `_dispatch_runloop_root_queue_*_4CF`, `_dispatch_get_main_queue_port_4CF`), `mach_msg`/`mach_port_*`, `notify_*`, `sandbox_*`, `container_*`, `voucher_*`, `os_*`, `pthread_*` |
 | CoreFoundation | libicucore | 107 | date/number formatting, calendars, converters, collation, locales |
 | CoreFoundation | libobjc | 65 | runtime, class and selector APIs |
-| CoreFoundation | CoreServicesInternal | 2 | file-system URL helpers; **unclassified** |
+| CoreFoundation | CoreServicesInternal | 7 (15 with the bookmark and security-scope forwarders) | file-system URL helpers; **unsupported**, unbound ([Landing](#landing-on-main-2026-11-06)) |
 | Foundation | libSystem | 101 | `pthread_*`, `xpc_*` (12), `os_*`, `dispatch_*`, `mach_*` |
 | Foundation | libobjc | 100 | runtime and property/protocol APIs |
 | Foundation | libswiftCore | 58 | Swift strings, arrays, hashing |
@@ -293,16 +293,37 @@ others); they are a tool finding to resolve.
 
 ### Landing on main (2026-11-06)
 
-Owner decision, superseding the landing condition of "The core cycle lands as
+Owner decisions, superseding the landing condition of "The core cycle lands as
 one track" below: `codex/cf-core` is not kept open until the whole group is
 complete. Completed work lands on main promptly and development continues on
-main; worktrees are temporary (AGENTS.md, "Tracks and History"). On 2026-11-06
-the branch holds about 7,000 implemented definitions that main's gates do not
-yet accept: `Configuration/Restoration.json` records 281 definitions, the
-remaining translation units have no ledger rows, tests or versioned readings,
-and OpenCoreFoundation does not link (libobjc, Foundation classes referenced
-from CoreFoundation, and CoreServices file-system and bookmark symbols are
-unresolved).
+main; worktrees are temporary (AGENTS.md, "Tracks and History"). The ledger
+gains an `implemented` status whose every gap is a recorded issue
+(AGENTS.md, "Progress and Verification"; `Tools/ledger.py`), so the branch's
+definitions land as implemented, not restored.
+
+The first link of both frameworks follows the native load commands
+(`Configuration/LinkDependencies.json`): OpenCoreFoundation re-exports libobjc
+and links OpenFoundation upward through a text stub of the ten classes and two
+functions native CoreFoundation imports from Foundation; OpenFoundation links
+libicucore. Symbols the restored code reaches but nothing supplies are linked
+weakly to an image that does not exist and bind to null: the CoreServicesInternal
+cut (unsupported: loading it would load the system CoreFoundation and Foundation),
+libcmark and CFNetwork (unsupported until decided), and unrestored CoreFoundation
+and Foundation definitions. Each definition that reaches one carries an
+`open-edges` issue.
+
+Two load-time entries stay uninstalled. In the prefixed build,
+`__CFInitialize` (its process-global tagged-pointer and bridge registrations
+would collide with the system CoreFoundation in the same process). In both
+builds, Foundation's `+[NSObject(NSObject) load]`: its `_NSToDoAtProcessStart`
+calls libswiftCore's `_SwiftCreateBridgedString`, whose bridging classes make
+libswiftCore lazily load the system CoreFoundation, which collides with the
+restored one. That libswiftCore boundary is an open issue for any Swift bridging
+in the replacement build.
+
+The test tools link both products' objects into one image, so the tests reach
+hidden definitions without test-only exports; the packaged frameworks are
+checked by validation.
 
 ### Swift-implemented Foundation classes (2026-11-03)
 
@@ -398,9 +419,84 @@ behaves as a native hole; the only difference from the native image is a caller
 passing the literal type ID of an unreached class, which no consumer obtains
 ([reading](Research/RuntimePrerequisites.md)).
 
+### The bridged classes' full method lists are in the scope (2026-10-31)
+
+Owner decision. The message tiers expand an Objective-C send only to methods whose
+selector the closure sends, so 297 methods of the toll-free bridged classes that live
+in CoreFoundation (`__NSCFString`, `__NSCFNumber`, `__NSCFBoolean`, `__NSCFArray`,
+`__NSCFDictionary`, `__NSCFSet`, `__NSCFData`, `__NSCFCharacterSet`,
+`__NSCFAttributedString`, `__NSCFError`, `__NSCFLocale`, `__NSCFTimer`,
+`__NSCFInputStream`/`__NSCFOutputStream`, `__NSCFType`, the CF part of `NSURL`, the
+`NSBlock` family, `NSNull`, `NSInvocation`, `NSMachPort`, `__NSArray0`) were not reached,
+although a bridged object handed to a consumer answers every method of its class. The
+owner admitted the classes' full method lists. The CF functions that only those methods
+call (66 after closing over their unrestored callees: the stream client and scheduling
+functions, the run-loop timer accessors, the CFURL resource-property, bookmark,
+file-reference and security-scope functions, the CFString check and comparison entry
+points and the character-set plane functions) join the scope with them. `Tools/scope.py`
+does not derive these yet: they are recorded as an owner-decided root set.
+
+### Cuts into other images (2026-10-31)
+
+Owner decision.
+
+- **Foundation.** The native code's edges into Foundation (the `dlopen` of the Foundation
+  image in `__CFLookUpClass`, the Mach port and run-loop units, and the imports
+  `__NSCreateBPlistMappedDataFromURL` and `__NSCreateBPlistMappedString`) resolve to
+  OpenFoundation in a replacement build, through a port hook; they never load the system
+  Foundation. Prefixed (coexistence) builds keep the native edge, as the comparison
+  baseline.
+- **CoreServicesInternal.** On Apple TARGETs it is **external** (owner decision, 2026-10-31, refining the
+  classification below): the native image links it upward (`LC_LOAD_UPWARD_DYLIB`), the simulator runtime
+  supplies it, and OpenCoreFoundation links it upward at native strength, like libobjc. On port TARGETs each
+  edge is classified by the native code at its call site:
+  where the native code has its own path for the dependency being absent (a NULL test of
+  a soft-linked pointer, a failure return), the edge is **downgraded** to that path;
+  otherwise it is **unsupported** and a build that needs it fails naming the cut
+  (`CFURLGetFileSystemRepresentation`'s file-reference path, `_FSCreatePathForFileID`).
+
+### Native names outside the prefix rule stay hidden (2026-10-31)
+
+Owner decision. Natively exported names that the OCF/ONS rule cannot spell
+(`__CFgetenv`, `os_log_callback`, `_CF_forwarding_prep_0`,
+`__THE_PROCESS_HAS_FORKED_AND_YOU_CANNOT_USE_THIS_COREFOUNDATION_FUNCTIONALITY___YOU_MUST_EXEC__`,
+`__cf_tsanReadFunction`, `__cf_tsanWriteFunction` and similar) keep their native spelling
+and hidden visibility in both naming modes; nothing outside the framework links them.
+
+### cf-core closes over the classes it references (2026-10-31)
+
+Owner decision. Restored cf-core code references Objective-C classes and functions this
+scope assigns to the consumer-scope groups (the `NSArray`, `NSDictionary` and `NSSet`
+class clusters, `NSDate`, the `CFPrefs` source classes and others). cf-core extends
+translation units that `main` already ships, so it cannot land while those references
+are unresolved without breaking the product link. The track stays open and restores the
+referenced classes, closed over their callees, until OpenCoreFoundation links; only then
+does it land, with its tests, ledger entries and iOS Device comparison.
+
+### iOS Device comparison is tiered (2026-10-31)
+
+Owner decision, changing how AGENTS.md's "Compare every restored function with the iOS Device image" is met
+for this track: every restored function is compared with its iOS Device counterpart automatically, by an
+instruction-shape diff of the two IDA readings (calls, branches, immediates, memory offsets and sizes, register
+allocation normalized); only the functions whose shapes differ are read by hand, and each difference is
+recorded with an `iOS Device divergence:` comment as the rule requires. The comparison method and its results
+are recorded with the track.
+
+### The Foundation classes CoreFoundation links upward (2026-10-31)
+
+Owner decision. The native CoreFoundation image links Foundation upward (`LC_LOAD_UPWARD_DYLIB`) and binds 25
+Objective-C symbols from it: the classes its own classes inherit from (`__NSCFString` from `NSMutableString`,
+`__NSCFNumber` from `NSNumber`, `__NSCFError` from `NSError`, `__NSCFCharacterSet` from
+`NSMutableCharacterSet`, `__NSCFAttributedString` from `NSMutableAttributedString`) and classes its code
+messages directly (`NSProcessInfo`, `NSThread`, `NSNotification`, `NSString`, `NSValue`, `NSUUID`,
+`NSScanner`, `NSKeyedArchiver`, `NSKeyedUnarchiver`, `NSMutableIndexSet`, `NSURLComponents`,
+`NSURLQueryItem`). OpenCoreFoundation therefore links OpenFoundation upward at native strength, and
+OpenFoundation restores these classes with the methods this scope's Foundation image reaches, closed over
+their callees; methods the scope does not reach are not restored and fall to the superclass.
+
 ## Next steps
 
-1. Owner decision on the CoreServicesInternal cut.
+1. Derive the owner-decided bridged-method roots in `Tools/scope.py` and regenerate the scope.
 2. Narrow the message tiers by reading consumer receivers, starting with the
    over-approximation families above.
 3. Resolve the remaining data-stored callbacks (collection callback structures,

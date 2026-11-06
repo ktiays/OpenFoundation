@@ -10,7 +10,7 @@ import argparse
 import hashlib
 import json
 import re
-from common import ROOT, SOURCE_SUFFIXES, internal_test_sources, write_changed
+from common import ROOT, SOURCE_SUFFIXES, write_changed
 
 
 def ident(name):
@@ -129,29 +129,31 @@ def generate():
         links = []
         if name != "OpenCoreFoundation":
             dependencies.append(dependency(name + "-core", "OpenCoreFoundation"))
-            links.append("OpenCoreFoundation")
+            if framework:
+                links.append("OpenCoreFoundation")
         if not framework:
             dependencies.append(dependency(name + "-foundation", "OpenFoundation"))
-            links.append("OpenFoundation")
         build_files = [add(name + "-link-" + library, "PBXBuildFile", fileRef=product_references[library]) for library in links]
         phases.append(phase(name + "-links", "PBXFrameworksBuildPhase", build_files))
         if not framework:
-            settings["OTHER_LDFLAGS"] = ("-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation "
-                                         "$(OF_CORE_FOUNDATION_LDFLAGS)")
+            # The test tools build both products' sources into one image (Tools/build.py build_tests): their
+            # hidden definitions are reachable by the tests and the frameworks are not loaded.
+            settings["OTHER_LDFLAGS"] = ('"$(BUILT_PRODUCTS_DIR)/Objects/Swift/OpenFoundation.o" '
+                                         '-L"$(SDKROOT)/usr/lib/swift" '
+                                         '-L"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)" '
+                                         '-Wl,-rpath,/usr/lib/swift "@$(BUILT_PRODUCTS_DIR)/Generated/Tests-link.rsp"')
         else:
+            settings["OTHER_LDFLAGS"] = (settings.get("OTHER_LDFLAGS", "$(inherited)")
+                                         + ' "@$(BUILT_PRODUCTS_DIR)/Generated/$(PRODUCT_NAME)-link.rsp"')
             if name == "OpenCoreFoundation":
-                settings["OTHER_LDFLAGS"] = settings.get("OTHER_LDFLAGS", "$(inherited)") + " $(OF_CORE_FOUNDATION_LDFLAGS)"
+                settings["OTHER_LDFLAGS"] += " $(OF_CORE_FOUNDATION_LDFLAGS)"
             phases.append(script(name + "-package", "package"))
         synchronized_groups = [group]
         if not framework:
-            selected = set(internal_test_sources())
             for source_group, module in ((core_source, "CoreFoundation"), (foundation_source, "Foundation")):
                 source_root = ROOT / "Source" / module
-                if not any(source_root in path.parents for path in selected):
-                    continue
-                excluded = sorted(str(path.relative_to(source_root)) for path in source_root.rglob("*")
-                                  if path.suffix in SOURCE_SUFFIXES and path not in selected)
-                exception = add(name + "-internal-" + module, "PBXFileSystemSynchronizedBuildFileExceptionSet",
+                excluded = sorted(str(path.relative_to(source_root)) for path in source_root.rglob("*.swift"))
+                exception = add(name + "-sources-" + module, "PBXFileSystemSynchronizedBuildFileExceptionSet",
                                 target=ident(name), membershipExceptions=excluded)
                 objects[source_group].setdefault("exceptions", []).append(exception)
                 synchronized_groups.append(source_group)

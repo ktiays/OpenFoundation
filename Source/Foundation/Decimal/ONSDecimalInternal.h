@@ -5,7 +5,9 @@
 
 #pragma once
 
-#include "Foundation/Decimal/ONSDecimal.h"
+#include <OpenFoundation/Decimal/ONSDecimal.h>
+#include "Foundation/Decimal/ONSDecimalParsing.h"
+#include "Foundation/Decimal/ONSDecimalFormatting.h"
 
 OF_EXTERN __attribute__((visibility("hidden"))) void _ONSDecimalCompact(ONSDecimal *number);
 

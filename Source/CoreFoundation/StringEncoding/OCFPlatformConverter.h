@@ -5,11 +5,21 @@
 
 #pragma once
 
+#include "CoreFoundation/StringEncoding/OCFStringEncodingConverter.h"
+
 #include <OpenCoreFoundation/Base/OCFBase.h>
 
 #include <stdint.h>
 
 // Original hidden names are preserved; no process-shared symbol is exported.
+OF_EXTERN const StringEncodingConverterRecord *
+__CFStringEncodingConverterGetUncommonConverter(uint32_t encoding);
+
+OF_EXTERN OCFIndex
+CFStringEncodingDecomposeCharacter(uint32_t flags, uint16_t character, uint16_t *characters);
+
+OF_EXTERN const StringEncodingConverterRecord *__CFStringEncodingGetExternalConverter(uint32_t encoding);
+
 OF_EXTERN uint32_t __CFStringEncodingPlatformUnicodeToBytes(
     uint32_t encoding,
     uint32_t flags,
@@ -34,4 +44,8 @@ OF_EXTERN uint32_t __CFStringEncodingPlatformBytesToUnicode(
 
 OF_EXTERN OCFIndex __CFStringEncodingPlatformCharLengthForBytes(
     uint32_t encoding, uint32_t flags, const uint8_t *bytes, OCFIndex numBytes
+);
+
+OF_EXTERN OCFIndex __CFStringEncodingPlatformByteLengthForCharacters(
+    uint32_t encoding, uint32_t flags, const uint16_t *characters, OCFIndex numChars
 );

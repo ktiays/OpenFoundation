@@ -98,6 +98,12 @@ def compiler_arguments(product, directory, configuration, mode, root=ROOT):
                  directory / "Generated/OFPrefixMapping.h", "-Xcc", "-DOF_SYSTEM_NAMES=" + str(int(mode == "YES")),
                  "-module-cache-path", directory / "Generated/SwiftModuleCache",
                  "-g", "-warnings-as-errors", shared["OF_SWIFT_OPTIMIZATION_" + configuration.upper()]]
+    # @objc declarations normally require a loaded module named Foundation. The replacement build is that module
+    # itself; the prefixed build (module OpenFoundation) must not import the system overlay to satisfy the check,
+    # so the diagnostic-only requirement is disabled in both modes.
+    arguments += ["-Xfrontend", "-disable-objc-attr-requires-foundation-module"]
+    # Data's span accessors (Data/Data.swift) carry lifetime dependencies, as the native ones do.
+    arguments += ["-enable-experimental-feature", "Lifetimes"]
     if configuration == "Release":
         arguments.append("-lto=llvm-full")
     return [str(value) for value in arguments], sources
@@ -127,7 +133,15 @@ def dump_ast(product, directory, mode="NO", root=ROOT):
     if not sources:
         return []
     arguments = [argument for argument in arguments if argument != "-whole-module-optimization"]
+    # The frontend takes the driver's -Xfrontend arguments directly.
+    arguments = [argument for index, argument in enumerate(arguments)
+                 if argument != "-Xfrontend"]
     arguments.insert(2, "-frontend")
+    # The driver also passes the compiler-plugin paths (the SDK's Swiftify macros); the frontend needs them given.
+    toolchain = Path(output(["xcrun", "--find", "swiftc"])).parents[1]
+    arguments += ["-in-process-plugin-server-path", str(toolchain / "lib/swift/host/libSwiftInProcPluginServer.dylib"),
+                  "-plugin-path", str(toolchain / "lib/swift/host/plugins"),
+                  "-plugin-path", str(toolchain / "local/lib/swift/host/plugins")]
     trees = []
     for primary in sources:
         command = [*arguments, "-dump-ast", "-dump-ast-format", "json", "-primary-file", str(primary),

@@ -1,0 +1,417 @@
+//
+//  Created by ktiays on 2026/10/31.
+//  Copyright (c) 2026 ktiays. All rights reserved.
+//
+
+#include "CoreFoundation/StringEncoding/OCFThai.h"
+
+// Inferred organization: the Thai converters (DOS Thai, ISO Latin Thai and Mac Thai, 0x1c02f40f4-0x1c02f43f0)
+// are contiguous in the iOS Simulator __text section and are kept in one translation unit with their tables
+// (0x1c046f2a0-0x1c046fa40, __TEXT,__const) and converter records (0x2227ab970-0x2227aba60,
+// __DATA_CONST,__const). The native source path is not in the evidence. __CFIsValidCombiningCharacterForThai
+// (0x1c02f41d0), which lies in the same range, is restored here in native order. Unless a definition says
+// otherwise: iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified; iOS
+// Device 24A446: unread. Every converter ignores its flags. The from-Unicode tables hold (unit, byte) pairs
+// sorted by unit; each search reads the byte as the low byte of the second halfword (LDRB at offset 2).
+// Reading: Documentation/Reference/Research/CoreFoundationStringEncoding.md.
+
+// Native DOSThai_from_uni, 0x1c046f2a0 (__TEXT,__const, 97 four-byte entries). Non-external.
+static const uint16_t DOSThai_from_uni[97][2] = {
+    {0x00a0, 0x00a0}, {0x0e01, 0x00a1}, {0x0e02, 0x00a2}, {0x0e03, 0x00a3}, {0x0e04, 0x00a4},
+    {0x0e05, 0x00a5}, {0x0e06, 0x00a6}, {0x0e07, 0x00a7}, {0x0e08, 0x00a8}, {0x0e09, 0x00a9},
+    {0x0e0a, 0x00aa}, {0x0e0b, 0x00ab}, {0x0e0c, 0x00ac}, {0x0e0d, 0x00ad}, {0x0e0e, 0x00ae},
+    {0x0e0f, 0x00af}, {0x0e10, 0x00b0}, {0x0e11, 0x00b1}, {0x0e12, 0x00b2}, {0x0e13, 0x00b3},
+    {0x0e14, 0x00b4}, {0x0e15, 0x00b5}, {0x0e16, 0x00b6}, {0x0e17, 0x00b7}, {0x0e18, 0x00b8},
+    {0x0e19, 0x00b9}, {0x0e1a, 0x00ba}, {0x0e1b, 0x00bb}, {0x0e1c, 0x00bc}, {0x0e1d, 0x00bd},
+    {0x0e1e, 0x00be}, {0x0e1f, 0x00bf}, {0x0e20, 0x00c0}, {0x0e21, 0x00c1}, {0x0e22, 0x00c2},
+    {0x0e23, 0x00c3}, {0x0e24, 0x00c4}, {0x0e25, 0x00c5}, {0x0e26, 0x00c6}, {0x0e27, 0x00c7},
+    {0x0e28, 0x00c8}, {0x0e29, 0x00c9}, {0x0e2a, 0x00ca}, {0x0e2b, 0x00cb}, {0x0e2c, 0x00cc},
+    {0x0e2d, 0x00cd}, {0x0e2e, 0x00ce}, {0x0e2f, 0x00cf}, {0x0e30, 0x00d0}, {0x0e31, 0x00d1},
+    {0x0e32, 0x00d2}, {0x0e33, 0x00d3}, {0x0e34, 0x00d4}, {0x0e35, 0x00d5}, {0x0e36, 0x00d6},
+    {0x0e37, 0x00d7}, {0x0e38, 0x00d8}, {0x0e39, 0x00d9}, {0x0e3a, 0x00da}, {0x0e3f, 0x00df},
+    {0x0e40, 0x00e0}, {0x0e41, 0x00e1}, {0x0e42, 0x00e2}, {0x0e43, 0x00e3}, {0x0e44, 0x00e4},
+    {0x0e45, 0x00e5}, {0x0e46, 0x00e6}, {0x0e47, 0x00e7}, {0x0e48, 0x00e8}, {0x0e49, 0x00e9},
+    {0x0e4a, 0x00ea}, {0x0e4b, 0x00eb}, {0x0e4c, 0x00ec}, {0x0e4d, 0x00ed}, {0x0e4e, 0x00ee},
+    {0x0e4f, 0x00ef}, {0x0e50, 0x00f0}, {0x0e51, 0x00f1}, {0x0e52, 0x00f2}, {0x0e53, 0x00f3},
+    {0x0e54, 0x00f4}, {0x0e55, 0x00f5}, {0x0e56, 0x00f6}, {0x0e57, 0x00f7}, {0x0e58, 0x00f8},
+    {0x0e59, 0x00f9}, {0x0e5a, 0x00fa}, {0x0e5b, 0x00fb}, {0x2013, 0x0096}, {0x2014, 0x0097},
+    {0x2018, 0x0091}, {0x2019, 0x0092}, {0x201c, 0x0093}, {0x201d, 0x0094}, {0x2022, 0x0095},
+    {0x2026, 0x0085}, {0x20ac, 0x0080},
+};
+
+// Native DOSThai_to_uni, 0x1c046f424 (__TEXT,__const, 128 uint16 entries). Non-external.
+static const uint16_t DOSThai_to_uni[128] = {
+    0x20ac, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0x2026, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
+    0xfffd, 0xfffd, 0xfffd, 0xfffd, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014, 0xfffd, 0xfffd,
+    0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0x00a0, 0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06,
+    0x0e07, 0x0e08, 0x0e09, 0x0e0a, 0x0e0b, 0x0e0c, 0x0e0d, 0x0e0e, 0x0e0f, 0x0e10, 0x0e11, 0x0e12, 0x0e13,
+    0x0e14, 0x0e15, 0x0e16, 0x0e17, 0x0e18, 0x0e19, 0x0e1a, 0x0e1b, 0x0e1c, 0x0e1d, 0x0e1e, 0x0e1f, 0x0e20,
+    0x0e21, 0x0e22, 0x0e23, 0x0e24, 0x0e25, 0x0e26, 0x0e27, 0x0e28, 0x0e29, 0x0e2a, 0x0e2b, 0x0e2c, 0x0e2d,
+    0x0e2e, 0x0e2f, 0x0e30, 0x0e31, 0x0e32, 0x0e33, 0x0e34, 0x0e35, 0x0e36, 0x0e37, 0x0e38, 0x0e39, 0x0e3a,
+    0xfffd, 0xfffd, 0xfffd, 0xfffd, 0x0e3f, 0x0e40, 0x0e41, 0x0e42, 0x0e43, 0x0e44, 0x0e45, 0x0e46, 0x0e47,
+    0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x0e4e, 0x0e4f, 0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54,
+    0x0e55, 0x0e56, 0x0e57, 0x0e58, 0x0e59, 0x0e5a, 0x0e5b, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
+};
+
+// Native ISOLatinThai_from_uni, 0x1c046f524 (__TEXT,__const, 87 four-byte entries). Non-external.
+static const uint16_t ISOLatinThai_from_uni[87][2] = {
+    {0x0e01, 0x00a1}, {0x0e02, 0x00a2}, {0x0e03, 0x00a3}, {0x0e04, 0x00a4}, {0x0e05, 0x00a5},
+    {0x0e06, 0x00a6}, {0x0e07, 0x00a7}, {0x0e08, 0x00a8}, {0x0e09, 0x00a9}, {0x0e0a, 0x00aa},
+    {0x0e0b, 0x00ab}, {0x0e0c, 0x00ac}, {0x0e0d, 0x00ad}, {0x0e0e, 0x00ae}, {0x0e0f, 0x00af},
+    {0x0e10, 0x00b0}, {0x0e11, 0x00b1}, {0x0e12, 0x00b2}, {0x0e13, 0x00b3}, {0x0e14, 0x00b4},
+    {0x0e15, 0x00b5}, {0x0e16, 0x00b6}, {0x0e17, 0x00b7}, {0x0e18, 0x00b8}, {0x0e19, 0x00b9},
+    {0x0e1a, 0x00ba}, {0x0e1b, 0x00bb}, {0x0e1c, 0x00bc}, {0x0e1d, 0x00bd}, {0x0e1e, 0x00be},
+    {0x0e1f, 0x00bf}, {0x0e20, 0x00c0}, {0x0e21, 0x00c1}, {0x0e22, 0x00c2}, {0x0e23, 0x00c3},
+    {0x0e24, 0x00c4}, {0x0e25, 0x00c5}, {0x0e26, 0x00c6}, {0x0e27, 0x00c7}, {0x0e28, 0x00c8},
+    {0x0e29, 0x00c9}, {0x0e2a, 0x00ca}, {0x0e2b, 0x00cb}, {0x0e2c, 0x00cc}, {0x0e2d, 0x00cd},
+    {0x0e2e, 0x00ce}, {0x0e2f, 0x00cf}, {0x0e30, 0x00d0}, {0x0e31, 0x00d1}, {0x0e32, 0x00d2},
+    {0x0e33, 0x00d3}, {0x0e34, 0x00d4}, {0x0e35, 0x00d5}, {0x0e36, 0x00d6}, {0x0e37, 0x00d7},
+    {0x0e38, 0x00d8}, {0x0e39, 0x00d9}, {0x0e3a, 0x00da}, {0x0e3f, 0x00df}, {0x0e40, 0x00e0},
+    {0x0e41, 0x00e1}, {0x0e42, 0x00e2}, {0x0e43, 0x00e3}, {0x0e44, 0x00e4}, {0x0e45, 0x00e5},
+    {0x0e46, 0x00e6}, {0x0e47, 0x00e7}, {0x0e48, 0x00e8}, {0x0e49, 0x00e9}, {0x0e4a, 0x00ea},
+    {0x0e4b, 0x00eb}, {0x0e4c, 0x00ec}, {0x0e4d, 0x00ed}, {0x0e4e, 0x00ee}, {0x0e4f, 0x00ef},
+    {0x0e50, 0x00f0}, {0x0e51, 0x00f1}, {0x0e52, 0x00f2}, {0x0e53, 0x00f3}, {0x0e54, 0x00f4},
+    {0x0e55, 0x00f5}, {0x0e56, 0x00f6}, {0x0e57, 0x00f7}, {0x0e58, 0x00f8}, {0x0e59, 0x00f9},
+    {0x0e5a, 0x00fa}, {0x0e5b, 0x00fb},
+};
+
+// The 95 entries map bytes 0xa1-0xff.
+// Native ISOLatinThai_to_uni, 0x1c046f680 (__TEXT,__const, 95 uint16 entries). Non-external.
+static const uint16_t ISOLatinThai_to_uni[95] = {
+    0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06, 0x0e07, 0x0e08, 0x0e09, 0x0e0a, 0x0e0b, 0x0e0c,
+    0x0e0d, 0x0e0e, 0x0e0f, 0x0e10, 0x0e11, 0x0e12, 0x0e13, 0x0e14, 0x0e15, 0x0e16, 0x0e17, 0x0e18,
+    0x0e19, 0x0e1a, 0x0e1b, 0x0e1c, 0x0e1d, 0x0e1e, 0x0e1f, 0x0e20, 0x0e21, 0x0e22, 0x0e23, 0x0e24,
+    0x0e25, 0x0e26, 0x0e27, 0x0e28, 0x0e29, 0x0e2a, 0x0e2b, 0x0e2c, 0x0e2d, 0x0e2e, 0x0e2f, 0x0e30,
+    0x0e31, 0x0e32, 0x0e33, 0x0e34, 0x0e35, 0x0e36, 0x0e37, 0x0e38, 0x0e39, 0x0e3a, 0xfffd, 0xfffd,
+    0xfffd, 0xfffd, 0x0e3f, 0x0e40, 0x0e41, 0x0e42, 0x0e43, 0x0e44, 0x0e45, 0x0e46, 0x0e47, 0x0e48,
+    0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x0e4e, 0x0e4f, 0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54,
+    0x0e55, 0x0e56, 0x0e57, 0x0e58, 0x0e59, 0x0e5a, 0x0e5b, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
+};
+
+// The three tables for a base unit followed by U+F873, U+F874 or U+F875.
+// Native MacThaiLow_from_uni, 0x1c046f73e (__TEXT,__const, 5 four-byte entries). Non-external.
+static const uint16_t MacThaiLow_from_uni[5][2] = {
+    {0x0e48, 0x0088},
+    {0x0e49, 0x0089},
+    {0x0e4a, 0x008a},
+    {0x0e4b, 0x008b},
+    {0x0e4c, 0x008c},
+};
+
+// Native MacThaiLeft_from_uni, 0x1c046f752 (__TEXT,__const, 12 four-byte entries). Non-external.
+static const uint16_t MacThaiLeft_from_uni[12][2] = {
+    {0x0e31, 0x0092},
+    {0x0e34, 0x0094},
+    {0x0e35, 0x0095},
+    {0x0e36, 0x0096},
+    {0x0e37, 0x0097},
+    {0x0e47, 0x0093},
+    {0x0e48, 0x0098},
+    {0x0e49, 0x0099},
+    {0x0e4a, 0x009a},
+    {0x0e4b, 0x009b},
+    {0x0e4c, 0x009c},
+    {0x0e4d, 0x008f},
+};
+
+// Native MacThaiLowLeft_from_uni, 0x1c046f782 (__TEXT,__const, 5 four-byte entries). Non-external.
+static const uint16_t MacThaiLowLeft_from_uni[5][2] = {
+    {0x0e48, 0x0083},
+    {0x0e49, 0x0084},
+    {0x0e4a, 0x0085},
+    {0x0e4b, 0x0086},
+    {0x0e4c, 0x0087},
+};
+
+// Native MacThai_from_uni, 0x1c046f796 (__TEXT,__const, 100 four-byte entries). Non-external.
+static const uint16_t MacThai_from_uni[100][2] = {
+    {0x00a0, 0x00a0}, {0x00a9, 0x00fb}, {0x00ab, 0x0080}, {0x00ae, 0x00fa}, {0x00bb, 0x0081},
+    {0x0e01, 0x00a1}, {0x0e02, 0x00a2}, {0x0e03, 0x00a3}, {0x0e04, 0x00a4}, {0x0e05, 0x00a5},
+    {0x0e06, 0x00a6}, {0x0e07, 0x00a7}, {0x0e08, 0x00a8}, {0x0e09, 0x00a9}, {0x0e0a, 0x00aa},
+    {0x0e0b, 0x00ab}, {0x0e0c, 0x00ac}, {0x0e0d, 0x00ad}, {0x0e0e, 0x00ae}, {0x0e0f, 0x00af},
+    {0x0e10, 0x00b0}, {0x0e11, 0x00b1}, {0x0e12, 0x00b2}, {0x0e13, 0x00b3}, {0x0e14, 0x00b4},
+    {0x0e15, 0x00b5}, {0x0e16, 0x00b6}, {0x0e17, 0x00b7}, {0x0e18, 0x00b8}, {0x0e19, 0x00b9},
+    {0x0e1a, 0x00ba}, {0x0e1b, 0x00bb}, {0x0e1c, 0x00bc}, {0x0e1d, 0x00bd}, {0x0e1e, 0x00be},
+    {0x0e1f, 0x00bf}, {0x0e20, 0x00c0}, {0x0e21, 0x00c1}, {0x0e22, 0x00c2}, {0x0e23, 0x00c3},
+    {0x0e24, 0x00c4}, {0x0e25, 0x00c5}, {0x0e26, 0x00c6}, {0x0e27, 0x00c7}, {0x0e28, 0x00c8},
+    {0x0e29, 0x00c9}, {0x0e2a, 0x00ca}, {0x0e2b, 0x00cb}, {0x0e2c, 0x00cc}, {0x0e2d, 0x00cd},
+    {0x0e2e, 0x00ce}, {0x0e2f, 0x00cf}, {0x0e30, 0x00d0}, {0x0e31, 0x00d1}, {0x0e32, 0x00d2},
+    {0x0e33, 0x00d3}, {0x0e34, 0x00d4}, {0x0e35, 0x00d5}, {0x0e36, 0x00d6}, {0x0e37, 0x00d7},
+    {0x0e38, 0x00d8}, {0x0e39, 0x00d9}, {0x0e3a, 0x00da}, {0x0e3f, 0x00df}, {0x0e40, 0x00e0},
+    {0x0e41, 0x00e1}, {0x0e42, 0x00e2}, {0x0e43, 0x00e3}, {0x0e44, 0x00e4}, {0x0e45, 0x00e5},
+    {0x0e46, 0x00e6}, {0x0e47, 0x00e7}, {0x0e48, 0x00e8}, {0x0e49, 0x00e9}, {0x0e4a, 0x00ea},
+    {0x0e4b, 0x00eb}, {0x0e4c, 0x00ec}, {0x0e4d, 0x00ed}, {0x0e4f, 0x00ef}, {0x0e50, 0x00f0},
+    {0x0e51, 0x00f1}, {0x0e52, 0x00f2}, {0x0e53, 0x00f3}, {0x0e54, 0x00f4}, {0x0e55, 0x00f5},
+    {0x0e56, 0x00f6}, {0x0e57, 0x00f7}, {0x0e58, 0x00f8}, {0x0e59, 0x00f9}, {0x200b, 0x00dc},
+    {0x2013, 0x00dd}, {0x2014, 0x00de}, {0x2018, 0x009d}, {0x2019, 0x009e}, {0x201c, 0x008d},
+    {0x201d, 0x008e}, {0x2022, 0x0091}, {0x2026, 0x0082}, {0x2060, 0x00db}, {0x2122, 0x00ee},
+};
+
+// Two zero bytes follow the table, then MacThaiVariantTableCounts.
+// Native MacThai_to_uni, 0x1c046f926 (__TEXT,__const, 128 uint16 entries). Non-external.
+static const uint16_t MacThai_to_uni[128] = {
+    0x00ab, 0x00bb, 0x2026, 0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c,
+    0x201c, 0x201d, 0x0e4d, 0xfffd, 0x2022, 0x0e31, 0x0e47, 0x0e34, 0x0e35, 0x0e36, 0x0e37, 0x0e48, 0x0e49,
+    0x0e4a, 0x0e4b, 0x0e4c, 0x2018, 0x2019, 0xfffd, 0x00a0, 0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06,
+    0x0e07, 0x0e08, 0x0e09, 0x0e0a, 0x0e0b, 0x0e0c, 0x0e0d, 0x0e0e, 0x0e0f, 0x0e10, 0x0e11, 0x0e12, 0x0e13,
+    0x0e14, 0x0e15, 0x0e16, 0x0e17, 0x0e18, 0x0e19, 0x0e1a, 0x0e1b, 0x0e1c, 0x0e1d, 0x0e1e, 0x0e1f, 0x0e20,
+    0x0e21, 0x0e22, 0x0e23, 0x0e24, 0x0e25, 0x0e26, 0x0e27, 0x0e28, 0x0e29, 0x0e2a, 0x0e2b, 0x0e2c, 0x0e2d,
+    0x0e2e, 0x0e2f, 0x0e30, 0x0e31, 0x0e32, 0x0e33, 0x0e34, 0x0e35, 0x0e36, 0x0e37, 0x0e38, 0x0e39, 0x0e3a,
+    0x2060, 0x200b, 0x2013, 0x2014, 0x0e3f, 0x0e40, 0x0e41, 0x0e42, 0x0e43, 0x0e44, 0x0e45, 0x0e46, 0x0e47,
+    0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x2122, 0x0e4f, 0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54,
+    0x0e55, 0x0e56, 0x0e57, 0x0e58, 0x0e59, 0x00ae, 0x00a9, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
+};
+
+// Native unnamed table, 0x1c046fa28 (__TEXT,__const, three 64-bit counts). Non-external; the entry counts of
+// the three variant tables, read by __CFToMacThai (LDR X, LSL #3). MacThaiVariantTableCounts is a descriptive
+// name.
+static const uint64_t MacThaiVariantTableCounts[3] = {5, 12, 5};
+
+// Native unnamed table, 0x2227aba48 (__DATA_CONST,__const, three pointers), directly after
+// __CFConverterMacThai. Non-external; the variant tables indexed by (uint16_t)(second unit + 0x78d).
+// MacThaiVariantTables is a descriptive name.
+static const uint16_t (*const MacThaiVariantTables[3])[2] = {
+    MacThaiLow_from_uni,
+    MacThaiLeft_from_uni,
+    MacThaiLowLeft_from_uni,
+};
+
+// Native __CFToDOSThai, 0x1c02f40f4. Non-external. Units above 0x7f are searched only in U+00A0-U+20AC (the
+// 32-bit test unit - 0x20ad >= 0xffffdff3).
+uint32_t __CFToDOSThai(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character <= 0x7f) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0x20ad >= UINT32_C(0xffffdff3)) {
+        int low = 0;
+        int high = 96;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = DOSThai_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)DOSThai_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromDOSThai, 0x1c02f416c. Non-external. The unit is stored before the U+FFFD test.
+uint32_t __CFFromDOSThai(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if ((byte & 0x80) != 0) {
+        value = DOSThai_to_uni[byte & 0x7f];
+    }
+    *character = value;
+    return value != 0xfffd;
+}
+
+// Native __CFToThaiPrecompose, 0x1c02f4194. Non-external; the precompose callback of all three Thai records.
+// U+0E4D followed by U+0E32 (SARA AM) becomes 0xd3. Both units are read without testing numChars, as in the
+// native code.
+OCFIndex __CFToThaiPrecompose(
+    uint32_t flags,
+    const uint16_t *character,
+    OCFIndex numChars,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    (void)flags;
+    (void)numChars;
+    if (character[0] != 0xe4d || character[1] != 0xe32) {
+        return 0;
+    }
+    if (maxByteLen != 0) {
+        *bytes = 0xd3;
+    }
+    *usedByteLen = 1;
+    return 2;
+}
+
+// Native __CFIsValidCombiningCharacterForThai, 0x1c02f41d0. Non-external. Evidence:
+// Local/Evidence/cf-core/iphone-simulator-core-corpus.json. True only for U+0E32.
+bool __CFIsValidCombiningCharacterForThai(uint16_t character) {
+    return character == 0xE32;
+}
+
+// Native __CFToISOLatinThai, 0x1c02f41dc. Non-external. Units up to U+00A0 map to themselves; others are
+// searched only in U+0E01-U+0E5B (the 32-bit test unit - 0xe5c >= 0xffffffa5).
+uint32_t __CFToISOLatinThai(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character <= 0xa0) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0xe5c >= UINT32_C(0xffffffa5)) {
+        int low = 0;
+        int high = 86;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = ISOLatinThai_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)ISOLatinThai_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromISOLatinThai, 0x1c02f424c. Non-external. Bytes up to 0xa0 map to themselves; the unit is
+// stored before the U+FFFD test.
+uint32_t __CFFromISOLatinThai(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if (byte > 0xa0) {
+        value = ISOLatinThai_to_uni[byte - 0xa1];
+    }
+    *character = value;
+    return value != 0xfffd;
+}
+
+// Native __CFToMacThai, 0x1c02f4278. Non-external; a standard eight-bit converter. With at least two units
+// and a second unit U+F873-U+F875, the pair is looked up in that variant table only and consumes two units; a
+// base unit outside the table's first and last keys fails before the search. Otherwise units above 0x7f are
+// searched in MacThai_from_uni only in U+00A0-U+2122 (the 32-bit test unit - 0x2123 >= 0xffffdf7d).
+uint32_t __CFToMacThai(uint32_t flags, const uint16_t *characters, OCFIndex numChars, uint8_t *byte) {
+    (void)flags;
+    uint16_t character = characters[0];
+    if (character <= 0x7f) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if (numChars >= 2) {
+        uint32_t variant = (uint16_t)(characters[1] + 0x78d);
+        if (variant <= 2) {
+            const uint16_t (*table)[2] = MacThaiVariantTables[variant];
+            if (character < table[0][0]) {
+                return 0;
+            }
+            int64_t low = 0;
+            int64_t high = (int64_t)MacThaiVariantTableCounts[variant] - 1;
+            if (character > table[high][0] || low > high) {
+                return 0;
+            }
+            do {
+                int64_t middle = low + ((high - low) >> 1);
+                uint32_t key = table[middle][0];
+                if (character >= key) {
+                    if (character <= key) {
+                        *byte = (uint8_t)table[middle][1];
+                        return 2;
+                    }
+                    low = middle + 1;
+                } else {
+                    high = middle - 1;
+                }
+            } while (low <= high);
+            return 0;
+        }
+    }
+    if ((uint32_t)character - 0x2123 >= UINT32_C(0xffffdf7d)) {
+        int low = 0;
+        int high = 99;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = MacThai_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)MacThai_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromMacThai, 0x1c02f4390. Non-external; a standard eight-bit converter that writes one unit. The
+// unit is stored after the U+FFFD test is computed, and is stored in both cases.
+uint32_t __CFFromMacThai(uint32_t flags, uint8_t byte, uint16_t *characters) {
+    (void)flags;
+    uint16_t value = byte;
+    uint32_t result = 1;
+    if ((byte & 0x80) != 0) {
+        value = MacThai_to_uni[byte & 0x7f];
+        result = value != 0xfffd;
+    }
+    *characters = value;
+    return result;
+}
+
+// Native __CFToMacThaiLen, 0x1c02f43c0. Non-external. Counts the units other than U+F873-U+F875
+// (0xfffd > (uint16_t)(unit + 0x78a)); the loop ends only when the count reaches zero (CBZ).
+OCFIndex __CFToMacThaiLen(uint32_t flags, const uint16_t *characters, OCFIndex numChars) {
+    (void)flags;
+    OCFIndex length = 0;
+    while (numChars != 0) {
+        if ((uint16_t)(*characters++ + 0x78a) < 0xfffd) {
+            ++length;
+        }
+        --numChars;
+    }
+    return length;
+}
+
+// Native __CFFromMacThaiLen, 0x1c02f43e8. Non-external. Returns numBytes, or 0 for a negative count
+// (BIC X0, X2, X2, ASR #63).
+OCFIndex __CFFromMacThaiLen(uint32_t flags, const uint8_t *bytes, OCFIndex numBytes) {
+    (void)flags;
+    (void)bytes;
+    return numBytes & ~(numBytes >> 63);
+}
+
+// Native __CFConverterDOSThai, 0x2227ab970 (__DATA_CONST,__const, 72 bytes). Hidden (was private external).
+const StringEncodingConverterRecord __CFConverterDOSThai = {
+    .toBytes.cheapEightBit = __CFToDOSThai,
+    .toUnicode.cheapEightBit = __CFFromDOSThai,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 1,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToThaiPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForThai,
+};
+
+// Native __CFConverterISOLatinThai, 0x2227ab9b8 (__DATA_CONST,__const, 72 bytes). Hidden (was private
+// external).
+const StringEncodingConverterRecord __CFConverterISOLatinThai = {
+    .toBytes.cheapEightBit = __CFToISOLatinThai,
+    .toUnicode.cheapEightBit = __CFFromISOLatinThai,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 1,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToThaiPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForThai,
+};
+
+// Native __CFConverterMacThai, 0x2227aba00 (__DATA_CONST,__const, 72 bytes). Hidden (was private external); a
+// standard eight-bit converter (class 2) with length callbacks.
+const StringEncodingConverterRecord __CFConverterMacThai = {
+    .toBytes.standardEightBit = __CFToMacThai,
+    .toUnicode.standardEightBit = __CFFromMacThai,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 2,
+    .toBytesLen = __CFToMacThaiLen,
+    .toUnicodeLen = __CFFromMacThaiLen,
+    .toBytesPrecompose = __CFToThaiPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForThai,
+};

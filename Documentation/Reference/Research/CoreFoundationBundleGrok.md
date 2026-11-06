@@ -7,10 +7,10 @@ This reading restores the four helpers that `_CFBundleGrokFileType` and
 `_CFBundleGrokFileTypeForZipFile`, `_CFBundleGrokFileTypeForOLEFile`,
 `_CFBundleGrokX11FromFile` and `_CFBundleGrokObjcImageInfoFromFile`, with the
 three tables they read. They are level-0 functions of the scope, reached by the
-consumers through the CFBundle group, and call only libsystem. It is not a
-restoration of `_CFBundleGrokFileType`, `_CFBundleGrokBinaryType`,
-`_CFBundleGrokMachTypeForFatFile`, `_CFBundleGrokObjCImageInfoFromMainExecutable`
-or any other CFBundle function.
+consumers through the CFBundle group, and call only libsystem. The cf-core
+bundle-1 sub-track (2026-10-31) adds the callers of the same cluster, read from
+the iOS Simulator assembly only: see "Callers" below. It is not a restoration of
+`_CFBundleGrokObjCImageInfoFromMainExecutable` or any other CFBundle function.
 
 | Reference | Identity |
 | --- | --- |
@@ -71,7 +71,7 @@ Darwin arm64 widens to 32 bits.
 | Zip | `off_t fileLength` (signed) | extension string | `_CFBundleGrokFileType` at 0x1c025c96c |
 | OLE | `off_t offset` (checked unsigned) | extension string | `_CFBundleGrokFileType` at 0x1c025c7b8: `((uint32_t)word at header + 0x30 << 9) + 512`, computed in 32 bits |
 | X11 | `uint32_t offset`, `swapped`, `sixtyFour` | 0 or 1 (`CSET`; the callers store it with `STRB`) | `_CFBundleGrokFileType` (offset 0, four flag pairs), `_CFBundleGrokMachTypeForFatFile` (32-bit slice offset, four flag pairs) |
-| Image information | `uint32_t offset`, `swapped`, `sixtyFour`, `uint8_t *`, `uint32_t *`, `uint32_t *` (ninth argument on the stack) | none | `_CFBundleGrokFileType` (offset 0; flags 1, 1 in the iOS Simulator, 0, 0 in the iOS Device), `_CFBundleGrokMachTypeForFatFile` (not swapped, 64-bit) |
+| Image information | `uint32_t offset`, `swapped`, `sixtyFour`, `uint8_t *`, `uint32_t *`, `uint32_t *` (ninth argument on the stack) | none | `_CFBundleGrokFileType` (offset 0; the flags of the thin Mach-O magic: 0, 0 for 0xfeedface, 0, 1 for 0xfeedfacf, 1, 0 for 0xcefaedfe, 1, 1 for 0xcffaedfe, as read on 2026-10-31 from all four iOS Simulator call sites), `_CFBundleGrokMachTypeForFatFile` (not swapped, 64-bit) |
 
 The zip function's fourth argument is loaded before the captured call-site
 context; the code uses it only as the end of the trailing 1,024-byte window.
@@ -194,6 +194,43 @@ the bytes path. Its only caller passes a zero-extended 32-bit value, so no
 native caller reaches it; the native behavior is kept and never tested. Every
 read of the zip function is bounded by its checks.
 
+### Callers
+
+Read from the iOS Simulator assembly (`Local/Evidence/cf-core/iphone-simulator-core-corpus.json`) for the
+cf-core bundle-1 sub-track; confidence verified for the iOS Simulator; iOS Device unread.
+
+| Native function | Linkage | iOS Simulator | Bytes |
+| --- | --- | --- | --- |
+| `_CFBundleCreateInfoDictFromMainExecutable` | non-external (was private external) | 0x1c025b0a8 | 124 |
+| `_CFBundleGetSectData` | non-external | 0x1c025b124 | 172 |
+| `_CFBundleCreateInfoDictFromData` | non-external | 0x1c025b1d0 | 380 |
+| `_CFBundleGrokFileType` | non-external | 0x1c025b494 | 8,112 |
+| `_CFBundleGrokBinaryType` | external | 0x1c025d700 | 196 |
+| `_CFBundleCreateInfoDictFromFile` | non-external | 0x1c025ea74 | 1,128 |
+| `_CFBundleGrokMachTypeForFatFile` | non-external | 0x1c025f44c | 1,632 |
+
+The magic table `__CFBundleMagicNumbersArray` (0x1c0456b90, 64 words) and the
+unnamed extension table after it (0x1c0456c90, 64 five-byte entries) are
+restored byte for byte. The definitions in `OCFBundleGrok.c` state each
+function's branch order and constants. Native behavior kept: the FORM test
+compares with 0x00414946, so "aifc" is never answered; a failed `read` gives a
+length of -1, which the signed tests classify as "txt";
+`_CFBundleCreateInfoDictFromFile` passes a failed mapping (-1) to `munmap`;
+`_CFBundleGrokMachTypeForFatFile` wraps `(uint16_t)(copied - 8)` below 8 copied
+bytes (no caller reaches it).
+
+`CoreFoundation defect:` `_CFBundleCreateInfoDictFromFile` checks only that a
+load command or section starts before the end and then reads up to 68 bytes of
+the command and 52 of the section beyond the mapping or the caller's bytes. The
+restoration bounds every read by the buffer: an undecidable name comparison is
+unequal, any other field that does not fit ends the scan without a dictionary.
+Within a mapping the native code reads the zero fill past `st_size`; the
+restoration treats it as outside the buffer.
+
+Unread: the iOS Device bodies of these seven functions; ELF executables (the
+magic table maps 0x7f454c46 to "elf", which takes no Mach-O path, so
+`_CFBundleGrokBinaryType` answers its default 6 for one).
+
 ## Dependencies and naming
 
 `read`, `lseek`, `malloc_type_malloc`, `free`, `strncmp` and `strncasecmp_l`
@@ -217,9 +254,11 @@ constants, literals, comparisons and table bytes agree.
   section offsets are compared instead of addresses, the next offset is formed
   before the result test and more state is kept on the stack; the defects above
   are the same.
-- The callers differ: the iOS Device `_CFBundleGrokFileType` passes 0, 0 as the
-  image-information flags where the iOS Simulator passes 1, 1. The callers are
-  not restored.
+- The batch2 capture compared one `_CFBundleGrokFileType` call site, where the
+  iOS Device passes 0, 0 as the image-information flags and the iOS Simulator
+  1, 1. The four iOS Simulator call sites pass the flags of their thin Mach-O
+  magic (see "Callers"); the iOS Device call sites and the callers' iOS Device
+  bodies are unread.
 
 ## Verification and limits
 
@@ -266,5 +305,5 @@ words). Loosening the dylib-name bound by one byte makes it fail. Commands:
 Not tested: native behavior in the defect cases (outside the buffer by
 definition), negative OLE offsets, `ncmds` values that loop billions of times
 over a zero command size, and descriptors repositioned between the two
-implementations' calls (each call positions absolutely). Not built: the callers
-listed above and the rest of CFBundle.
+implementations' calls (each call positions absolutely). Not tested: the callers
+listed under "Callers" (compile-only on the cf-core branch). Not built: the rest of CFBundle.

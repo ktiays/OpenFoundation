@@ -3,7 +3,15 @@
   "products": {
     "OpenFoundation": {
       "bridge_headers": [
-        "Foundation/Decimal/ONSDecimalInternal.h"
+        "Foundation/Decimal/ONSDecimalInternal.h",
+        "CoreFoundation/Base/OCFPlatform.h",
+        "Foundation/Base/ONSPlatformShims.h",
+        "Foundation/ProcessInfo/ONSProcessInfo.h",
+        "Foundation/Error/ONSErrorSwiftSupport.h",
+        "Foundation/UUID/ONSUUIDSwiftSupport.h",
+        "Foundation/Collections/ONSDictionarySwiftSupport.h",
+        "Foundation/String/ONSMorphologySwiftSupport.h",
+        "Foundation/Data/ONSDataSwiftSupport.h"
       ],
       "module_names": {
         "NO": "OpenFoundation",

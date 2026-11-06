@@ -1,0 +1,652 @@
+//
+//  Created by ktiays on 2026/10/31.
+//  Copyright (c) 2026 ktiays. All rights reserved.
+//
+
+#include "CoreFoundation/StringEncoding/OCFCyrillic.h"
+
+// Inferred organization: the Cyrillic converters (0x1c02c3d9c-0x1c02c43bc) are contiguous in the iOS
+// Simulator
+// __text section and are kept in one translation unit with their tables (0x1c046d310-0x1c046dd8c,
+// __TEXT,__const) and converter records (0x2227aa038-0x2227aa1a0, __DATA_CONST,__const). The native source
+// path is not in the evidence. __CFIsValidCombiningCharacterForCyrillic (0x1c02c3eec) and
+// __CFPrecomposeCyrillicCharacter (0x1c02c43bc) lie in the same range; both are restored here in
+// native order, the second with its map, before the records.
+// Unless a definition says otherwise: iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC;
+// confidence: verified; iOS Device 24A446: unread. Every converter ignores its flags. The from-Unicode tables
+// hold (unit, byte) pairs sorted by unit; each search reads the byte as the low byte of the second halfword
+// (LDRB at offset 2). Reading: Documentation/Reference/Research/CoreFoundationStringEncoding.md.
+
+// Native DOSRussian_from_uni, 0x1c046d310 (__TEXT,__const, 128 four-byte entries). Non-external.
+static const uint16_t DOSRussian_from_uni[128][2] = {
+    {0x00a0, 0x00ff}, {0x00a4, 0x00fd}, {0x00b0, 0x00f8}, {0x00b7, 0x00fa}, {0x0401, 0x00f0},
+    {0x0404, 0x00f2}, {0x0407, 0x00f4}, {0x040e, 0x00f6}, {0x0410, 0x0080}, {0x0411, 0x0081},
+    {0x0412, 0x0082}, {0x0413, 0x0083}, {0x0414, 0x0084}, {0x0415, 0x0085}, {0x0416, 0x0086},
+    {0x0417, 0x0087}, {0x0418, 0x0088}, {0x0419, 0x0089}, {0x041a, 0x008a}, {0x041b, 0x008b},
+    {0x041c, 0x008c}, {0x041d, 0x008d}, {0x041e, 0x008e}, {0x041f, 0x008f}, {0x0420, 0x0090},
+    {0x0421, 0x0091}, {0x0422, 0x0092}, {0x0423, 0x0093}, {0x0424, 0x0094}, {0x0425, 0x0095},
+    {0x0426, 0x0096}, {0x0427, 0x0097}, {0x0428, 0x0098}, {0x0429, 0x0099}, {0x042a, 0x009a},
+    {0x042b, 0x009b}, {0x042c, 0x009c}, {0x042d, 0x009d}, {0x042e, 0x009e}, {0x042f, 0x009f},
+    {0x0430, 0x00a0}, {0x0431, 0x00a1}, {0x0432, 0x00a2}, {0x0433, 0x00a3}, {0x0434, 0x00a4},
+    {0x0435, 0x00a5}, {0x0436, 0x00a6}, {0x0437, 0x00a7}, {0x0438, 0x00a8}, {0x0439, 0x00a9},
+    {0x043a, 0x00aa}, {0x043b, 0x00ab}, {0x043c, 0x00ac}, {0x043d, 0x00ad}, {0x043e, 0x00ae},
+    {0x043f, 0x00af}, {0x0440, 0x00e0}, {0x0441, 0x00e1}, {0x0442, 0x00e2}, {0x0443, 0x00e3},
+    {0x0444, 0x00e4}, {0x0445, 0x00e5}, {0x0446, 0x00e6}, {0x0447, 0x00e7}, {0x0448, 0x00e8},
+    {0x0449, 0x00e9}, {0x044a, 0x00ea}, {0x044b, 0x00eb}, {0x044c, 0x00ec}, {0x044d, 0x00ed},
+    {0x044e, 0x00ee}, {0x044f, 0x00ef}, {0x0451, 0x00f1}, {0x0454, 0x00f3}, {0x0457, 0x00f5},
+    {0x045e, 0x00f7}, {0x2116, 0x00fc}, {0x2219, 0x00f9}, {0x221a, 0x00fb}, {0x2500, 0x00c4},
+    {0x2502, 0x00b3}, {0x250c, 0x00da}, {0x2510, 0x00bf}, {0x2514, 0x00c0}, {0x2518, 0x00d9},
+    {0x251c, 0x00c3}, {0x2524, 0x00b4}, {0x252c, 0x00c2}, {0x2534, 0x00c1}, {0x253c, 0x00c5},
+    {0x2550, 0x00cd}, {0x2551, 0x00ba}, {0x2552, 0x00d5}, {0x2553, 0x00d6}, {0x2554, 0x00c9},
+    {0x2555, 0x00b8}, {0x2556, 0x00b7}, {0x2557, 0x00bb}, {0x2558, 0x00d4}, {0x2559, 0x00d3},
+    {0x255a, 0x00c8}, {0x255b, 0x00be}, {0x255c, 0x00bd}, {0x255d, 0x00bc}, {0x255e, 0x00c6},
+    {0x255f, 0x00c7}, {0x2560, 0x00cc}, {0x2561, 0x00b5}, {0x2562, 0x00b6}, {0x2563, 0x00b9},
+    {0x2564, 0x00d1}, {0x2565, 0x00d2}, {0x2566, 0x00cb}, {0x2567, 0x00cf}, {0x2568, 0x00d0},
+    {0x2569, 0x00ca}, {0x256a, 0x00d8}, {0x256b, 0x00d7}, {0x256c, 0x00ce}, {0x2580, 0x00df},
+    {0x2584, 0x00dc}, {0x2588, 0x00db}, {0x258c, 0x00dd}, {0x2590, 0x00de}, {0x2591, 0x00b0},
+    {0x2592, 0x00b1}, {0x2593, 0x00b2}, {0x25a0, 0x00fe},
+};
+
+// Native DOSRussian_to_uni, 0x1c046d510 (__TEXT,__const, 128 uint16 entries). Non-external.
+static const uint16_t DOSRussian_to_uni[128] = {
+    0x0410, 0x0411, 0x0412, 0x0413, 0x0414, 0x0415, 0x0416, 0x0417, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c,
+    0x041d, 0x041e, 0x041f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0424, 0x0425, 0x0426, 0x0427, 0x0428, 0x0429,
+    0x042a, 0x042b, 0x042c, 0x042d, 0x042e, 0x042f, 0x0430, 0x0431, 0x0432, 0x0433, 0x0434, 0x0435, 0x0436,
+    0x0437, 0x0438, 0x0439, 0x043a, 0x043b, 0x043c, 0x043d, 0x043e, 0x043f, 0x2591, 0x2592, 0x2593, 0x2502,
+    0x2524, 0x2561, 0x2562, 0x2556, 0x2555, 0x2563, 0x2551, 0x2557, 0x255d, 0x255c, 0x255b, 0x2510, 0x2514,
+    0x2534, 0x252c, 0x251c, 0x2500, 0x253c, 0x255e, 0x255f, 0x255a, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550,
+    0x256c, 0x2567, 0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256b, 0x256a, 0x2518, 0x250c,
+    0x2588, 0x2584, 0x258c, 0x2590, 0x2580, 0x0440, 0x0441, 0x0442, 0x0443, 0x0444, 0x0445, 0x0446, 0x0447,
+    0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x044f, 0x0401, 0x0451, 0x0404, 0x0454, 0x0407,
+    0x0457, 0x040e, 0x045e, 0x00b0, 0x2219, 0x00b7, 0x221a, 0x2116, 0x00a4, 0x25a0, 0x00a0,
+};
+
+// The 64 entries map bytes 0x80-0xbf; bytes from 0xc0 are computed.
+// Native cp1251_from_uni, 0x1c046d610 (__TEXT,__const, 63 four-byte entries). Non-external.
+static const uint16_t cp1251_from_uni[63][2] = {
+    {0x00a0, 0x00a0}, {0x00a4, 0x00a4}, {0x00a6, 0x00a6}, {0x00a7, 0x00a7}, {0x00a9, 0x00a9},
+    {0x00ab, 0x00ab}, {0x00ac, 0x00ac}, {0x00ad, 0x00ad}, {0x00ae, 0x00ae}, {0x00b0, 0x00b0},
+    {0x00b1, 0x00b1}, {0x00b5, 0x00b5}, {0x00b6, 0x00b6}, {0x00b7, 0x00b7}, {0x00bb, 0x00bb},
+    {0x0401, 0x00a8}, {0x0402, 0x0080}, {0x0403, 0x0081}, {0x0404, 0x00aa}, {0x0405, 0x00bd},
+    {0x0406, 0x00b2}, {0x0407, 0x00af}, {0x0408, 0x00a3}, {0x0409, 0x008a}, {0x040a, 0x008c},
+    {0x040b, 0x008e}, {0x040c, 0x008d}, {0x040e, 0x00a1}, {0x040f, 0x008f}, {0x0451, 0x00b8},
+    {0x0452, 0x0090}, {0x0453, 0x0083}, {0x0454, 0x00ba}, {0x0455, 0x00be}, {0x0456, 0x00b3},
+    {0x0457, 0x00bf}, {0x0458, 0x00bc}, {0x0459, 0x009a}, {0x045a, 0x009c}, {0x045b, 0x009e},
+    {0x045c, 0x009d}, {0x045e, 0x00a2}, {0x045f, 0x009f}, {0x0490, 0x00a5}, {0x0491, 0x00b4},
+    {0x2013, 0x0096}, {0x2014, 0x0097}, {0x2018, 0x0091}, {0x2019, 0x0092}, {0x201a, 0x0082},
+    {0x201c, 0x0093}, {0x201d, 0x0094}, {0x201e, 0x0084}, {0x2020, 0x0086}, {0x2021, 0x0087},
+    {0x2022, 0x0095}, {0x2026, 0x0085}, {0x2030, 0x0089}, {0x2039, 0x008b}, {0x203a, 0x009b},
+    {0x20ac, 0x0088}, {0x2116, 0x00b9}, {0x2122, 0x0099},
+};
+
+// Native cp1251_to_uni, 0x1c046d70c (__TEXT,__const, 64 uint16 entries). Non-external.
+static const uint16_t cp1251_to_uni[64] = {
+    0x0402, 0x0403, 0x201a, 0x0453, 0x201e, 0x2026, 0x2020, 0x2021, 0x20ac, 0x2030, 0x0409, 0x2039, 0x040a,
+    0x040c, 0x040b, 0x040f, 0x0452, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014, 0xfffd, 0x2122,
+    0x0459, 0x203a, 0x045a, 0x045c, 0x045b, 0x045f, 0x00a0, 0x040e, 0x045e, 0x0408, 0x00a4, 0x0490, 0x00a6,
+    0x00a7, 0x0401, 0x00a9, 0x0404, 0x00ab, 0x00ac, 0x00ad, 0x00ae, 0x0407, 0x00b0, 0x00b1, 0x0406, 0x0456,
+    0x0491, 0x00b5, 0x00b6, 0x00b7, 0x0451, 0x2116, 0x0454, 0x00bb, 0x0458, 0x0405, 0x0455, 0x0457,
+};
+
+// Native maccyrillic_from_uni, 0x1c046d78c (__TEXT,__const, 128 four-byte entries). Non-external.
+static const uint16_t maccyrillic_from_uni[128][2] = {
+    {0x00a0, 0x00ca}, {0x00a3, 0x00a3}, {0x00a7, 0x00a4}, {0x00a9, 0x00a9}, {0x00ab, 0x00c7},
+    {0x00ac, 0x00c2}, {0x00ae, 0x00a8}, {0x00b0, 0x00a1}, {0x00b1, 0x00b1}, {0x00b5, 0x00b5},
+    {0x00b6, 0x00a6}, {0x00bb, 0x00c8}, {0x00f7, 0x00d6}, {0x0192, 0x00c4}, {0x0401, 0x00dd},
+    {0x0402, 0x00ab}, {0x0403, 0x00ae}, {0x0404, 0x00b8}, {0x0405, 0x00c1}, {0x0406, 0x00a7},
+    {0x0407, 0x00ba}, {0x0408, 0x00b7}, {0x0409, 0x00bc}, {0x040a, 0x00be}, {0x040b, 0x00cb},
+    {0x040c, 0x00cd}, {0x040e, 0x00d8}, {0x040f, 0x00da}, {0x0410, 0x0080}, {0x0411, 0x0081},
+    {0x0412, 0x0082}, {0x0413, 0x0083}, {0x0414, 0x0084}, {0x0415, 0x0085}, {0x0416, 0x0086},
+    {0x0417, 0x0087}, {0x0418, 0x0088}, {0x0419, 0x0089}, {0x041a, 0x008a}, {0x041b, 0x008b},
+    {0x041c, 0x008c}, {0x041d, 0x008d}, {0x041e, 0x008e}, {0x041f, 0x008f}, {0x0420, 0x0090},
+    {0x0421, 0x0091}, {0x0422, 0x0092}, {0x0423, 0x0093}, {0x0424, 0x0094}, {0x0425, 0x0095},
+    {0x0426, 0x0096}, {0x0427, 0x0097}, {0x0428, 0x0098}, {0x0429, 0x0099}, {0x042a, 0x009a},
+    {0x042b, 0x009b}, {0x042c, 0x009c}, {0x042d, 0x009d}, {0x042e, 0x009e}, {0x042f, 0x009f},
+    {0x0430, 0x00e0}, {0x0431, 0x00e1}, {0x0432, 0x00e2}, {0x0433, 0x00e3}, {0x0434, 0x00e4},
+    {0x0435, 0x00e5}, {0x0436, 0x00e6}, {0x0437, 0x00e7}, {0x0438, 0x00e8}, {0x0439, 0x00e9},
+    {0x043a, 0x00ea}, {0x043b, 0x00eb}, {0x043c, 0x00ec}, {0x043d, 0x00ed}, {0x043e, 0x00ee},
+    {0x043f, 0x00ef}, {0x0440, 0x00f0}, {0x0441, 0x00f1}, {0x0442, 0x00f2}, {0x0443, 0x00f3},
+    {0x0444, 0x00f4}, {0x0445, 0x00f5}, {0x0446, 0x00f6}, {0x0447, 0x00f7}, {0x0448, 0x00f8},
+    {0x0449, 0x00f9}, {0x044a, 0x00fa}, {0x044b, 0x00fb}, {0x044c, 0x00fc}, {0x044d, 0x00fd},
+    {0x044e, 0x00fe}, {0x044f, 0x00df}, {0x0451, 0x00de}, {0x0452, 0x00ac}, {0x0453, 0x00af},
+    {0x0454, 0x00b9}, {0x0455, 0x00cf}, {0x0456, 0x00b4}, {0x0457, 0x00bb}, {0x0458, 0x00c0},
+    {0x0459, 0x00bd}, {0x045a, 0x00bf}, {0x045b, 0x00cc}, {0x045c, 0x00ce}, {0x045e, 0x00d9},
+    {0x045f, 0x00db}, {0x0490, 0x00a2}, {0x0491, 0x00b6}, {0x2013, 0x00d0}, {0x2014, 0x00d1},
+    {0x2018, 0x00d4}, {0x2019, 0x00d5}, {0x201c, 0x00d2}, {0x201d, 0x00d3}, {0x201e, 0x00d7},
+    {0x2020, 0x00a0}, {0x2022, 0x00a5}, {0x2026, 0x00c9}, {0x20ac, 0x00ff}, {0x2116, 0x00dc},
+    {0x2122, 0x00aa}, {0x2206, 0x00c6}, {0x221a, 0x00c3}, {0x221e, 0x00b0}, {0x2248, 0x00c5},
+    {0x2260, 0x00ad}, {0x2264, 0x00b2}, {0x2265, 0x00b3},
+};
+
+// Native maccyrillic_to_uni, 0x1c046d98c (__TEXT,__const, 128 uint16 entries). Non-external.
+static const uint16_t maccyrillic_to_uni[128] = {
+    0x0410, 0x0411, 0x0412, 0x0413, 0x0414, 0x0415, 0x0416, 0x0417, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c,
+    0x041d, 0x041e, 0x041f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0424, 0x0425, 0x0426, 0x0427, 0x0428, 0x0429,
+    0x042a, 0x042b, 0x042c, 0x042d, 0x042e, 0x042f, 0x2020, 0x00b0, 0x0490, 0x00a3, 0x00a7, 0x2022, 0x00b6,
+    0x0406, 0x00ae, 0x00a9, 0x2122, 0x0402, 0x0452, 0x2260, 0x0403, 0x0453, 0x221e, 0x00b1, 0x2264, 0x2265,
+    0x0456, 0x00b5, 0x0491, 0x0408, 0x0404, 0x0454, 0x0407, 0x0457, 0x0409, 0x0459, 0x040a, 0x045a, 0x0458,
+    0x0405, 0x00ac, 0x221a, 0x0192, 0x2248, 0x2206, 0x00ab, 0x00bb, 0x2026, 0x00a0, 0x040b, 0x045b, 0x040c,
+    0x045c, 0x0455, 0x2013, 0x2014, 0x201c, 0x201d, 0x2018, 0x2019, 0x00f7, 0x201e, 0x040e, 0x045e, 0x040f,
+    0x045f, 0x2116, 0x0401, 0x0451, 0x044f, 0x0430, 0x0431, 0x0432, 0x0433, 0x0434, 0x0435, 0x0436, 0x0437,
+    0x0438, 0x0439, 0x043a, 0x043b, 0x043c, 0x043d, 0x043e, 0x043f, 0x0440, 0x0441, 0x0442, 0x0443, 0x0444,
+    0x0445, 0x0446, 0x0447, 0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x20ac,
+};
+
+// Native koi8r_from_uni, 0x1c046da8c (__TEXT,__const, 128 four-byte entries). Non-external.
+static const uint16_t koi8r_from_uni[128][2] = {
+    {0x00a0, 0x009a}, {0x00a9, 0x00bf}, {0x00b0, 0x009c}, {0x00b2, 0x009d}, {0x00b7, 0x009e},
+    {0x00f7, 0x009f}, {0x0401, 0x00b3}, {0x0410, 0x00e1}, {0x0411, 0x00e2}, {0x0412, 0x00f7},
+    {0x0413, 0x00e7}, {0x0414, 0x00e4}, {0x0415, 0x00e5}, {0x0416, 0x00f6}, {0x0417, 0x00fa},
+    {0x0418, 0x00e9}, {0x0419, 0x00ea}, {0x041a, 0x00eb}, {0x041b, 0x00ec}, {0x041c, 0x00ed},
+    {0x041d, 0x00ee}, {0x041e, 0x00ef}, {0x041f, 0x00f0}, {0x0420, 0x00f2}, {0x0421, 0x00f3},
+    {0x0422, 0x00f4}, {0x0423, 0x00f5}, {0x0424, 0x00e6}, {0x0425, 0x00e8}, {0x0426, 0x00e3},
+    {0x0427, 0x00fe}, {0x0428, 0x00fb}, {0x0429, 0x00fd}, {0x042a, 0x00ff}, {0x042b, 0x00f9},
+    {0x042c, 0x00f8}, {0x042d, 0x00fc}, {0x042e, 0x00e0}, {0x042f, 0x00f1}, {0x0430, 0x00c1},
+    {0x0431, 0x00c2}, {0x0432, 0x00d7}, {0x0433, 0x00c7}, {0x0434, 0x00c4}, {0x0435, 0x00c5},
+    {0x0436, 0x00d6}, {0x0437, 0x00da}, {0x0438, 0x00c9}, {0x0439, 0x00ca}, {0x043a, 0x00cb},
+    {0x043b, 0x00cc}, {0x043c, 0x00cd}, {0x043d, 0x00ce}, {0x043e, 0x00cf}, {0x043f, 0x00d0},
+    {0x0440, 0x00d2}, {0x0441, 0x00d3}, {0x0442, 0x00d4}, {0x0443, 0x00d5}, {0x0444, 0x00c6},
+    {0x0445, 0x00c8}, {0x0446, 0x00c3}, {0x0447, 0x00de}, {0x0448, 0x00db}, {0x0449, 0x00dd},
+    {0x044a, 0x00df}, {0x044b, 0x00d9}, {0x044c, 0x00d8}, {0x044d, 0x00dc}, {0x044e, 0x00c0},
+    {0x044f, 0x00d1}, {0x0451, 0x00a3}, {0x2022, 0x0095}, {0x221a, 0x0096}, {0x2248, 0x0097},
+    {0x2264, 0x0098}, {0x2265, 0x0099}, {0x2320, 0x0093}, {0x2321, 0x009b}, {0x2500, 0x0080},
+    {0x2502, 0x0081}, {0x250c, 0x0082}, {0x2510, 0x0083}, {0x2514, 0x0084}, {0x2518, 0x0085},
+    {0x251c, 0x0086}, {0x2524, 0x0087}, {0x252c, 0x0088}, {0x2534, 0x0089}, {0x253c, 0x008a},
+    {0x2550, 0x00a0}, {0x2551, 0x00a1}, {0x2552, 0x00a2}, {0x2553, 0x00a4}, {0x2554, 0x00a5},
+    {0x2555, 0x00a6}, {0x2556, 0x00a7}, {0x2557, 0x00a8}, {0x2558, 0x00a9}, {0x2559, 0x00aa},
+    {0x255a, 0x00ab}, {0x255b, 0x00ac}, {0x255c, 0x00ad}, {0x255d, 0x00ae}, {0x255e, 0x00af},
+    {0x255f, 0x00b0}, {0x2560, 0x00b1}, {0x2561, 0x00b2}, {0x2562, 0x00b4}, {0x2563, 0x00b5},
+    {0x2564, 0x00b6}, {0x2565, 0x00b7}, {0x2566, 0x00b8}, {0x2567, 0x00b9}, {0x2568, 0x00ba},
+    {0x2569, 0x00bb}, {0x256a, 0x00bc}, {0x256b, 0x00bd}, {0x256c, 0x00be}, {0x2580, 0x008b},
+    {0x2584, 0x008c}, {0x2588, 0x008d}, {0x258c, 0x008e}, {0x2590, 0x008f}, {0x2591, 0x0090},
+    {0x2592, 0x0091}, {0x2593, 0x0092}, {0x25a0, 0x0094},
+};
+
+// The twelve bytes that follow the table up to the next symbol (0x1c046dd8c) are not referenced by this
+// family. Native koi8r_to_uni, 0x1c046dc8c (__TEXT,__const, 128 uint16 entries). Non-external.
+static const uint16_t koi8r_to_uni[128] = {
+    0x2500, 0x2502, 0x250c, 0x2510, 0x2514, 0x2518, 0x251c, 0x2524, 0x252c, 0x2534, 0x253c, 0x2580, 0x2584,
+    0x2588, 0x258c, 0x2590, 0x2591, 0x2592, 0x2593, 0x2320, 0x25a0, 0x2022, 0x221a, 0x2248, 0x2264, 0x2265,
+    0x00a0, 0x2321, 0x00b0, 0x00b2, 0x00b7, 0x00f7, 0x2550, 0x2551, 0x2552, 0x0451, 0x2553, 0x2554, 0x2555,
+    0x2556, 0x2557, 0x2558, 0x2559, 0x255a, 0x255b, 0x255c, 0x255d, 0x255e, 0x255f, 0x2560, 0x2561, 0x0401,
+    0x2562, 0x2563, 0x2564, 0x2565, 0x2566, 0x2567, 0x2568, 0x2569, 0x256a, 0x256b, 0x256c, 0x00a9, 0x044e,
+    0x0430, 0x0431, 0x0446, 0x0434, 0x0435, 0x0444, 0x0433, 0x0445, 0x0438, 0x0439, 0x043a, 0x043b, 0x043c,
+    0x043d, 0x043e, 0x043f, 0x044f, 0x0440, 0x0441, 0x0442, 0x0443, 0x0436, 0x0432, 0x044c, 0x044b, 0x0437,
+    0x0448, 0x044d, 0x0449, 0x0447, 0x044a, 0x042e, 0x0410, 0x0411, 0x0426, 0x0414, 0x0415, 0x0424, 0x0413,
+    0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, 0x041f, 0x042f, 0x0420, 0x0421, 0x0422,
+    0x0423, 0x0416, 0x0412, 0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042a,
+};
+
+// Native __CFToISOCyrillic, 0x1c02c3d9c. Non-external. Units below U+00A1 and U+00AD map to themselves,
+// U+2116 to 0xf0, U+00A7 to 0xfd, U+0401-U+045F to unit - 0x60 except U+040D, U+0450 and U+045D.
+uint32_t __CFToISOCyrillic(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character < 0xa1) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if (character == 0xa7) {
+        *byte = 0xfd;
+        return 1;
+    }
+    if (character == 0x2116) {
+        *byte = 0xf0;
+        return 1;
+    }
+    if (character == 0xad) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0x401 > 0x5e) {
+        return 0;
+    }
+    if (character == 0x40d || character == 0x450 || character == 0x45d) {
+        return 0;
+    }
+    *byte = (uint8_t)(character - 0x60);
+    return 1;
+}
+
+// Native __CFFromISOCyrillic, 0x1c02c3e14. Non-external. Four CSELs in this order: 0xfd to U+00A7, 0xf0 to
+// U+2116, 0xad to itself, bytes below 0xa1 to themselves; any other byte is byte + 0x360.
+uint32_t __CFFromISOCyrillic(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint32_t value = byte == 0xfd ? 0xa7 : (uint32_t)byte + 0x360;
+    value = byte == 0xf0 ? 0x2116 : value;
+    value = byte == 0xad ? byte : value;
+    value = byte < 0xa1 ? byte : value;
+    *character = (uint16_t)value;
+    return 1;
+}
+
+// Native __CFToISOCyrillicPrecompose, 0x1c02c3e4c. Non-external. The native call passes the precomposed unit
+// in both W0 (the flags) and W1 of __CFToISOCyrillic; the byte scratch is zeroed first and a zero byte fails.
+OCFIndex __CFToISOCyrillicPrecompose(
+    uint32_t flags,
+    const uint16_t *character,
+    OCFIndex numChars,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    (void)flags;
+    (void)numChars;
+    uint8_t byte = 0;
+    uint16_t precomposed = __CFPrecomposeCyrillicCharacter(character);
+    if (__CFToISOCyrillic(precomposed, precomposed, &byte) == 0 || byte == 0) {
+        return 0;
+    }
+    if (maxByteLen != 0) {
+        *bytes = byte;
+    }
+    *usedByteLen = 1;
+    return 2;
+}
+
+// Native __CFIsValidCombiningCharacterForCyrillic, 0x1c02c3eec. Non-external. Evidence:
+// Local/Evidence/cf-core/iphone-simulator-core-corpus.json. True for units 0x300-0x30e whose bit (31 - (unit
+// & 31)) is set in 0xca800000 (U+0300, U+0301, U+0304, U+0306, U+0308), and for U+0338.
+bool __CFIsValidCombiningCharacterForCyrillic(uint16_t character) {
+    uint32_t offset = (uint32_t)character - 0x300;
+    if (offset <= 0xE && ((UINT32_C(1) << (~(uint32_t)character & 31)) & 0xCA800000) != 0) {
+        return true;
+    }
+    return character == 0x338;
+}
+
+// Native __CFToDOSRussian, 0x1c02c3f1c. Non-external. Units above 0x7f are searched only in U+00A0-U+25A0
+// (the 32-bit test unit - 0x25a1 >= 0xffffdaff).
+uint32_t __CFToDOSRussian(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character <= 0x7f) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0x25a1 >= UINT32_C(0xffffdaff)) {
+        int low = 0;
+        int high = 127;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = DOSRussian_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)DOSRussian_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromDOSRussian, 0x1c02c3f94. Non-external. The unit is stored before the U+FFFD test.
+uint32_t __CFFromDOSRussian(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if ((byte & 0x80) != 0) {
+        value = DOSRussian_to_uni[byte & 0x7f];
+    }
+    *character = value;
+    return value != 0xfffd;
+}
+
+// Native __CFToDOSRussianPrecompose, 0x1c02c3fbc. Non-external. The DOS Russian lookup is inlined: the range
+// test is on the low halfword ((uint16_t)(unit - 0x25a1) >= 0xdaff), and a zero byte fails.
+OCFIndex __CFToDOSRussianPrecompose(
+    uint32_t flags,
+    const uint16_t *character,
+    OCFIndex numChars,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    (void)flags;
+    (void)numChars;
+    uint16_t precomposed = __CFPrecomposeCyrillicCharacter(character);
+    uint8_t byte;
+    if (precomposed <= 0x7f) {
+        byte = (uint8_t)precomposed;
+    } else {
+        if ((uint16_t)(precomposed - 0x25a1) < 0xdaff) {
+            return 0;
+        }
+        int low = 0;
+        int high = 127;
+        for (;;) {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = DOSRussian_from_uni[middle][0];
+            if (precomposed >= key) {
+                if (precomposed <= key) {
+                    byte = (uint8_t)DOSRussian_from_uni[middle][1];
+                    break;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+            if (low > high) {
+                return 0;
+            }
+        }
+    }
+    if (byte == 0) {
+        return 0;
+    }
+    if (maxByteLen != 0) {
+        *bytes = byte;
+    }
+    *usedByteLen = 1;
+    return 2;
+}
+
+// Native __CFToWinCyrillic, 0x1c02c4074. Non-external. U+0410-U+044F map to unit - 0x50; other units above
+// 0x7f are searched only in U+00A0-U+2122 ((uint16_t)(unit - 0x2123) >= 0xdf7d).
+uint32_t __CFToWinCyrillic(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character < 0x80) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint16_t)(character - 0x410) <= 0x3f) {
+        *byte = (uint8_t)(character - 0x50);
+        return 1;
+    }
+    if ((uint16_t)(character - 0x2123) >= 0xdf7d) {
+        int low = 0;
+        int high = 62;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = cp1251_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)cp1251_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromWinCyrillic, 0x1c02c40fc. Non-external. Bytes from 0xc0 map to byte + 0x350, bytes
+// 0x80-0xbf through the table; the unit is stored before the U+FFFD test.
+uint32_t __CFFromWinCyrillic(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if ((byte & 0x80) != 0) {
+        if (byte >= 0xc0) {
+            value = (uint16_t)(byte + 0x350);
+        } else {
+            value = cp1251_to_uni[byte & 0x7f];
+        }
+    }
+    *character = value;
+    return value != 0xfffd;
+}
+
+// Native __CFToWinCyrillicPrecompose, 0x1c02c4134. Non-external. The native call passes the precomposed unit
+// in both W0 (the flags) and W1 of __CFToWinCyrillic; the byte scratch is zeroed first and a zero byte fails.
+OCFIndex __CFToWinCyrillicPrecompose(
+    uint32_t flags,
+    const uint16_t *character,
+    OCFIndex numChars,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    (void)flags;
+    (void)numChars;
+    uint8_t byte = 0;
+    uint16_t precomposed = __CFPrecomposeCyrillicCharacter(character);
+    if (__CFToWinCyrillic(precomposed, precomposed, &byte) == 0 || byte == 0) {
+        return 0;
+    }
+    if (maxByteLen != 0) {
+        *bytes = byte;
+    }
+    *usedByteLen = 1;
+    return 2;
+}
+
+// Native __CFToMacCyrillic, 0x1c02c41d4. Non-external. Units above 0x7f are searched only in U+00A0-U+2265
+// (the 32-bit test unit - 0x2266 >= 0xffffde3a).
+uint32_t __CFToMacCyrillic(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character <= 0x7f) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0x2266 >= UINT32_C(0xffffde3a)) {
+        int low = 0;
+        int high = 127;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = maccyrillic_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)maccyrillic_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromMacCyrillic, 0x1c02c424c. Non-external. Always succeeds.
+uint32_t __CFFromMacCyrillic(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if ((byte & 0x80) != 0) {
+        value = maccyrillic_to_uni[byte & 0x7f];
+    }
+    *character = value;
+    return 1;
+}
+
+// Native __CFToMacCyrillicPrecompose, 0x1c02c426c. Non-external. The Mac Cyrillic lookup is inlined: the
+// range test is on the low halfword ((uint16_t)(unit - 0x2266) >= 0xde3a), and a zero byte fails.
+OCFIndex __CFToMacCyrillicPrecompose(
+    uint32_t flags,
+    const uint16_t *character,
+    OCFIndex numChars,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    (void)flags;
+    (void)numChars;
+    uint16_t precomposed = __CFPrecomposeCyrillicCharacter(character);
+    uint8_t byte;
+    if (precomposed <= 0x7f) {
+        byte = (uint8_t)precomposed;
+    } else {
+        if ((uint16_t)(precomposed - 0x2266) < 0xde3a) {
+            return 0;
+        }
+        int low = 0;
+        int high = 127;
+        for (;;) {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = maccyrillic_from_uni[middle][0];
+            if (precomposed >= key) {
+                if (precomposed <= key) {
+                    byte = (uint8_t)maccyrillic_from_uni[middle][1];
+                    break;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+            if (low > high) {
+                return 0;
+            }
+        }
+    }
+    if (byte == 0) {
+        return 0;
+    }
+    if (maxByteLen != 0) {
+        *bytes = byte;
+    }
+    *usedByteLen = 1;
+    return 2;
+}
+
+// Native __CFToKOI8R, 0x1c02c4324. Non-external. Units above 0x7f are searched only in U+00A0-U+25A0 (the
+// 32-bit test unit - 0x25a1 >= 0xffffdaff).
+uint32_t __CFToKOI8R(uint32_t flags, uint16_t character, uint8_t *byte) {
+    (void)flags;
+    if (character <= 0x7f) {
+        *byte = (uint8_t)character;
+        return 1;
+    }
+    if ((uint32_t)character - 0x25a1 >= UINT32_C(0xffffdaff)) {
+        int low = 0;
+        int high = 127;
+        do {
+            int middle = low + ((high - low) >> 1);
+            uint32_t key = koi8r_from_uni[middle][0];
+            if (character >= key) {
+                if (character <= key) {
+                    *byte = (uint8_t)koi8r_from_uni[middle][1];
+                    return 1;
+                }
+                low = middle + 1;
+            } else {
+                high = middle - 1;
+            }
+        } while (low <= high);
+    }
+    return 0;
+}
+
+// Native __CFFromKOI8R, 0x1c02c439c. Non-external. Always succeeds.
+uint32_t __CFFromKOI8R(uint32_t flags, uint8_t byte, uint16_t *character) {
+    (void)flags;
+    uint16_t value = byte;
+    if ((byte & 0x80) != 0) {
+        value = koi8r_to_uni[byte & 0x7f];
+    }
+    *character = value;
+    return 1;
+}
+
+// A precomposition map entry (8 bytes): the base unit above the combining unit as a 32-bit key, the
+// precomposed unit, and two zero bytes. PrecompositionEntry is a descriptive name.
+typedef struct {
+    uint32_t key;
+    uint16_t value;
+    uint16_t reserved;
+} PrecompositionEntry;
+
+// Native __CFCyrillicPrecompMap, 0x1c046d168 (__TEXT,__const, 53 entries sorted by key). Non-external.
+static const PrecompositionEntry __CFCyrillicPrecompMap[53] = {
+    {0x003d0338, 0x2260, 0}, {0x04060308, 0x0407, 0}, {0x04100306, 0x04d0, 0}, {0x04100308, 0x04d2, 0},
+    {0x04130301, 0x0403, 0}, {0x04150300, 0x0400, 0}, {0x04150306, 0x04d6, 0}, {0x04150308, 0x0401, 0},
+    {0x04160306, 0x04c1, 0}, {0x04160308, 0x04dc, 0}, {0x04170308, 0x04de, 0}, {0x04180300, 0x040d, 0},
+    {0x04180304, 0x04e2, 0}, {0x04180306, 0x0419, 0}, {0x04180308, 0x04e4, 0}, {0x041a0301, 0x040c, 0},
+    {0x041e0308, 0x04e6, 0}, {0x04230304, 0x04ee, 0}, {0x04230306, 0x040e, 0}, {0x04230308, 0x04f0, 0},
+    {0x0423030b, 0x04f2, 0}, {0x04270308, 0x04f4, 0}, {0x042b0308, 0x04f8, 0}, {0x042d0308, 0x04ec, 0},
+    {0x04300306, 0x04d1, 0}, {0x04300308, 0x04d3, 0}, {0x04330301, 0x0453, 0}, {0x04350300, 0x0450, 0},
+    {0x04350306, 0x04d7, 0}, {0x04350308, 0x0451, 0}, {0x04360306, 0x04c2, 0}, {0x04360308, 0x04dd, 0},
+    {0x04370308, 0x04df, 0}, {0x04380300, 0x045d, 0}, {0x04380304, 0x04e3, 0}, {0x04380306, 0x0439, 0},
+    {0x04380308, 0x04e5, 0}, {0x043a0301, 0x045c, 0}, {0x043e0308, 0x04e7, 0}, {0x04430304, 0x04ef, 0},
+    {0x04430306, 0x045e, 0}, {0x04430308, 0x04f1, 0}, {0x0443030b, 0x04f3, 0}, {0x04470308, 0x04f5, 0},
+    {0x044b0308, 0x04f9, 0}, {0x044d0308, 0x04ed, 0}, {0x04560308, 0x0457, 0}, {0x0474030f, 0x0476, 0},
+    {0x0475030f, 0x0477, 0}, {0x04d80308, 0x04da, 0}, {0x04d90308, 0x04db, 0}, {0x04e80308, 0x04ea, 0},
+    {0x04e90308, 0x04eb, 0},
+};
+
+// Native __CFPrecomposeCyrillicCharacter, 0x1c02c43bc. Non-external. The key (character[0] << 16) |
+// character[1] must lie in [0x003d0338, 0x04e90309) ((key - 0x04e90309) mod 2^32 at least 0xfb54002f);
+// otherwise, and when the binary search of __CFCyrillicPrecompMap (the midpoint rounded down to an entry; the
+// pointers compared unsigned) finds no entry, U+FFFD is answered.
+uint16_t __CFPrecomposeCyrillicCharacter(const uint16_t *character) {
+    uint32_t key = ((uint32_t)character[0] << 16) | character[1];
+    if (key + 0xFB16FCF7 < 0xFB54002F) {
+        return 0xFFFD;
+    }
+    const PrecompositionEntry *map = __CFCyrillicPrecompMap;
+    const PrecompositionEntry *low = map;
+    const PrecompositionEntry *high = map + 52;
+    do {
+        const PrecompositionEntry *middle =
+            low + ((uintptr_t)((const uint8_t *)high - (const uint8_t *)low) >> 4);
+        if (key < middle->key) {
+            high = middle - 1;
+        } else if (key > middle->key) {
+            low = middle + 1;
+        } else {
+            return middle->value;
+        }
+    } while (low <= high);
+    return 0xFFFD;
+}
+
+// Native __CFConverterISOCyrillic, 0x2227aa038 (__DATA_CONST,__const, 72 bytes). Hidden (was private
+// external).
+const StringEncodingConverterRecord __CFConverterISOCyrillic = {
+    .toBytes.cheapEightBit = __CFToISOCyrillic,
+    .toUnicode.cheapEightBit = __CFFromISOCyrillic,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToISOCyrillicPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForCyrillic,
+};
+
+// Native __CFConverterDOSRussian, 0x2227aa080 (__DATA_CONST,__const, 72 bytes). Hidden (was private
+// external).
+const StringEncodingConverterRecord __CFConverterDOSRussian = {
+    .toBytes.cheapEightBit = __CFToDOSRussian,
+    .toUnicode.cheapEightBit = __CFFromDOSRussian,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToDOSRussianPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForCyrillic,
+};
+
+// Native __CFConverterWinCyrillic, 0x2227aa0c8 (__DATA_CONST,__const, 72 bytes). Hidden (was private
+// external).
+const StringEncodingConverterRecord __CFConverterWinCyrillic = {
+    .toBytes.cheapEightBit = __CFToWinCyrillic,
+    .toUnicode.cheapEightBit = __CFFromWinCyrillic,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToWinCyrillicPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForCyrillic,
+};
+
+// Native __CFConverterMacCyrillic, 0x2227aa110 (__DATA_CONST,__const, 72 bytes). Hidden (was private
+// external).
+const StringEncodingConverterRecord __CFConverterMacCyrillic = {
+    .toBytes.cheapEightBit = __CFToMacCyrillic,
+    .toUnicode.cheapEightBit = __CFFromMacCyrillic,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 1,
+    .toBytesPrecompose = __CFToMacCyrillicPrecompose,
+    .isValidCombiningChar = __CFIsValidCombiningCharacterForCyrillic,
+};
+
+// Native __CFConverterKOI8R, 0x2227aa158 (__DATA_CONST,__const, 72 bytes). Hidden (was private external); no
+// precompose or combining-character callback.
+const StringEncodingConverterRecord __CFConverterKOI8R = {
+    .toBytes.cheapEightBit = __CFToKOI8R,
+    .toUnicode.cheapEightBit = __CFFromKOI8R,
+    .maxBytesPerChar = 1,
+    .maxDecomposedCharLen = 2,
+    .encodingClass = 1,
+};

@@ -106,7 +106,7 @@ int runCoreFoundationPropertyListHelperStandaloneTests(void) {
     ++cases;
     // Line numbers: CR LF counts once, lone CR and LF count each.
     const uint8_t text[] = "a\r\nb\rc\nd";
-    XMLPlistParseContext xml = {text, text + 7, text + 8};
+    XMLPlistParseContext xml = {.begin = text, .curr = text + 7, .end = text + 8};
     if (lineNumber(&xml) != 4) {
         return fail(__LINE__);
     }
@@ -117,7 +117,7 @@ int runCoreFoundationPropertyListHelperStandaloneTests(void) {
     }
     ++cases;
     const uint16_t units[] = {'a', '\r', '\n', 'b', '\n', ' ', '/', '/', 'x', '\n', '/', '*', '*', '/', 'k'};
-    OldStylePlistParseContext oldStyle = {units, units + 5, units + 15};
+    OldStylePlistParseContext oldStyle = {.begin = units, .curr = units + 5, .end = units + 15};
     if (lineNumberStrings(&oldStyle) != 3) {
         return fail(__LINE__);
     }

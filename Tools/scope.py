@@ -316,7 +316,10 @@ def assemble(arguments):
     pinned = json.loads((ROOT / "Configuration/ReferenceImages.json").read_text())[arguments.platform]["images"]
     restoration = json.loads((ROOT / "Configuration/Restoration.json").read_text())
     # Restored definitions match by native address, which avoids Mach-O/Swift spelling differences.
-    restored = {int(row["address"], 16) for row in restoration["definitions"] if row.get("address")}
+    restored = {int(row["address"], 16) for row in restoration["definitions"]
+                if row.get("address") and row.get("status") == "restored"}
+    implemented = {int(row["address"], 16) for row in restoration["definitions"]
+                   if row.get("address") and row.get("status") == "implemented"}
     consumers = {row["consumer"] for row in roots_file["consumers"]}
     closures = {}
     for image in NATIVE:
@@ -374,7 +377,8 @@ def assemble(arguments):
             identifier = component[node]
             entry = {"name": row["name"], "address": row["address"], "size": row["size"], "tier": row["tier"],
                      "family": label, "component": identifier, "level": level[identifier],
-                     "consumers": sorted(reach), "restored": int(row["address"], 16) in restored}
+                     "consumers": sorted(reach), "restored": int(row["address"], 16) in restored,
+                     "implemented": int(row["address"], 16) in implemented}
             functions.append(entry)
             summary = families[label]
             summary["functions"] += 1
@@ -397,6 +401,7 @@ def assemble(arguments):
             "tiers": {tier: sum(1 for row in functions if row["tier"] == tier) for tier in
                       ("symbol", "message-candidate", "message-reachable")},
             "restored_count": sum(1 for row in functions if row["restored"]),
+            "implemented_count": sum(1 for row in functions if row["implemented"]),
             "strongly_connected": [{"component": identifier, "functions": component_sizes[identifier],
                                     "level": level[identifier]} for identifier in large],
             "families": {name: dict(value, tiers=dict(value["tiers"])) for name, value in

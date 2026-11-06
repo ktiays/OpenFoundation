@@ -223,3 +223,11 @@ extern const uint32_t __CFUniCharCompatibilityDecompositionTable[7666];
 extern const uint32_t __CFUniCharCompatibilityMultipleDecompositionTable[2928];
 
 extern const uint8_t __CFUniCharDecompositionCanonicalDecomposableCharacterSetBitmapPlane0[8192];
+
+extern const uint8_t __CFUniCharDecompositionHfsPlusDecomposableCharacterSetBitmapPlane0[8192];
+
+extern const uint32_t __CFUniCharPrecompSourceTable[144];
+
+extern const uint32_t __CFUniCharNonBMPPrecompDestinationTable[62];
+
+extern const uint16_t __CFUniCharBMPPrecompDestinationTable[1856];

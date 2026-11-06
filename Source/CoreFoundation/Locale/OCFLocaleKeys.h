@@ -1,0 +1,103 @@
+//
+//  Created by ktiays on 2026/10/31.
+//  Copyright (c) 2026 ktiays. All rights reserved.
+//
+
+#pragma once
+
+#include <OpenCoreFoundation/Base/OCFBase.h>
+
+// The CFLocale keys (SDK CFLocale.h names, spelled OCF), defined in Locale/OCFLocaleKeys.c in native address
+// order (0x2227a88e0-0x2227a8968, __DATA_CONST,__const). External. Natively each shares its address with the
+// NSLocale names noted in Locale/OCFLocaleKeys.c, aliases this branch does not define.
+OF_EXPORT const OCFStringRef kOCFLocaleLanguageCodeKey;
+OF_EXPORT const OCFStringRef kOCFLocaleCountryCodeKey;
+OF_EXPORT const OCFStringRef kOCFLocaleScriptCodeKey;
+OF_EXPORT const OCFStringRef kOCFLocaleVariantCodeKey;
+OF_EXPORT const OCFStringRef kOCFLocaleCalendarIdentifierKey;
+OF_EXPORT const OCFStringRef kOCFLocaleDecimalSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFLocaleCalendarKey;
+
+// The CFDateFormatter property keys (SDK CFDateFormatter.h names, spelled OCF), defined in
+// Locale/OCFLocaleKeys.c in native address order (0x2227a89a8-0x2227a8a98, __DATA_CONST,__const). External.
+// kCFDateFormatterCalendarName points to the string "kCFDateFormatterCalendarIdentifierKey".
+OF_EXPORT const OCFStringRef kOCFDateFormatterAMSymbolKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterCalendarKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterCalendarName;
+OF_EXPORT const OCFStringRef kOCFDateFormatterDefaultDateKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterDefaultFormatKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterDoesRelativeDateFormattingKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterEraSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterGregorianStartDateKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterIsLenientKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterLongEraSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterPMSymbolKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterAmbiguousYearStrategyKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterQuarterSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortQuarterSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortStandaloneMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortStandaloneQuarterSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortStandaloneWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterShortWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterStandaloneMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterStandaloneQuarterSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterStandaloneWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterTimeZoneKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterTwoDigitStartDateKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterVeryShortMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterVeryShortStandaloneMonthSymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterVeryShortStandaloneWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterVeryShortWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterWeekdaySymbolsKey;
+OF_EXPORT const OCFStringRef kOCFDateFormatterUsesCharacterDirectionKey;
+
+// The CFNumberFormatter property keys (SDK CFNumberFormatter.h names, spelled OCF), defined in
+// Locale/OCFLocaleKeys.c in native address order (0x2227a8ac0-0x2227a8bf8, __DATA_CONST,__const). External.
+OF_EXPORT const OCFStringRef kOCFNumberFormatterAlwaysShowDecimalSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterCurrencyCodeKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterCurrencyDecimalSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterCurrencyGroupingSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterCurrencySymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterDecimalSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterDefaultFormatKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterExponentSymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterFormatWidthKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterGroupingSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterGroupingSizeKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterInfinitySymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterInternationalCurrencySymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterIsLenientKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMaxFractionDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMaxIntegerDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMaxSignificantDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMinFractionDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMinIntegerDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMinSignificantDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMinusSignKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMultiplierKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterNaNSymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterNegativePrefixKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterNegativeSuffixKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPaddingCharacterKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPaddingPositionKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPerMillSymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPercentSymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPlusSignKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPositivePrefixKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterPositiveSuffixKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterRoundingIncrementKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterRoundingModeKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterSecondaryGroupingSizeKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterUseGroupingSeparatorKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterUseSignificantDigitsKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterUsesCharacterDirectionKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterZeroSymbolKey;
+OF_EXPORT const OCFStringRef kOCFNumberFormatterMinGroupingDigitsKey;
+
+// Native kCFGregorianCalendar, 0x2227a8c00, and kCFChineseCalendar, 0x2227a8c40 (__DATA_CONST,__const,
+// external; SDK CFLocale.h names, spelled OCF), in the NSCalendar identifiers run after the locale-keys
+// table, defined in Locale/OCFLocaleKeys.c. CFCalendarIdentifier is a CFStringRef.
+OF_EXPORT const OCFStringRef kOCFGregorianCalendar;
+OF_EXPORT const OCFStringRef kOCFChineseCalendar;

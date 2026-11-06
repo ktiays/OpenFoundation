@@ -260,6 +260,19 @@ compiles.
   undeclared export may ship. A definition is marked restored only when its
   whole dependency group is independently implemented and tested; a group that
   reaches a cut is whole when every cut is classified under "Scope".
+- Every row has a status (owner decision, 2026-11-06). `restored` keeps the
+  requirements above. `implemented` is a definition built from a reading that
+  is not yet restored: it carries an `issues` list with one entry per gap
+  (`untested`, `reading-unversioned`, `native-identity-uncited`,
+  `confidence-below-verified`, `device-unread`, `open-edges`), each required
+  exactly when it applies. `Tools/ledger.py` records new definitions in this
+  form and keeps their issues current; progress counts the two statuses
+  separately and never reports implemented definitions as restored. Implemented
+  work lands on main as soon as main builds and its tests pass.
+- `Configuration/LinkDependencies.json` records each product's link
+  dependencies at native load-command strength, and the symbols left unbound
+  (unsupported cuts and unrestored dependencies), which link weakly to an image
+  that does not exist and bind to null.
 - Restored definitions outside `Configuration/Scope.json` are kept but
   reported separately; new restoration work starts only inside the scope.
   Progress is reported against the scope, never as a share of the framework.

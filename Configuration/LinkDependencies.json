@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "products": {
+    "OpenCoreFoundation": {
+      "native": "CoreFoundation D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC load commands: LC_REEXPORT_DYLIB /usr/lib/libobjc.A.dylib; LC_LOAD_UPWARD_DYLIB Foundation.framework/Foundation (imports the ten classes and two functions below); LC_LOAD_UPWARD_DYLIB CoreServicesInternal.framework/CoreServicesInternal",
+      "reexport_libraries": [
+        "objc"
+      ],
+      "upward": [
+        {
+          "product": "OpenFoundation",
+          "install_name": "@rpath/OpenFoundation.framework/OpenFoundation",
+          "objc_classes": [
+            "ONSCharacterSet",
+            "ONSError",
+            "ONSMutableAttributedString",
+            "ONSMutableCharacterSet",
+            "ONSMutableString",
+            "ONSNotification",
+            "ONSNumber",
+            "ONSProcessInfo",
+            "ONSString",
+            "ONSThread"
+          ],
+          "symbols": [
+            "___ONSCreateBPlistMappedDataFromURL",
+            "___ONSCreateBPlistMappedString"
+          ]
+        }
+      ],
+      "unbound": {
+        "CoreServicesInternal": {
+          "classification": "unsupported",
+          "reason": "Loading the system CoreServicesInternal loads the system CoreFoundation and Foundation, which the replacement build must not. Each restored path that reaches one calls a null address.",
+          "symbols": [
+            "__FSCreatePathForFileID",
+            "__FSGetFileSystemRepresentationForFileID",
+            "__FSURLBeginResourcePropertyCacheAccess",
+            "__FSURLClearResourcePropertyCacheForKey",
+            "__FSURLCopyResourcePropertiesForKeys",
+            "__FSURLCopyResourcePropertyForKey",
+            "__FSURLEndResourcePropertyCacheAccess",
+            "__FSURLSetResourcePropertiesForKeys",
+            "__FSURLSetResourcePropertyForKey",
+            "__CFURLCreateBookmarkData",
+            "__CFURLCreateBookmarkDataFromFile",
+            "__CFURLCreateResourcePropertiesForKeysFromBookmarkData",
+            "__CFURLStartAccessingSecurityScopedResource",
+            "__CFURLStopAccessingSecurityScopedResource",
+            "__CFURLWriteBookmarkDataToFile"
+          ]
+        }
+      }
+    },
+    "OpenFoundation": {
+      "native": "Foundation 49FCDA5F-A93E-3259-857C-FC75AC2C7B03 links libicucore (LC_LOAD_DYLIB); libcmark-gfm is built into the native image; CFNetwork classes are reached by class reference",
+      "libraries": [
+        "icucore"
+      ],
+      "unbound": {
+        "libcmark": {
+          "classification": "unsupported",
+          "reason": "Owner decision pending (Documentation/Reference/Scope.md, Cuts): the native image contains libcmark-gfm; it is neither restored nor supplied, so Markdown parsing calls a null address.",
+          "symbols": [
+            "_CMARK_NODE_STRIKETHROUGH",
+            "_CMARK_NODE_TABLE",
+            "_CMARK_NODE_TABLE_CELL",
+            "_CMARK_NODE_TABLE_ROW",
+            "_cmark_find_syntax_extension",
+            "_cmark_gfm_core_extensions_ensure_registered",
+            "_cmark_gfm_extensions_get_table_alignments",
+            "_cmark_gfm_extensions_get_table_columns",
+            "_cmark_gfm_extensions_get_table_row_is_header",
+            "_cmark_iter_free",
+            "_cmark_iter_get_node",
+            "_cmark_iter_new",
+            "_cmark_iter_next",
+            "_cmark_node_free",
+            "_cmark_node_get_attributes",
+            "_cmark_node_get_end_column",
+            "_cmark_node_get_end_line",
+            "_cmark_node_get_fence_info",
+            "_cmark_node_get_heading_level",
+            "_cmark_node_get_list_delim",
+            "_cmark_node_get_list_marker",
+            "_cmark_node_get_list_start",
+            "_cmark_node_get_list_type",
+            "_cmark_node_get_literal",
+            "_cmark_node_get_start_column",
+            "_cmark_node_get_start_line",
+            "_cmark_node_get_title",
+            "_cmark_node_get_type",
+            "_cmark_node_get_url",
+            "_cmark_node_get_user_data",
+            "_cmark_node_set_user_data",
+            "_cmark_parser_attach_syntax_extension",
+            "_cmark_parser_feed",
+            "_cmark_parser_finish",
+            "_cmark_parser_free",
+            "_cmark_parser_new"
+          ]
+        },
+        "CFNetwork": {
+          "classification": "unsupported",
+          "reason": "Owner decision pending: the URL loading classes NSString reaches for remote contents are CFNetwork's.",
+          "objc_classes": [
+            "ONSHTTPURLResponse",
+            "ONSURLConnection",
+            "ONSURLRequest"
+          ]
+        },
+        "unrestored": {
+          "classification": "unrestored",
+          "reason": "Referenced by restored code, not restored yet: CoreFoundation definitions (CFNonObjCStringGetBytes, the Swift NSURL feature check, two constants, NSCache) and Foundation definitions (NSCountedSet, five attribute descriptors, the Swift file-manager and character-set classes, four dependent notifications, the Swift Locale type). A path that reaches one finds a null address; each referencing definition records the edge.",
+          "symbols": [
+            "__OCFNonObjCStringGetBytes",
+            "__foundation_swift_nsurl_feature_enabled",
+            "__kOCFStringFormatMetadataArgumentNumberKey",
+            "__kOCFXNotificationConfigurationCustomLocalConfiguration",
+            "__NSBundleDidLoadDependentNotification",
+            "__NSProcessInfoPowerStateDidChangeDependentNotification",
+            "__NSProcessInfoThermalStateDidChangeDependentNotification",
+            "__NSUbiquityIdentityDidChangeDependentNotification"
+          ],
+          "symbols_by_mode": {
+            "NO": [
+              "_$s14OpenFoundation6LocaleVN"
+            ],
+            "YES": [
+              "_$s10Foundation6LocaleVN"
+            ]
+          },
+          "objc_classes": [
+            "ONSCache",
+            "ONSCountedSet",
+            "_ONSAssumedFallbackInflectionAttributeDescriptor",
+            "_ONSMarkdownStringAttributeDescriptor",
+            "_ONSNumberFormattingAttributeDescriptor",
+            "_ONSNumericAttributeDescriptor",
+            "_ONSStringAttributeDescriptor",
+            "_ONSFileManagerBridge",
+            "_ONSSwiftCharacterSet"
+          ]
+        }
+      }
+    }
+  }
+}

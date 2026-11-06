@@ -457,7 +457,9 @@ static int compareLineNumbers(
                     if (end > length) {
                         end = length;
                     }
-                    XMLPlistParseContext context = {buffer, buffer + curr, buffer + end};
+                    XMLPlistParseContext context = {
+                        .begin = buffer, .curr = buffer + curr, .end = buffer + end
+                    };
                     uint32_t expected = native->lineNumber(&context);
                     uint32_t actual = replacement->lineNumber(&context);
                     if (expected != actual) {
@@ -492,7 +494,9 @@ static int compareLineNumbers(
                     if (end > length) {
                         end = length;
                     }
-                    OldStylePlistParseContext context = {units, units + curr, units + end};
+                    OldStylePlistParseContext context = {
+                        .begin = units, .curr = units + curr, .end = units + end
+                    };
                     uint32_t expected = native->lineNumberStrings(&context);
                     uint32_t actual = replacement->lineNumberStrings(&context);
                     if (expected != actual) {
@@ -528,7 +532,9 @@ compareAdvance(const PropertyListFunctions *native, const PropertyListFunctions 
             units[length] = '/';
             units[length + 1] = '/';
             for (size_t start = 0; start <= length + 1; ++start) {
-                OldStylePlistParseContext expected = {units, units + start, units + length};
+                OldStylePlistParseContext expected = {
+                    .begin = units, .curr = units + start, .end = units + length
+                };
                 OldStylePlistParseContext actual = expected;
                 bool expectedResult = native->advance(&expected);
                 bool actualResult = replacement->advance(&actual);

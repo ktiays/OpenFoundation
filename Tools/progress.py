@@ -64,8 +64,21 @@ def definitions_from_ast(tree, source_root):
     return definitions
 
 
+def parse_definitions(job):
+    """One translation unit's definitions (a worker of collect_definitions)."""
+    path, command, source_root = job
+    process = subprocess.run([str(item) for item in command], capture_output=True, text=True)
+    if process.returncode:
+        raise SystemExit("Definition audit could not parse " + str(path) + ":\n" + process.stderr)
+    return definitions_from_ast(json.loads(process.stdout), source_root)
+
+
 def collect_definitions(paths, source_root=None):
-    """Use compiler syntax, including hidden functions/data and header definitions."""
+    """Use compiler syntax, including hidden functions/data and header definitions. Translation units are
+    parsed in parallel worker processes."""
+    import multiprocessing
+    import sys
+    import types
     source_root = source_root or ROOT / "Source"
     spec = importlib.util.spec_from_file_location("progress_prefix", ROOT / "Tools/prefix-mapping.py")
     prefix = importlib.util.module_from_spec(spec)
@@ -75,11 +88,18 @@ def collect_definitions(paths, source_root=None):
     parent.mkdir(parents=True, exist_ok=True)
     config = defaults()
     sdk = output(["xcrun", "--sdk", "iphonesimulator", "--show-sdk-path"])
+    # Workers are forked; the worker function is found through this module's entry in sys.modules, which a
+    # module loaded by path (another tool's import) does not have until it is registered here.
+    if sys.modules.get(__name__) is None or getattr(sys.modules[__name__], "parse_definitions", None) is not parse_definitions:
+        registered = types.ModuleType(__name__)
+        registered.__dict__.update(globals())
+        sys.modules[__name__] = registered
     result = set()
     with tempfile.TemporaryDirectory(dir=parent) as directory:
         directory = Path(directory)
         for product in PRODUCTS:
             prefix.package(product, directory / (product + ".framework"), "NO", mapping)
+        jobs = []
         for path in sorted(paths):
             cpp = path.suffix in {".cpp", ".mm"}
             command = ["xcrun", "clang++" if cpp else "clang", "-target",
@@ -89,11 +109,15 @@ def collect_definitions(paths, source_root=None):
                            "CLANG_CXX_LANGUAGE_STANDARD" if cpp else "GCC_C_LANGUAGE_STANDARD"],
                        "-Xclang", "-ast-dump=json", "-fsyntax-only", path]
             if path.suffix in {".m", ".mm"}:
-                command.insert(2, "-fno-objc-arc")
-            process = subprocess.run([str(item) for item in command], capture_output=True, text=True)
-            if process.returncode:
-                raise SystemExit("Definition audit could not parse " + str(path) + ":\n" + process.stderr)
-            result.update(definitions_from_ast(json.loads(process.stdout), source_root))
+                command[2:2] = ["-fno-objc-arc", "-fobjc-weak"]
+            jobs.append((path, command, source_root))
+        if len(jobs) > 1:
+            with multiprocessing.get_context("fork").Pool() as pool:
+                for definitions in pool.imap_unordered(parse_definitions, jobs):
+                    result.update(definitions)
+        else:
+            for job in jobs:
+                result.update(parse_definitions(job))
     return {(str(Path(path).relative_to(ROOT)), symbol) for path, symbol in result}
 
 
@@ -181,6 +205,68 @@ def self_test():
           "Objective-C classes/methods and missing/extra rows.")
 
 
+RESTORED_FIELDS = ("path", "symbol", "native_symbol", "address", "reference_uuid", "confidence", "reading", "tests",
+                   "ios_device")
+# Issues an implemented definition may carry (AGENTS.md, "Progress and Verification"). Each is required exactly
+# when its condition holds, so a gap cannot go unrecorded.
+ISSUE_CODES = {"untested", "reading-unversioned", "native-identity-uncited", "confidence-below-verified",
+               "device-unread", "open-edges"}
+
+
+def check_restored_row(row, uuids):
+    for key in RESTORED_FIELDS:
+        if not row.get(key):
+            raise SystemExit("Missing restoration field: " + key)
+    if row["confidence"] != "verified":
+        raise SystemExit("Unread or inferred code cannot be marked restored: " + row["symbol"])
+    if row["reference_uuid"] not in uuids:
+        raise SystemExit("Definition is not pinned to a simulator reference image: " + row["symbol"])
+    for name in [row["reading"], *row["tests"]]:
+        if not (ROOT / name).is_file():
+            raise SystemExit("Missing reading or test: " + name)
+
+
+def check_implemented_row(row, uuids):
+    """An implemented definition is built from a reading but not yet restored; every gap is an issue."""
+    symbol = row["symbol"]
+    issues = row.get("issues")
+    if not isinstance(issues, list) or not issues:
+        raise SystemExit("Implemented definition without recorded issues: " + symbol)
+    codes = [issue.get("code") for issue in issues]
+    unknown = set(codes) - ISSUE_CODES
+    if unknown or len(set(codes)) != len(codes):
+        raise SystemExit("Unknown or repeated issue codes for " + symbol + ": " + repr(codes))
+    if any(not issue.get("detail") for issue in issues):
+        raise SystemExit("Issue without detail for " + symbol)
+    for key in ("product", "kind"):
+        if not row.get(key):
+            raise SystemExit("Missing restoration field for " + symbol + ": " + key)
+
+    def require(condition, code):
+        if bool(condition) != (code in codes):
+            raise SystemExit(f"{symbol}: issue '{code}' must be recorded exactly when it applies")
+
+    tests = row.get("tests", [])
+    for name in tests:
+        if not (ROOT / name).is_file():
+            raise SystemExit("Missing test: " + name)
+    require(not tests, "untested")
+    reading = row.get("reading")
+    if reading and not (ROOT / reading).is_file():
+        raise SystemExit("Missing reading: " + reading)
+    require(not reading, "reading-unversioned")
+    identity = all(row.get(key) for key in ("native_symbol", "address", "reference_uuid"))
+    if identity and row["reference_uuid"] not in uuids:
+        raise SystemExit("Definition is not pinned to a simulator reference image: " + symbol)
+    require(not identity, "native-identity-uncited")
+    require(row.get("confidence") != "verified", "confidence-below-verified")
+    device = row.get("ios_device") or {}
+    if device.get("status") not in ("compared", "unread"):
+        raise SystemExit("iOS Device status must be compared or unread: " + symbol)
+    require(device["status"] == "unread", "device-unread")
+    return codes
+
+
 def check():
     ledger = json.loads((ROOT / "Configuration/Restoration.json").read_text())
     paths = {path for path in (ROOT / "Source").rglob("*") if path.suffix in SOURCE_SUFFIXES | {".swift"}}
@@ -199,23 +285,25 @@ def check():
     references = json.loads((ROOT / "Configuration/ReferenceImages.json").read_text())
     simulator_images = references["iphone-simulator"]["images"]
     uuids = {row["uuid"] for row in simulator_images.values()}
+    statuses = {"restored": 0, "implemented": 0}
+    issue_counts = {}
     for row in ledger["definitions"]:
-        for key in ("path", "symbol", "native_symbol", "address", "reference_uuid", "confidence",
-                    "reading", "tests", "ios_device"):
-            if not row.get(key):
-                raise SystemExit("Missing restoration field: " + key)
-        if row["confidence"] != "verified":
-            raise SystemExit("Unread or inferred code cannot be marked restored: " + row["symbol"])
-        if row["reference_uuid"] not in uuids:
-            raise SystemExit("Definition is not pinned to a simulator reference image: " + row["symbol"])
-        key = (row["path"], row["symbol"])
+        status = row.get("status")
+        if status not in statuses:
+            raise SystemExit("Unknown restoration status for " + row.get("symbol", "?") + ": " + repr(status))
+        statuses[status] += 1
+        key = (row.get("path"), row.get("symbol"))
+        if not all(key):
+            raise SystemExit("Missing restoration field: path or symbol")
         if key in definitions:
             raise SystemExit("Duplicate restoration definition: " + repr(key))
         definitions.add(key)
         restored_paths.add(row["path"])
-        for name in [row["reading"], *row["tests"]]:
-            if not (ROOT / name).is_file():
-                raise SystemExit("Missing reading or test: " + name)
+        if status == "restored":
+            check_restored_row(row, uuids)
+        else:
+            for code in check_implemented_row(row, uuids):
+                issue_counts[code] = issue_counts.get(code, 0) + 1
     translation_units = {str(path.relative_to(ROOT)) for path in paths}
     recorded_units = {path for path in restored_paths if Path(path).suffix in SOURCE_SUFFIXES | {".swift"}}
     if translation_units != recorded_units | exclusions:
@@ -227,9 +315,13 @@ def check():
     check_definition_records(collect_definitions(c_paths), c_records)
     swift_rows = [row for row in ledger["definitions"] if Path(row["path"]).suffix == ".swift"]
     check_swift_records(swift_rows, collect_swift_definitions())
-    functions = sum(row.get("kind", "function") == "function" for row in ledger["definitions"])
-    print(f"Restoration ledger passed: {len(definitions)} definitions ({functions} functions). "
-          "Bootstrap is not API coverage.")
+    functions = sum(row.get("kind", "function") == "function" and row["status"] == "restored"
+                    for row in ledger["definitions"])
+    print(f"Restoration ledger passed: {statuses['restored']} restored definitions ({functions} functions), "
+          f"{statuses['implemented']} implemented with recorded issues. Bootstrap is not API coverage.")
+    if issue_counts:
+        print("Open issues of implemented definitions: " +
+              ", ".join(f"{code} {count}" for code, count in sorted(issue_counts.items())))
 
 
 if __name__ == "__main__":

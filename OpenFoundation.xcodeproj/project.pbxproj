@@ -16,8 +16,8 @@
             sourceTree = "<group>";
             exceptions = (
                 8B40830C9E2E83094B9E430E,
-                A5F2DA10DF3B3E718E6AB02A,
-                9A8DF383512D9D957BB1BD27,
+                ED47BF8A79682B11C545D2F1,
+                C10F4D6AD11DBC8AA7A20E99,
             );
         };
         A68A01BC3517FDF3A076492D = {
@@ -26,6 +26,8 @@
             sourceTree = "<group>";
             exceptions = (
                 F73AC23D2193E8B66E61AF3C,
+                6E43E1C024DCBC2C97920D72,
+                9B29977BAA46C1FAC01A7E35,
             );
         };
         41CF6794BA4200B839C53531 = {
@@ -226,7 +228,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
-                OTHER_LDFLAGS = "$(inherited) $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "$(inherited) \"@$(BUILT_PRODUCTS_DIR)/Generated/$(PRODUCT_NAME)-link.rsp\" $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -249,7 +251,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenCoreFoundation.modulemap;
-                OTHER_LDFLAGS = "$(inherited) $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "$(inherited) \"@$(BUILT_PRODUCTS_DIR)/Generated/$(PRODUCT_NAME)-link.rsp\" $(OF_CORE_FOUNDATION_LDFLAGS)";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -305,11 +307,36 @@
                 Decimal/ONSDecimal.h,
             );
             membershipExceptions = (
+                Calendar/WeekendRange.swift,
+                "Collections/Dictionary+ObjectiveCBridge.swift",
+                "Data/Data+Bridging.swift",
+                Data/Data.swift,
+                Data/DataStorage.swift,
                 "Decimal/Decimal+Conformances.swift",
+                "Decimal/Decimal+Formatting.swift",
                 "Decimal/Decimal+IntegerArithmetic.swift",
                 "Decimal/Decimal+Math.swift",
                 "Decimal/Decimal+Operations.swift",
+                "Decimal/Decimal+Parsing.swift",
+                "Decimal/Decimal+StringBridge.swift",
                 Decimal/Decimal.swift,
+                Error/CocoaError.swift,
+                FileManager/DarwinSearchPaths.swift,
+                Locale/LocaleNotifications.swift,
+                ProcessInfo/ProcessInfo.swift,
+                String/BuiltInUnicodeBitmapData.swift,
+                String/BuiltInUnicodeScalarSet.swift,
+                "String/ONSMorphology+Morphun.swift",
+                "String/Platform+UserGroups.swift",
+                "String/String+Decomposition.swift",
+                "String/String+DotSegments.swift",
+                "String/String+ObjectiveCBridgeable.swift",
+                "String/String+PathComponents.swift",
+                "String/String+ResolvingSymlinks.swift",
+                "String/String+StandardizingPath.swift",
+                String/UTF8Decomposition.swift,
+                "URL/URL+PathStyle.swift",
+                UUID/UUID.swift,
             );
         };
         A0F5FE790E1DA0D5F1974C53 = {
@@ -378,7 +405,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
-                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift";
+                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/$(PRODUCT_NAME)-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -401,7 +428,7 @@
                 DYLIB_INSTALL_NAME_BASE = "@rpath";
                 DEFINES_MODULE = YES;
                 MODULEMAP_FILE = Resources/OpenFoundation.modulemap;
-                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift";
+                OTHER_LDFLAGS = "$(inherited) \"$(BUILT_PRODUCTS_DIR)/Objects/Swift/$(PRODUCT_NAME).o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/$(PRODUCT_NAME)-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -479,34 +506,51 @@
             target = 63B4191BE2FF663882B26A5A;
             targetProxy = E241CF9E3762ED5B268D9C78;
         };
-        6F5884065B0445E6C522E4D3 = {
-            isa = PBXBuildFile;
-            fileRef = D0CE395FADE5D75F798CFC70;
-        };
-        2663DB9683DEAA62373FFFC1 = {
-            isa = PBXBuildFile;
-            fileRef = 8D3990AE4ED97AA93C280C54;
-        };
         E424B5736BB41C2F3EB4080B = {
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
-            files = (
-                6F5884065B0445E6C522E4D3,
-                2663DB9683DEAA62373FFFC1,
-            );
+            files = ();
             runOnlyForDeploymentPostprocessing = 0;
         };
-        A5F2DA10DF3B3E718E6AB02A = {
+        ED47BF8A79682B11C545D2F1 = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = FCED26B3F5CF01836C4B7184;
+            membershipExceptions = ();
+        };
+        6E43E1C024DCBC2C97920D72 = {
             isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
             target = FCED26B3F5CF01836C4B7184;
             membershipExceptions = (
-                Base/OCFBase.c,
-                Base/OCFHashBytes.c,
-                Base/OCFUtilities.c,
-                Bootstrap.c,
-                Number/OCFBigNumber.c,
-                PropertyList/OCFBinaryPList.c,
-                StringEncoding/OCFStringEncodings.c,
+                Calendar/WeekendRange.swift,
+                "Collections/Dictionary+ObjectiveCBridge.swift",
+                "Data/Data+Bridging.swift",
+                Data/Data.swift,
+                Data/DataStorage.swift,
+                "Decimal/Decimal+Conformances.swift",
+                "Decimal/Decimal+Formatting.swift",
+                "Decimal/Decimal+IntegerArithmetic.swift",
+                "Decimal/Decimal+Math.swift",
+                "Decimal/Decimal+Operations.swift",
+                "Decimal/Decimal+Parsing.swift",
+                "Decimal/Decimal+StringBridge.swift",
+                Decimal/Decimal.swift,
+                Error/CocoaError.swift,
+                FileManager/DarwinSearchPaths.swift,
+                Locale/LocaleNotifications.swift,
+                ProcessInfo/ProcessInfo.swift,
+                String/BuiltInUnicodeBitmapData.swift,
+                String/BuiltInUnicodeScalarSet.swift,
+                "String/ONSMorphology+Morphun.swift",
+                "String/Platform+UserGroups.swift",
+                "String/String+Decomposition.swift",
+                "String/String+DotSegments.swift",
+                "String/String+ObjectiveCBridgeable.swift",
+                "String/String+PathComponents.swift",
+                "String/String+ResolvingSymlinks.swift",
+                "String/String+StandardizingPath.swift",
+                String/UTF8Decomposition.swift,
+                "URL/URL+PathStyle.swift",
+                UUID/UUID.swift,
             );
         };
         D6FBB04F97A3F636FCF54562 = {
@@ -522,7 +566,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "\"$(BUILT_PRODUCTS_DIR)/Objects/Swift/OpenFoundation.o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/Tests-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -540,7 +584,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "\"$(BUILT_PRODUCTS_DIR)/Objects/Swift/OpenFoundation.o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/Tests-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -563,6 +607,7 @@
             fileSystemSynchronizedGroups = (
                 5B565A33B80B75DC462328A6,
                 D787A7C45CB2BAF8097F84FD,
+                A68A01BC3517FDF3A076492D,
             );
             buildConfigurationList = D2A1704AFC3CE0C308BA2B19;
             buildPhases = (
@@ -618,34 +663,51 @@
             target = 63B4191BE2FF663882B26A5A;
             targetProxy = 06517DE619325E77096821A4;
         };
-        6B883E9F7FB3E31C532EC797 = {
-            isa = PBXBuildFile;
-            fileRef = D0CE395FADE5D75F798CFC70;
-        };
-        B180AE5F89EFCF479A6BCEC2 = {
-            isa = PBXBuildFile;
-            fileRef = 8D3990AE4ED97AA93C280C54;
-        };
         B704D2548D42BDA2A1796F73 = {
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
-            files = (
-                6B883E9F7FB3E31C532EC797,
-                B180AE5F89EFCF479A6BCEC2,
-            );
+            files = ();
             runOnlyForDeploymentPostprocessing = 0;
         };
-        9A8DF383512D9D957BB1BD27 = {
+        C10F4D6AD11DBC8AA7A20E99 = {
+            isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+            target = BE88CA43ACE290E13F50CA5E;
+            membershipExceptions = ();
+        };
+        9B29977BAA46C1FAC01A7E35 = {
             isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
             target = BE88CA43ACE290E13F50CA5E;
             membershipExceptions = (
-                Base/OCFBase.c,
-                Base/OCFHashBytes.c,
-                Base/OCFUtilities.c,
-                Bootstrap.c,
-                Number/OCFBigNumber.c,
-                PropertyList/OCFBinaryPList.c,
-                StringEncoding/OCFStringEncodings.c,
+                Calendar/WeekendRange.swift,
+                "Collections/Dictionary+ObjectiveCBridge.swift",
+                "Data/Data+Bridging.swift",
+                Data/Data.swift,
+                Data/DataStorage.swift,
+                "Decimal/Decimal+Conformances.swift",
+                "Decimal/Decimal+Formatting.swift",
+                "Decimal/Decimal+IntegerArithmetic.swift",
+                "Decimal/Decimal+Math.swift",
+                "Decimal/Decimal+Operations.swift",
+                "Decimal/Decimal+Parsing.swift",
+                "Decimal/Decimal+StringBridge.swift",
+                Decimal/Decimal.swift,
+                Error/CocoaError.swift,
+                FileManager/DarwinSearchPaths.swift,
+                Locale/LocaleNotifications.swift,
+                ProcessInfo/ProcessInfo.swift,
+                String/BuiltInUnicodeBitmapData.swift,
+                String/BuiltInUnicodeScalarSet.swift,
+                "String/ONSMorphology+Morphun.swift",
+                "String/Platform+UserGroups.swift",
+                "String/String+Decomposition.swift",
+                "String/String+DotSegments.swift",
+                "String/String+ObjectiveCBridgeable.swift",
+                "String/String+PathComponents.swift",
+                "String/String+ResolvingSymlinks.swift",
+                "String/String+StandardizingPath.swift",
+                String/UTF8Decomposition.swift,
+                "URL/URL+PathStyle.swift",
+                UUID/UUID.swift,
             );
         };
         5375D868972B5DF0CC423165 = {
@@ -661,7 +723,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "\"$(BUILT_PRODUCTS_DIR)/Objects/Swift/OpenFoundation.o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/Tests-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 0;
                 LLVM_LTO = NO;
             };
@@ -679,7 +741,7 @@
                 FRAMEWORK_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"";
                 OTHER_CFLAGS = "$(inherited) -fblocks -ffp-contract=off -Wall -Wextra -Werror -include \"$(BUILT_PRODUCTS_DIR)/Generated/OFPrefixMapping.h\"";
                 LD_RUNPATH_SEARCH_PATHS = "@executable_path @loader_path/..";
-                OTHER_LDFLAGS = "-Wl,-needed_framework,OpenFoundation -Wl,-needed_framework,OpenCoreFoundation $(OF_CORE_FOUNDATION_LDFLAGS)";
+                OTHER_LDFLAGS = "\"$(BUILT_PRODUCTS_DIR)/Objects/Swift/OpenFoundation.o\" -L\"$(SDKROOT)/usr/lib/swift\" -L\"$(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME)\" -Wl,-rpath,/usr/lib/swift \"@$(BUILT_PRODUCTS_DIR)/Generated/Tests-link.rsp\"";
                 GCC_OPTIMIZATION_LEVEL = 2;
                 LLVM_LTO = YES;
             };
@@ -702,6 +764,7 @@
             fileSystemSynchronizedGroups = (
                 59830EBC3A4184110566BF1A,
                 D787A7C45CB2BAF8097F84FD,
+                A68A01BC3517FDF3A076492D,
             );
             buildConfigurationList = E51BA6A3F329F2030101B956;
             buildPhases = (

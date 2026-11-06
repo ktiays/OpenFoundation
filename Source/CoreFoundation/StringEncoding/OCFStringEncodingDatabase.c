@@ -4,20 +4,39 @@
 //
 
 #include "CoreFoundation/StringEncoding/OCFStringEncodingDatabase.h"
+#include "CoreFoundation/StringEncoding/OCFStringEncodingConverter.h"
+#include "CoreFoundation/String/OCFString.h"
 
+#include <os/lock.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <xlocale.h>
 
 // ICU (libicucore) is a library the native image links (/usr/lib/libicucore.A.dylib); it is supplied,
 // never reimplemented. The SDK installs no ucnv.h, so the single called entry point is declared here.
 // UErrorCode is a 32-bit enumeration; the native caller passes a 32-bit stack slot.
 extern const char *ucnv_getAlias(const char *alias, uint16_t n, int32_t *pErrorCode);
 
-// Inferred organization: __CFStringEncodingGetICUName (0x1c02ad994), __CFStringEncodingGetWindowsCodePage
-// (0x1c02ae7c4) and __CFStringEncodingGetCanonicalName (0x1c02aea2c) lie in one iOS Simulator __text
-// region with their sorted tables in __TEXT,__const and __DATA_CONST,__const. The native source path
-// is not in the evidence.
-// All tables below were decoded from the capture by Local/Evidence/cf-encoding-names/generate-tables.py,
-// which also checks that the iOS Simulator and iOS Device images agree entry for entry.
+extern uint16_t ucnv_countAliases(const char *alias, int32_t *pErrorCode);
+
+extern const char *ucnv_getStandardName(const char *name, const char *standard, int32_t *pErrorCode);
+
+// libsystem_platform's os_unfair_lock_lock_with_options (private SPI); both native calls here pass 0x10000
+// (kUnfairLockDataSynchronization).
+extern void os_unfair_lock_lock_with_options(os_unfair_lock_t lock, uint32_t options);
+static const uint32_t kUnfairLockDataSynchronization = 0x10000;
+
+// Inferred organization: __CFStringEncodingGetICUName (0x1c02ad994), __CFStringEncodingGetFromICUName
+// (0x1c02ada74), __CFStringEncodingGetWindowsCodePage (0x1c02ae7c4), __CFStringEncodingGetFromWindowsCodePage
+// (0x1c02ae874), __CFStringEncodingGetCanonicalName (0x1c02aea2c) and __CFStringEncodingGetFromCanonicalName
+// (0x1c02aebf4) lie in one iOS Simulator __text region with their sorted tables in __TEXT,__const and
+// __DATA_CONST,__const; the ICU converter functions between them are in OCFICUConverters.c. The native source
+// path is not in the evidence. The three reverse lookups follow the earlier definitions in this file: iOS
+// Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified; iOS Device 24A446:
+// unread. All tables below were decoded from the capture by
+// Local/Evidence/cf-encoding-names/generate-tables.py, which also checks that the iOS Simulator and iOS
+// Device images agree entry for entry.
 
 // Native __CFKnownEncodingList, iOS Simulator 24A434, 0x1c046ca44 (__TEXT,__const, 98 entries; the
 // searches read up to list + 0xc2), UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified.
@@ -317,4 +336,243 @@ const char *__CFStringEncodingGetICUName(uint32_t encoding) {
         return ucnv_getAlias(buffer, 0, &errorCode);
     }
     return NULL;
+}
+
+// Native __CFStringEncodingGetFromICUName, 0x1c02ada74. Hidden (was private external).
+// A "windows-<n>" name with a nonzero 32-bit number and no trailing text maps through the code page.
+// Otherwise a name ICU does not know (no aliases) is invalid (0xffffffff); then the WINDOWS standard name
+// (itself through its code page when it has the windows- form) and the JAVA and MIME standard names are
+// tried, each only when it is not a case-insensitive prefix of the given name, through
+// __CFStringEncodingGetFromCanonicalName. One error code, zeroed on entry, is shared by every ICU call.
+uint32_t __CFStringEncodingGetFromICUName(const char *icuName) {
+    char *endPtr = NULL;
+    int32_t errorCode = 0;
+    if (strncasecmp_l(icuName, "windows-", 8, NULL) == 0) {
+        long codePage = strtol(icuName + 8, &endPtr, 10);
+        if ((int32_t)codePage != 0 && *endPtr == 0) {
+            return __CFStringEncodingGetFromWindowsCodePage((uint32_t)codePage & 0xffff);
+        }
+    }
+    if (ucnv_countAliases(icuName, &errorCode) == 0) {
+        return 0xffffffff;
+    }
+    const char *name = ucnv_getStandardName(icuName, "WINDOWS", &errorCode);
+    if (name != NULL) {
+        if (strncasecmp_l(name, "windows-", 8, NULL) == 0) {
+            long codePage = strtol(name + 8, &endPtr, 10);
+            if ((int32_t)codePage != 0 && *endPtr == 0) {
+                return __CFStringEncodingGetFromWindowsCodePage((uint32_t)codePage & 0xffff);
+            }
+        }
+        if (strncasecmp_l(icuName, name, strlen(name), NULL) != 0) {
+            uint32_t encoding = __CFStringEncodingGetFromCanonicalName(name);
+            if (encoding != 0xffffffff) {
+                return encoding;
+            }
+        }
+    }
+    name = ucnv_getStandardName(icuName, "JAVA", &errorCode);
+    if (name != NULL && strncasecmp_l(icuName, name, strlen(name), NULL) != 0) {
+        uint32_t encoding = __CFStringEncodingGetFromCanonicalName(name);
+        if (encoding != 0xffffffff) {
+            return encoding;
+        }
+    }
+    name = ucnv_getStandardName(icuName, "MIME", &errorCode);
+    if (name != NULL && strncasecmp_l(icuName, name, strlen(name), NULL) != 0) {
+        return __CFStringEncodingGetFromCanonicalName(name);
+    }
+    return 0xffffffff;
+}
+
+// Native __CFStringEncodingGetFromWindowsCodePage, 0x1c02ae874. Hidden (was private external).
+// 0 is invalid; 1200, 1201, 65000, 65001, 65005 and 65006 are the Unicode encodings; 28591-28606 are ISO 8859
+// (codePage - 28078). Other code pages use a dictionary built once under a data-synchronization unfair lock
+// (options 0x10000) from the nonzero __CFWindowsCPList entries to the parallel __CFKnownEncodingList entries,
+// and queried after the unlock; a missing code page is 0xffffffff. The function-local statics are native
+// __CFStringEncodingGetFromWindowsCodePage.mappingTable and .lock (__DATA,__bss).
+uint32_t __CFStringEncodingGetFromWindowsCodePage(uint32_t codePage) {
+    static OCFMutableDictionaryRef mappingTable = NULL;
+    static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+    switch (codePage) {
+        case 0:
+            return 0xffffffff;
+        case 1200:
+            return 0x100;
+        case 1201:
+            return 0x10000100;
+        case 65000:
+            return 0x4000100;
+        case 65001:
+            return 0x8000100;
+        case 65005:
+            return 0xc000100;
+        case 65006:
+            return 0x18000100;
+        default:
+            break;
+    }
+    if (codePage - 28591 <= 15) {
+        return codePage - 28078;
+    }
+    const void *value = NULL;
+    os_unfair_lock_lock_with_options(&lock, kUnfairLockDataSynchronization);
+    if (mappingTable == NULL) {
+        mappingTable = OCFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+        for (OCFIndex index = 0; index != 98; ++index) {
+            if (__CFWindowsCPList[index] != 0) {
+                OCFDictionarySetValue(
+                    mappingTable,
+                    (const void *)(uintptr_t)__CFWindowsCPList[index],
+                    (const void *)(uintptr_t)__CFKnownEncodingList[index]
+                );
+            }
+        }
+    }
+    os_unfair_lock_unlock(&lock);
+    if (!OCFDictionaryGetValueIfPresent(mappingTable, (const void *)(uintptr_t)codePage, &value)) {
+        return 0xffffffff;
+    }
+    return (uint32_t)(uintptr_t)value;
+}
+
+// The 48-byte key callbacks __CFStringEncodingGetFromCanonicalName copies to its frame from the unnamed
+// constant at 0x2227a8fe8 (__DATA_CONST,__const, directly after __CFCanonicalNameList): version 0, no retain,
+// release or description, __CFCanonicalNameCompare and __CFCanonicalNameHash.
+
+// Native __CFStringEncodingGetFromCanonicalName, 0x1c02aebf4. Hidden (was private external).
+// "iso-8859-<n>" yields 0x200 + n for n in 1-16 and 0xffffffff otherwise; "cp<n>" and "windows-<n>" go
+// through the code page (n truncated to 16 bits). Otherwise a dictionary with case-insensitive name callbacks
+// is built once under a data-synchronization unfair lock: the eight Unicode names, then every nonzero
+// __CFCanonicalNameList name to its __CFKnownEncodingList value. After the unlock "macintosh" is MacRoman
+// (0); any other name, without an "x-mac-" prefix, is looked up, and a value whose low 32 bits are zero is
+// 0xffffffff. The function-local statics are native __CFStringEncodingGetFromCanonicalName.mappingTable and
+// .lock (__DATA,__bss).
+uint32_t __CFStringEncodingGetFromCanonicalName(const char *canonicalName) {
+    static OCFMutableDictionaryRef mappingTable = NULL;
+    static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+    if (strncasecmp_l(canonicalName, "iso-8859-", 9, NULL) == 0) {
+        int32_t number = (int32_t)strtol(canonicalName + 9, NULL, 10);
+        return (uint32_t)(number - 17) >= 0xfffffff0 ? (uint32_t)number + 0x200 : 0xffffffff;
+    }
+    if (strncasecmp_l(canonicalName, "cp", 2, NULL) == 0) {
+        return __CFStringEncodingGetFromWindowsCodePage(
+            (uint32_t)strtol(canonicalName + 2, NULL, 10) & 0xffff
+        );
+    }
+    if (strncasecmp_l(canonicalName, "windows-", 8, NULL) == 0) {
+        return __CFStringEncodingGetFromWindowsCodePage(
+            (uint32_t)strtol(canonicalName + 8, NULL, 10) & 0xffff
+        );
+    }
+    os_unfair_lock_lock_with_options(&lock, kUnfairLockDataSynchronization);
+    if (mappingTable == NULL) {
+        OCFDictionaryKeyCallBacks keyCallBacks = {
+            0, NULL, NULL, NULL, __CFCanonicalNameCompare, __CFCanonicalNameHash
+        };
+        mappingTable = OCFDictionaryCreateMutable(NULL, 0, &keyCallBacks, NULL);
+        OCFDictionarySetValue(mappingTable, "utf-7", (const void *)(uintptr_t)0x4000100);
+        OCFDictionarySetValue(mappingTable, "utf-8", (const void *)(uintptr_t)0x8000100);
+        OCFDictionarySetValue(mappingTable, "utf-16", (const void *)(uintptr_t)0x100);
+        OCFDictionarySetValue(mappingTable, "utf-16be", (const void *)(uintptr_t)0x10000100);
+        OCFDictionarySetValue(mappingTable, "utf-16le", (const void *)(uintptr_t)0x14000100);
+        OCFDictionarySetValue(mappingTable, "utf-32", (const void *)(uintptr_t)0xc000100);
+        OCFDictionarySetValue(mappingTable, "utf-32be", (const void *)(uintptr_t)0x18000100);
+        OCFDictionarySetValue(mappingTable, "utf-32le", (const void *)(uintptr_t)0x1c000100);
+        for (OCFIndex index = 0; index != 98; ++index) {
+            if (__CFCanonicalNameList[index] != NULL) {
+                OCFDictionarySetValue(
+                    mappingTable,
+                    __CFCanonicalNameList[index],
+                    (const void *)(uintptr_t)__CFKnownEncodingList[index]
+                );
+            }
+        }
+    }
+    os_unfair_lock_unlock(&lock);
+    if (strncasecmp_l(canonicalName, "macintosh", 9, NULL) == 0) {
+        return 0;
+    }
+    OCFIndex prefix = strncasecmp_l(canonicalName, "x-mac-", 6, NULL) == 0 ? 6 : 0;
+    uint32_t encoding = (uint32_t)(uintptr_t)OCFDictionaryGetValue(mappingTable, canonicalName + prefix);
+    return encoding != 0 ? encoding : 0xffffffff;
+}
+
+// Native __CFCanonicalNameCompare, 0x1c02aeeb0. Non-external; the key equal callback of the canonical-name
+// table. Case-insensitive equality of at most 256 bytes (strncasecmp_l with no locale).
+Boolean __CFCanonicalNameCompare(const void *value1, const void *value2) {
+    return strncasecmp_l(value1, value2, 0x100, NULL) == 0;
+}
+
+// Native __CFCanonicalNameHash, 0x1c02aeed4. Non-external; the key hash callback. An empty name hashes to 0.
+// Otherwise the bytes (sign-extended, plus 0x20 for 'A'-'Z') of at most the first 256 characters are summed
+// and the sum is multiplied by the number of characters summed.
+OCFHashCode __CFCanonicalNameHash(const void *value) {
+    const char *name = value;
+    uint8_t character = (uint8_t)name[0];
+    if (character == 0) {
+        return 0;
+    }
+    uint64_t sum = 0;
+    int64_t index = 1;
+    int64_t next;
+    for (;;) {
+        uint64_t fold = (uint8_t)(character - 'A') < 0x1A ? 0x20 : 0;
+        sum = sum + (uint64_t)(int64_t)(int8_t)character + fold;
+        character = (uint8_t)name[index];
+        next = index + 1;
+        if (character == 0 || index >= 0x100) {
+            break;
+        }
+        index = next;
+    }
+    return (OCFHashCode)((uint64_t)(next - 1) * sum);
+}
+
+// Native __CFStringEncodingGetName, 0x1c02aef34. Non-external (was a private external). The display names of
+// the encodings the converters know beyond the database's (Unicode forms, the Japanese carrier encodings and
+// non-lossy ASCII); NULL otherwise.
+const char *__CFStringEncodingGetName(uint32_t encoding) {
+    switch (encoding) {
+        case 0x100:
+            return "Unicode (UTF-16)";
+        case 0xBF0:
+            return "Japanese (NTT Docomo Shift JIS)";
+        case 0xBF1:
+            return "Japanese (KDDI Shift JIS)";
+        case 0xBF2:
+            return "Japanese (SoftBank Shift JIS)";
+        case 0xBF3:
+            return "Japanese (NTT Docomo ISO 2022-JP)";
+        case 0xBF4:
+            return "Japanese (KDDI ISO 2022-JP)";
+        case 0xBFF:
+            return "Non-lossy ASCII";
+        case 0x4000100:
+            return "Unicode (UTF-7)";
+        case 0x8000100:
+            return "Unicode (UTF-8)";
+        case 0xC000100:
+            return "Unicode (UTF-32)";
+        case 0x10000100:
+            return "Unicode (UTF-16BE)";
+        case 0x14000100:
+            return "Unicode (UTF-16LE)";
+        case 0x18000100:
+            return "Unicode (UTF-32BE)";
+        case 0x1C000100:
+            return "Unicode (UTF-32LE)";
+        default:
+            return NULL;
+    }
+}
+
+// Native __CFStringEncodingCopyNameAsCF, 0x1c02af0cc. Non-external (was a private external). The name as a
+// string that does not copy the bytes (or an indirect tagged string), NULL for an unnamed encoding.
+OCFStringRef __CFStringEncodingCopyNameAsCF(uint32_t encoding) {
+    const char *name = __CFStringEncodingGetName(encoding);
+    if (name == NULL) {
+        return NULL;
+    }
+    return _OCFStringCreateWithASCIICStringNoCopyOrIndirectTagged(kOCFAllocatorSystemDefault, name);
 }

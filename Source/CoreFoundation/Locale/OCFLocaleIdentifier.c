@@ -5,6 +5,8 @@
 
 #include "CoreFoundation/Locale/OCFLocaleIdentifier.h"
 
+#include "CoreFoundation/String/OCFString.h"
+
 #include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -32,17 +34,266 @@ extern int32_t uloc_setKeywordValue(
 
 extern void uenum_close(UEnumeration *en);
 
-// Inferred organization: the seven functions lie in one iOS Simulator __text region
-// (0x1c01a0324-0x1c01a1960) with _CFLocaleCreateCanonicalLanguageIdentifierFromString and
-// _CFLocaleCreateCanonicalLocaleIdentifierFromString, their callers; their tables are in
-// __DATA_CONST,__const beside _localeStringPrefixToDefaults. The native source path is not in the
-// evidence; Source/CoreFoundation/Locale/OCFLocaleIdentifier.c is a local spelling.
-// The tables below were decoded from the capture by Local/Evidence/cf-locale-identifier/generate-tables.py,
-// which also checks that the iOS Simulator and iOS Device images agree record for record.
+// Inferred organization: the seven helpers lie in one iOS Simulator __text region
+// (0x1c01a0324-0x1c01a1960) with CFLocaleCreateCanonicalLanguageIdentifierFromString (0x1c019ffd8, restored
+// here) and CFLocaleCreateCanonicalLocaleIdentifierFromString (not restored on this branch), their callers;
+// their tables are in __DATA_CONST,__const beside _localeStringPrefixToDefaults. The native source path is
+// not in the evidence; Source/CoreFoundation/Locale/OCFLocaleIdentifier.c is a local spelling.
+// _localeStringPrefixToCanonical and _specialCases were decoded from the capture by
+// Local/Evidence/cf-locale-identifier/generate-tables.py, which also checks that the iOS Simulator and iOS
+// Device images agree record for record; _oldAppleLocaleToCanonical, _localeStringPrefixToDefaults and
+// _appleLocaleToLanguageString were decoded from the iOS Simulator image only.
 // Character classes: the native code expands the <ctype.h> inlines against _DefaultRuneLocale (a
 // sign-tested index into __runetype, otherwise __maskrune) with masks 0x100 (alpha), 0x500 (alnum),
 // 0x800 (graph), 0x4000 (space) and 0x8000 (upper); the same inlines are used here. Case conversion
 // calls __tolower and __toupper.
+
+// Native oldAppleLocaleToCanonical, iOS Simulator 24A434, 0x22279e1a0 (__DATA_CONST,__const, 184 sixteen-byte
+// records: the bsearch count 0xb8 of CFLocaleCreateCanonicalLanguageIdentifierFromString), UUID
+// D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified (decoded with Local/Scratch/cf-core/macho.py).
+// Non-external. Sorted by key in byte order. iOS Device 24A446: unread.
+static const LocaleStringMapping oldAppleLocaleToCanonical[184] = {
+    {"Afrikaans", "af"},
+    {"Albanian", "sq"},
+    {"Amharic", "am"},
+    {"Arabic", "ar"},
+    {"Armenian", "hy"},
+    {"Assamese", "as"},
+    {"Aymara", "ay"},
+    {"Azerbaijani", "az"},
+    {"Basque", "eu"},
+    {"Belarusian", "be"},
+    {"Belorussian", "be"},
+    {"Bengali", "bn"},
+    {"Brazilian Portugese", "pt-BR"},
+    {"Brazilian Portuguese", "pt-BR"},
+    {"Breton", "br"},
+    {"Bulgarian", "bg"},
+    {"Burmese", "my"},
+    {"Byelorussian", "be"},
+    {"Catalan", "ca"},
+    {"Chewa", "ny"},
+    {"Chichewa", "ny"},
+    {"Chinese", "zh"},
+    {"Chinese, Simplified", "zh-Hans"},
+    {"Chinese, Traditional", "zh-Hant"},
+    {"Chinese, Tradtional", "zh-Hant"},
+    {"Croatian", "hr"},
+    {"Czech", "cs"},
+    {"Danish", "da"},
+    {"Dutch", "nl"},
+    {"Dzongkha", "dz"},
+    {"English", "en"},
+    {"Esperanto", "eo"},
+    {"Estonian", "et"},
+    {"Faroese", "fo"},
+    {"Farsi", "fa"},
+    {"Finnish", "fi"},
+    {"Flemish", "nl-BE"},
+    {"French", "fr"},
+    {"Galician", "gl"},
+    {"Gallegan", "gl"},
+    {"Georgian", "ka"},
+    {"German", "de"},
+    {"Greek", "el"},
+    {"Greenlandic", "kl"},
+    {"Guarani", "gn"},
+    {"Gujarati", "gu"},
+    {"Hawaiian", "haw"},
+    {"Hebrew", "he"},
+    {"Hindi", "hi"},
+    {"Hungarian", "hu"},
+    {"Icelandic", "is"},
+    {"Indonesian", "id"},
+    {"Inuktitut", "iu"},
+    {"Irish", "ga"},
+    {"Italian", "it"},
+    {"Japanese", "ja"},
+    {"Javanese", "jv"},
+    {"Kalaallisut", "kl"},
+    {"Kannada", "kn"},
+    {"Kashmiri", "ks"},
+    {"Kazakh", "kk"},
+    {"Khmer", "km"},
+    {"Kinyarwanda", "rw"},
+    {"Kirghiz", "ky"},
+    {"Korean", "ko"},
+    {"Kurdish", "ku"},
+    {"Lao", "lo"},
+    {"Latin", "la"},
+    {"Latvian", "lv"},
+    {"Lithuanian", "lt"},
+    {"Macedonian", "mk"},
+    {"Malagasy", "mg"},
+    {"Malay", "ms"},
+    {"Malayalam", "ml"},
+    {"Maltese", "mt"},
+    {"Manx", "gv"},
+    {"Marathi", "mr"},
+    {"Moldavian", "mo"},
+    {"Mongolian", "mn"},
+    {"Nepali", "ne"},
+    {"Norwegian", "nb"},
+    {"Nyanja", "ny"},
+    {"Nynorsk", "nn"},
+    {"Oriya", "or"},
+    {"Oromo", "om"},
+    {"Panjabi", "pa"},
+    {"Pashto", "ps"},
+    {"Persian", "fa"},
+    {"Polish", "pl"},
+    {"Portuguese", "pt"},
+    {"Portuguese, Brazilian", "pt-BR"},
+    {"Punjabi", "pa"},
+    {"Pushto", "ps"},
+    {"Quechua", "qu"},
+    {"Romanian", "ro"},
+    {"Ruanda", "rw"},
+    {"Rundi", "rn"},
+    {"Russian", "ru"},
+    {"Sami", "se"},
+    {"Sanskrit", "sa"},
+    {"Scottish", "gd"},
+    {"Serbian", "sr"},
+    {"Simplified Chinese", "zh-Hans"},
+    {"Sindhi", "sd"},
+    {"Sinhalese", "si"},
+    {"Slovak", "sk"},
+    {"Slovenian", "sl"},
+    {"Somali", "so"},
+    {"Spanish", "es"},
+    {"Sundanese", "su"},
+    {"Swahili", "sw"},
+    {"Swedish", "sv"},
+    {"Tagalog", "fil"},
+    {"Tajik", "tg"},
+    {"Tajiki", "tg"},
+    {"Tamil", "ta"},
+    {"Tatar", "tt"},
+    {"Telugu", "te"},
+    {"Thai", "th"},
+    {"Tibetan", "bo"},
+    {"Tigrinya", "ti"},
+    {"Tongan", "to"},
+    {"Traditional Chinese", "zh-Hant"},
+    {"Turkish", "tr"},
+    {"Turkmen", "tk"},
+    {"Uighur", "ug"},
+    {"Ukrainian", "uk"},
+    {"Urdu", "ur"},
+    {"Uzbek", "uz"},
+    {"Vietnamese", "vi"},
+    {"Welsh", "cy"},
+    {"Yiddish", "yi"},
+    {"ar_??", "ar"},
+    {"az.Ar", "az-Arab"},
+    {"az.Cy", "az-Cyrl"},
+    {"az.La", "az"},
+    {"be_??", "be_BY"},
+    {"bn_??", "bn"},
+    {"bo_??", "bo"},
+    {"br_??", "br"},
+    {"cy_??", "cy"},
+    {"de-96", "de-1996"},
+    {"de_96", "de-1996"},
+    {"de_??", "de-1996"},
+    {"el.El-P", "grc"},
+    {"en-ascii", "en_001"},
+    {"en_??", "en_001"},
+    {"eo_??", "eo"},
+    {"es_??", "es_419"},
+    {"es_XL", "es_419"},
+    {"fr_??", "fr_001"},
+    {"ga-dots", "ga-Latg"},
+    {"ga-dots_IE", "ga-Latg_IE"},
+    {"ga.Lg", "ga-Latg"},
+    {"ga.Lg_IE", "ga-Latg_IE"},
+    {"gd_??", "gd"},
+    {"gv_??", "gv"},
+    {"jv.La", "jv"},
+    {"jw.La", "jv"},
+    {"kk.Cy", "kk"},
+    {"kl.La", "kl"},
+    {"kl.La_GL", "kl_GL"},
+    {"lp_??", "se"},
+    {"mk_??", "mk_MK"},
+    {"mn.Cy", "mn"},
+    {"mn.Mn", "mn-Mong"},
+    {"ms.Ar", "ms-Arab"},
+    {"ms.La", "ms"},
+    {"nl-be", "nl-BE"},
+    {"nl-be_BE", "nl_BE"},
+    {"no-NO", "nb-NO"},
+    {"no-NO_NO", "nb-NO_NO"},
+    {"pa_??", "pa"},
+    {"sa.Dv", "sa"},
+    {"sl_??", "sl_SI"},
+    {"sr_??", "sr_RS"},
+    {"su.La", "su"},
+    {"yi.He", "yi"},
+    {"zh-simp", "zh-Hans"},
+    {"zh-trad", "zh-Hant"},
+    {"zh.Ha-S", "zh-Hans"},
+    {"zh.Ha-S_CN", "zh_CN"},
+    {"zh.Ha-T", "zh-Hant"},
+    {"zh.Ha-T_TW", "zh_TW"},
+};
+
+// Native localeStringPrefixToDefaults, iOS Simulator 24A434, 0x22279ed20 (__DATA_CONST,__const, 183
+// sixteen-byte records: the bsearch count 0xb7), UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence:
+// verified (decoded with Local/Scratch/cf-core/macho.py). Non-external. Sorted by key in byte order. iOS
+// Device 24A446: unread.
+static const LocaleStringMapping localeStringPrefixToDefaults[183] = {
+    {"ab-", "-Cyrl"},  {"af-", "-Latn"},  {"agq-", "-Latn"}, {"ak-", "-Latn"},  {"am-", "-Ethi"},
+    {"ar-", "-Arab"},  {"ars-", "-Arab"}, {"as-", "-Beng"},  {"asa-", "-Latn"}, {"ay-", "-Latn"},
+    {"az-", "-Latn"},  {"bas-", "-Latn"}, {"be-", "-Cyrl"},  {"bem-", "-Latn"}, {"bez-", "-Latn"},
+    {"bg-", "-Cyrl"},  {"bm-", "-Latn"},  {"bn-", "-Beng"},  {"bo-", "-Tibt"},  {"br-", "-Latn"},
+    {"brx-", "-Deva"}, {"bs-", "-Latn"},  {"ca-", "-Latn"},  {"cgg-", "-Latn"}, {"chr-", "-Cher"},
+    {"cs-", "-Latn"},  {"cy-", "-Latn"},  {"da-", "-Latn"},  {"dav-", "-Latn"}, {"de-", "-Latn -1901"},
+    {"dje-", "-Latn"}, {"dua-", "-Latn"}, {"dv-", "-Thaa"},  {"dyo-", "-Latn"}, {"dz-", "-Tibt"},
+    {"ebu-", "-Latn"}, {"ee-", "-Latn"},  {"el-", "-Grek"},  {"en-", "-Latn"},  {"eo-", "-Latn"},
+    {"es-", "-Latn"},  {"et-", "-Latn"},  {"eu-", "-Latn"},  {"ewo-", "-Latn"}, {"fa-", "-Arab"},
+    {"ff-", "-Latn"},  {"fi-", "-Latn"},  {"fil-", "-Latn"}, {"fo-", "-Latn"},  {"fr-", "-Latn"},
+    {"ga-", "-Latn"},  {"gd-", "-Latn"},  {"gl-", "-Latn"},  {"gn-", "-Latn"},  {"gsw-", "-Latn"},
+    {"gu-", "-Gujr"},  {"guz-", "-Latn"}, {"gv-", "-Latn"},  {"ha-", "-Latn"},  {"haw-", "-Latn"},
+    {"he-", "-Hebr"},  {"hi-", "-Deva"},  {"hr-", "-Latn"},  {"hu-", "-Latn"},  {"hy-", "-Armn"},
+    {"id-", "-Latn"},  {"ig-", "-Latn"},  {"ii-", "-Yiii"},  {"is-", "-Latn"},  {"it-", "-Latn"},
+    {"ja-", "-Jpan"},  {"jmc-", "-Latn"}, {"ka-", "-Geor"},  {"kab-", "-Latn"}, {"kam-", "-Latn"},
+    {"kde-", "-Latn"}, {"kea-", "-Latn"}, {"khq-", "-Latn"}, {"ki-", "-Latn"},  {"kk-", "-Cyrl"},
+    {"kl-", "-Latn"},  {"km-", "-Khmr"},  {"kn-", "-Knda"},  {"ko-", "-Hang"},  {"kok-", "-Deva"},
+    {"ks-", "-Aran"},  {"ksb-", "-Latn"}, {"ksf-", "-Latn"}, {"kw-", "-Latn"},  {"ky-", "-Cyrl"},
+    {"la-", "-Latn"},  {"lag-", "-Latn"}, {"lb-", "-Latn"},  {"lg-", "-Latn"},  {"ln-", "-Latn"},
+    {"lo-", "-Laoo"},  {"lt-", "-Latn"},  {"lu-", "-Latn"},  {"luo-", "-Latn"}, {"luy-", "-Latn"},
+    {"lv-", "-Latn"},  {"mas-", "-Latn"}, {"mer-", "-Latn"}, {"mfe-", "-Latn"}, {"mg-", "-Latn"},
+    {"mgh-", "-Latn"}, {"mk-", "-Cyrl"},  {"ml-", "-Mlym"},  {"mn-", "-Cyrl"},  {"mo-", "-Latn"},
+    {"mr-", "-Deva"},  {"ms-", "-Latn"},  {"mt-", "-Latn"},  {"mua-", "-Latn"}, {"my-", "-Mymr"},
+    {"naq-", "-Latn"}, {"nb-", "-Latn"},  {"nd-", "-Latn"},  {"ne-", "-Deva"},  {"nl-", "-Latn"},
+    {"nmg-", "-Latn"}, {"nn-", "-Latn"},  {"nus-", "-Latn"}, {"ny-", "-Latn"},  {"nyn-", "-Latn"},
+    {"om-", "-Latn"},  {"or-", "-Orya"},  {"pa-", "-Guru"},  {"pl-", "-Latn"},  {"ps-", "-Arab"},
+    {"pt-", "-Latn"},  {"qu-", "-Latn"},  {"rm-", "-Latn"},  {"rn-", "-Latn"},  {"ro-", "-Latn"},
+    {"rof-", "-Latn"}, {"ru-", "-Cyrl"},  {"rw-", "-Latn"},  {"rwk-", "-Latn"}, {"sa-", "-Deva"},
+    {"saq-", "-Latn"}, {"sbp-", "-Latn"}, {"se-", "-Latn"},  {"seh-", "-Latn"}, {"ses-", "-Latn"},
+    {"sg-", "-Latn"},  {"shi-", "-Latn"}, {"si-", "-Sinh"},  {"sk-", "-Latn"},  {"sl-", "-Latn"},
+    {"sn-", "-Latn"},  {"so-", "-Latn"},  {"sq-", "-Latn"},  {"sr-", "-Cyrl"},  {"sv-", "-Latn"},
+    {"sw-", "-Latn"},  {"swc-", "-Latn"}, {"ta-", "-Taml"},  {"te-", "-Telu"},  {"teo-", "-Latn"},
+    {"tg-", "-Cyrl"},  {"th-", "-Thai"},  {"ti-", "-Ethi"},  {"tk-", "-Latn"},  {"tn-", "-Latn"},
+    {"to-", "-Latn"},  {"tr-", "-Latn"},  {"twq-", "-Latn"}, {"tzm-", "-Latn"}, {"uk-", "-Cyrl"},
+    {"ur-", "-Aran"},  {"uz-", "-Latn"},  {"vai-", "-Vaii"}, {"vi-", "-Latn"},  {"vun-", "-Latn"},
+    {"wo-", "-Latn"},  {"xh-", "-Latn"},  {"xog-", "-Latn"}, {"yav-", "-Latn"}, {"yi-", "-Hebr"},
+    {"yo-", "-Latn"},  {"zh-", "-Hani"},  {"zu-", "-Latn"},
+};
+
+// Native appleLocaleToLanguageString, iOS Simulator 24A434, 0x22279f890 (__DATA_CONST,__const, 6 sixteen-byte
+// records: the bsearch count 6), UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified (decoded
+// with Local/Scratch/cf-core/macho.py). Non-external. Sorted by key in byte order. iOS Device 24A446: unread.
+static const LocaleStringMapping appleLocaleToLanguageString[6] = {
+    {"en_US_POSIX", "en-US-POSIX"},
+    {"zh_CN", "zh-Hans"},
+    {"zh_HK", "zh-HK"},
+    {"zh_MO", "zh-MO"},
+    {"zh_SG", "zh-SG"},
+    {"zh_TW", "zh-Hant"},
+};
 
 // Native _localeStringPrefixToCanonical, iOS Simulator 24A434, 0x2227a0b98 (__DATA_CONST,__const, 304
 // sixteen-byte records: the bsearch count 0x130 and width 0x10 of __UpdateFullLocaleString), UUID
@@ -146,6 +397,119 @@ static const LocaleSpecialCase specialCases[8] = {
     {"sh", "-HR", "hr", "-RS", "sr"},
     {NULL, NULL, NULL, NULL, NULL},
 };
+
+// Native CFLocaleCreateCanonicalLanguageIdentifierFromString, iOS Simulator 24A434, 0x1c019ffd8, UUID
+// D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified (assembly read in full). External. iOS Device
+// 24A446: unread. NULL for a NULL identifier or one that does not convert to ASCII in 257 bytes. A keyword
+// part from the first '@' is moved, without spaces, to a 257-byte buffer (the '@' kept). The identifiers
+// starting "aa_SAAHO", "no_BOKMAL" and "no_NYNORSK" (compared as 8-, 9- and 10-byte prefixes, as the native
+// 64-bit and 8/16-bit loads do) become "ssy", "nb" and "nn"; otherwise _oldAppleLocaleToCanonical maps the
+// whole string, and a string it does not map goes through _UpdateFullLocaleString (with a 257-byte key/value
+// buffer), whose region is cut at the underscore form when both region pointers are set. A mapped string
+// clears the key/value buffer. A prefix found in _localeStringPrefixToDefaults has its default substrings
+// removed. _appleLocaleToLanguageString then maps the whole string; otherwise, at the first '_', a region of
+// letters (counted as 3) or of digits (counted as 4) whose start is the '_' turns the '_' into '-', any other
+// byte after it clears the '_', and the string ends after the region. The key/value and keyword buffers are
+// appended, in that order, and the result is created from the ASCII string. The copies are strlcpy with the
+// buffer size 257, standing for the native fortified __strlcpy_chk(buffer, source, 257, 257).
+OCFLocaleIdentifier OCFLocaleCreateCanonicalLanguageIdentifierFromString(
+    OCFAllocatorRef allocator, OCFStringRef localeIdentifier
+) {
+    char buffer[257];
+    char keyValues[257];
+    char keywords[257];
+    if (localeIdentifier == NULL) {
+        return NULL;
+    }
+    if (!OCFStringGetCString(localeIdentifier, buffer, 257, kOCFStringEncodingASCII)) {
+        return NULL;
+    }
+    LocaleStringMapping key = {NULL, NULL};
+    char *cursor = buffer;
+    while (*cursor != 0 && *cursor != '@') {
+        cursor++;
+    }
+    if (*cursor == '@') {
+        keywords[0] = '@';
+        *cursor = 0;
+        char *out = keywords;
+        do {
+            char c;
+            do {
+                c = *++cursor;
+            } while (c == ' ');
+            *++out = c;
+        } while (*cursor != 0);
+    } else {
+        keywords[0] = 0;
+    }
+    key.key = buffer;
+    key.value = NULL;
+    const char *replacement = NULL;
+    if (memcmp(buffer, "aa_SAAHO", 8) == 0) {
+        replacement = "ssy";
+    } else if (memcmp(buffer, "no_BOKMA", 8) == 0 && buffer[8] == 'L') {
+        replacement = "nb";
+    } else if (memcmp(buffer, "no_NYNOR", 8) == 0 && memcmp(buffer + 8, "SK", 2) == 0) {
+        replacement = "nn";
+    } else {
+        const LocaleStringMapping *found =
+            bsearch(&key, oldAppleLocaleToCanonical, 0xb8, 0x10, _CompareTestEntryToTableEntryKey);
+        if (found != NULL) {
+            replacement = found->value;
+        } else {
+            char *underscoreRegion = NULL;
+            char *hyphenRegion = NULL;
+            _UpdateFullLocaleString(buffer, &hyphenRegion, &underscoreRegion, keyValues);
+            if (hyphenRegion != NULL && underscoreRegion != NULL) {
+                *underscoreRegion = 0;
+            }
+        }
+    }
+    if (replacement != NULL) {
+        strlcpy(buffer, replacement, 257);
+        keyValues[0] = 0;
+    }
+    key.key = buffer;
+    const LocaleStringMapping *defaults =
+        bsearch(&key, localeStringPrefixToDefaults, 0xb7, 0x10, _CompareTestEntryPrefixToTableEntryKey);
+    if (defaults != NULL) {
+        _RemoveSubstringsIfPresent(buffer, defaults->value);
+    }
+    key.key = buffer;
+    const LocaleStringMapping *language =
+        bsearch(&key, appleLocaleToLanguageString, 6, 0x10, _CompareTestEntryToTableEntryKey);
+    if (language != NULL) {
+        strlcpy(buffer, language->value, 257);
+    } else {
+        char *position = buffer;
+        while (*position != 0) {
+            if (*position == '_') {
+                char *region = position + 1;
+                int64_t width;
+                if (isalpha(*region)) {
+                    width = 3;
+                    while (isalpha(*++region)) {
+                    }
+                } else if ((unsigned)(*region - '0') <= 9) {
+                    width = 4;
+                    while ((unsigned)(*++region - '0') < 10) {
+                    }
+                } else {
+                    width = 0;
+                }
+                *position = region - width == position ? '-' : 0;
+                position = region;
+                break;
+            }
+            position++;
+        }
+        *position = 0;
+    }
+    _AppendKeyValueString(buffer, keyValues);
+    _AppendKeyValueString(buffer, keywords);
+    return OCFStringCreateWithCString(allocator, buffer, kOCFStringEncodingASCII);
+}
 
 // Native _CompareTestEntryToTableEntryKey, iOS Simulator 24A434, 0x1c01a0324, UUID
 // D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external bsearch callback: loads the

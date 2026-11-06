@@ -4,16 +4,781 @@
 //
 
 #include "CoreFoundation/StringEncoding/OCFStringEncodingConverter.h"
+#include "CoreFoundation/StringEncoding/OCFICUConverters.h"
+#include "CoreFoundation/StringEncoding/OCFPlatformConverter.h"
+#include "CoreFoundation/StringEncoding/OCFSingleByte.h"
+#include "CoreFoundation/StringEncoding/OCFStringEncodingDatabase.h"
+#include "CoreFoundation/StringEncoding/OCFUTF8.h"
+#include "CoreFoundation/Runtime/OCFRuntime.h"
 #include "CoreFoundation/Unicode/OCFUniChar.h"
 
 #include <string.h>
 
-// Inferred organization: the nine wrappers (0x1c022b484-0x1c022bf68), __CFDefaultToBytesFallbackProc
-// (0x1c022bf68) and __CFDefaultToUnicodeFallbackProc (0x1c022c174) are contiguous in the iOS Simulator
-// __text section and are kept in one translation unit. The native source path is not in the evidence.
-// __CFStrConvertBytesToUnicode (0x1c022c2a4), which follows them, is an open group: its character table is
-// rewritten at run time by the function at 0x1c022c1a4, which calls the unrestored
+// Inferred organization: the converter registry (CFStringEncodingUnicodeToBytes 0x1c0229f60 through
+// CFStringEncodingByteLengthForCharacters 0x1c022b0dc, with __CFGetConverter at 0x1c022a8ac), the nine
+// wrappers (0x1c022b484-0x1c022bf68), __CFDefaultToBytesFallbackProc (0x1c022bf68) and
+// __CFDefaultToUnicodeFallbackProc (0x1c022c174) are contiguous in the iOS Simulator __text section and are
+// kept in one translation unit. The native source path is not in the evidence. __CFStrConvertBytesToUnicode
+// (0x1c022c2a4), which follows them, is an open group: its character table is rewritten at run time by
+// __CFSetCharToUniCharFunc (0x1c022c1a4, String/OCFStringByteStream.c), which calls
 // CFStringEncodingGetConverter.
+//
+// The registry definitions below: iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC;
+// confidence: verified; iOS Device 24A446: unread. Every caller of __CFGetConverter that later reads the
+// fallback slots stores zeros into them before the call (STP XZR, XZR); the callee writes the whole 48-byte
+// value on every path, so the stores have no observable effect and are not reproduced. Reading:
+// Documentation/Reference/Research/CoreFoundationStringEncoding.md.
+
+// Count-only conversions pass a NULL buffer with a zero capacity and still advance the buffer position;
+// the native code forms these addresses with integer arithmetic, as here, never dereferencing them.
+static inline uint8_t *bytesAtOffset(uint8_t *bytes, OCFIndex offset) {
+    return (uint8_t *)((uintptr_t)bytes + (uintptr_t)offset);
+}
+
+static inline uint16_t *charactersAtOffset(uint16_t *characters, OCFIndex offset) {
+    return (uint16_t *)((uintptr_t)characters + ((uintptr_t)offset << 1));
+}
+
+// Native CFStringEncodingUnicodeToBytes, 0x1c0229f60. External.
+// UTF-8 (0x8000100) never reaches __CFGetConverter: flags & 0xc0 decomposes through CFUniCharDecompose
+// (reorder, UTF-8 format 2, HFS from bit 7); otherwise the converter record's to-bytes callback, cached once
+// in the function-local static (native _CFStringEncodingUnicodeToBytes.__CFToUTF8, __DATA,__bss), converts
+// with flags 0. The result is then 0 when every unit was used, 1 for no capacity, more than nine bytes left,
+// a lone low surrogate or a high surrogate without a following unit or followed by a non-low-surrogate, and 2
+// otherwise. Other encodings: bit 3 drops precomposition (and, with bit 0, the combining test); otherwise bit
+// 5 drops precomposition and its absence adds bit 0x10 to the flags passed on. Classes 4 and 5 forward the
+// modified flags. A unit the converter stops at is handled in this order: an insufficient buffer (the
+// capacity is exactly used, or the converter would accept the unit with no buffer) ends with 2; a combining
+// unit after at least one converted unit is precomposed with the units before it when the record has a
+// precompose callback; otherwise bit 0 selects the lossy byte (flags >> 24) or the record's fallback.
+// Combining units without a precompose callback skip the bit 0 test. Results: 0, 1 (invalid input), 2
+// (insufficient buffer), 3 (no converter).
+uint32_t OCFStringEncodingUnicodeToBytes(
+    uint32_t encoding,
+    uint32_t flags,
+    const uint16_t *characters,
+    OCFIndex numChars,
+    OCFIndex *usedCharLen,
+    uint8_t *bytes,
+    OCFIndex maxByteLen,
+    OCFIndex *usedByteLen
+) {
+    if (encoding == 0x8000100) {
+        OCFIndex theUsedCharLen = 0;
+        OCFIndex theUsedByteLen = 0;
+        if ((flags & 0xc0) != 0) {
+            OCFUniCharDecompose(
+                characters,
+                numChars,
+                &theUsedCharLen,
+                bytes,
+                maxByteLen,
+                &theUsedByteLen,
+                true,
+                2,
+                ((flags >> 7) & 1) != 0
+            );
+        } else {
+            static StringEncodingStandardToBytesProc toUTF8 = NULL;
+            if (toUTF8 == NULL) {
+                toUTF8 = __CFConverterUTF8.toBytes.standard;
+            }
+            theUsedCharLen = toUTF8(0, characters, numChars, bytes, maxByteLen, &theUsedByteLen);
+        }
+        if (usedCharLen != NULL) {
+            *usedCharLen = theUsedCharLen;
+        }
+        if (usedByteLen != NULL) {
+            *usedByteLen = theUsedByteLen;
+        }
+        OCFIndex remaining = numChars - theUsedCharLen;
+        if (remaining == 0) {
+            return 0;
+        }
+        if (maxByteLen < 1) {
+            return 1;
+        }
+        if (maxByteLen - theUsedByteLen > 9) {
+            return 1;
+        }
+        const uint16_t *character = characters + theUsedCharLen;
+        uint32_t kind = character[0] & 0xfc00;
+        if (kind == 0xdc00) {
+            return 1;
+        }
+        if (kind != 0xd800) {
+            return 2;
+        }
+        if (remaining == 1) {
+            return 1;
+        }
+        if ((uint32_t)(character[1] - 0xe000) >= 0xfffffc00) {
+            return 2;
+        }
+        return 1;
+    }
+
+    StringEncodingRuntimeConverter converter = __CFGetConverter(encoding);
+    OCFIndex localUsed = 0;
+    const StringEncodingConverterRecord *definition = converter.definition;
+    if (definition == NULL) {
+        return 3;
+    }
+    StringEncodingIsValidCombiningCharProc isValidCombiningChar;
+    StringEncodingToBytesPrecomposeProc toBytesPrecompose;
+    if ((flags & 8) != 0) {
+        toBytesPrecompose = NULL;
+        isValidCombiningChar = (flags & 1) != 0 ? NULL : definition->isValidCombiningChar;
+    } else {
+        isValidCombiningChar = definition->isValidCombiningChar;
+        if ((flags & 0x20) != 0) {
+            toBytesPrecompose = NULL;
+        } else {
+            toBytesPrecompose = definition->toBytesPrecompose;
+            flags |= 0x10;
+        }
+    }
+    if (definition->encodingClass == 4) {
+        return __CFStringEncodingPlatformUnicodeToBytes(
+            encoding, flags, characters, numChars, usedCharLen, bytes, maxByteLen, usedByteLen
+        );
+    }
+    if (definition->encodingClass == 5) {
+        return (uint32_t)__CFStringEncodingICUToBytes(
+            converter.toBytes.icuName,
+            flags,
+            characters,
+            numChars,
+            usedCharLen,
+            bytes,
+            maxByteLen,
+            usedByteLen
+        );
+    }
+
+    OCFIndex theUsedByteLen = 0;
+    OCFIndex theUsedCharLen = 0;
+    uint32_t result = 0;
+    if (numChars >= 1) {
+        uint8_t lossyByte = (uint8_t)(flags >> 24);
+        StringEncodingToBytesWrapperProc toBytes = converter.toBytes.wrapper;
+        StringEncodingToBytesFallbackProc toBytesFallback = converter.toBytesFallback;
+        for (;;) {
+            if (maxByteLen != 0 && maxByteLen <= theUsedByteLen) {
+                break;
+            }
+            OCFIndex capacity = maxByteLen != 0 ? maxByteLen - theUsedByteLen : 0;
+            OCFIndex processed;
+            if (toBytes != NULL) {
+                processed = toBytes(
+                    definition,
+                    flags,
+                    characters + theUsedCharLen,
+                    numChars - theUsedCharLen,
+                    bytesAtOffset(bytes, theUsedByteLen),
+                    capacity,
+                    &localUsed
+                );
+            } else {
+                processed = definition->toBytes.standard(
+                    flags,
+                    characters + theUsedCharLen,
+                    numChars - theUsedCharLen,
+                    bytesAtOffset(bytes, theUsedByteLen),
+                    capacity,
+                    &localUsed
+                );
+            }
+            OCFIndex index = processed + theUsedCharLen;
+            OCFIndex remaining = numChars - index;
+            if (remaining <= 0) {
+                theUsedCharLen = index;
+                goto next;
+            }
+            OCFIndex probeUsed = 0;
+            const uint16_t *current = characters + index;
+            if (isValidCombiningChar == NULL || index < 1 || !isValidCombiningChar(*current)) {
+                if (maxByteLen != 0) {
+                    if (maxByteLen == localUsed + theUsedByteLen) {
+                        goto insufficient;
+                    }
+                    OCFIndex probe;
+                    if (toBytes != NULL) {
+                        probe = toBytes(definition, flags, current, remaining, NULL, 0, &probeUsed);
+                    } else {
+                        probe = definition->toBytes.standard(flags, current, remaining, NULL, 0, &probeUsed);
+                    }
+                    if (probe != 0) {
+                        goto insufficient;
+                    }
+                }
+                theUsedByteLen += localUsed;
+                if ((flags & 1) == 0) {
+                    result = 1;
+                    theUsedCharLen = index;
+                    goto check;
+                }
+                if (lossyByte != 0) {
+                    goto lossy;
+                }
+                theUsedCharLen = toBytesFallback(
+                                     current,
+                                     remaining,
+                                     bytesAtOffset(bytes, theUsedByteLen),
+                                     maxByteLen != 0 ? maxByteLen - theUsedByteLen : 0,
+                                     &localUsed
+                                 ) +
+                                 index;
+                goto next;
+            }
+            if (toBytesPrecompose == NULL) {
+                if (maxByteLen != 0) {
+                    OCFIndex probe;
+                    if (maxByteLen == localUsed + theUsedByteLen) {
+                        probe = 1;
+                    } else if (toBytes != NULL) {
+                        probe = toBytes(definition, flags, current, remaining, NULL, 0, &probeUsed);
+                    } else {
+                        probe = definition->toBytes.standard(flags, current, remaining, NULL, 0, &probeUsed);
+                    }
+                    if (probe != 0) {
+                        theUsedByteLen += localUsed;
+                        result = 2;
+                        theUsedCharLen = index;
+                        goto check;
+                    }
+                }
+                if ((flags & 0x20) != 0) {
+                    theUsedCharLen = index + 1;
+                    while (theUsedCharLen < numChars &&
+                           (isValidCombiningChar(characters[theUsedCharLen]) & 1)) {
+                        ++theUsedCharLen;
+                    }
+                    goto next;
+                }
+                theUsedByteLen += localUsed;
+                if (lossyByte != 0) {
+                    goto lossy;
+                }
+                theUsedCharLen = toBytesFallback(
+                                     current,
+                                     remaining,
+                                     bytesAtOffset(bytes, theUsedByteLen),
+                                     maxByteLen != 0 ? maxByteLen - theUsedByteLen : 0,
+                                     &localUsed
+                                 ) +
+                                 index;
+                goto next;
+            }
+
+            // Back up over the combining units before the stop, to the base unit (offset <= -1).
+            OCFIndex offset = 0;
+            OCFIndex before;
+            bool valid;
+            do {
+                before = index + offset;
+                valid = isValidCombiningChar(current[offset - 1]);
+                --offset;
+            } while ((uint64_t)before >= 2 && valid);
+            const uint16_t *base = current + offset;
+            theUsedByteLen += localUsed;
+            if (definition->maxBytesPerChar < 2) {
+                theUsedByteLen -= 1;
+            } else {
+                if (toBytes != NULL) {
+                    toBytes(definition, flags, base, -offset, NULL, 0, &localUsed);
+                } else {
+                    definition->toBytes.standard(flags, base, -offset, NULL, 0, &localUsed);
+                }
+                theUsedByteLen -= localUsed;
+            }
+            OCFIndex rest = numChars - processed - theUsedCharLen;
+            OCFIndex precomposeCapacity = maxByteLen != 0 ? maxByteLen - theUsedByteLen : 0;
+            OCFIndex precomposed = toBytesPrecompose(
+                flags,
+                base,
+                rest - offset,
+                bytesAtOffset(bytes, theUsedByteLen),
+                precomposeCapacity,
+                &localUsed
+            );
+            if (precomposed >= 1) {
+                OCFIndex after = precomposed + index + offset;
+                if (after < numChars && isValidCombiningChar(characters[after])) {
+                    theUsedByteLen += localUsed;
+                    theUsedCharLen = processed + theUsedCharLen + precomposed + offset;
+                    result = 1;
+                    goto check;
+                }
+                theUsedCharLen = after;
+                goto next;
+            }
+            if ((flags & 1) == 0) {
+                theUsedCharLen = processed + theUsedCharLen + offset;
+                result = 1;
+                goto check;
+            }
+            if (lossyByte != 0) {
+                theUsedCharLen = index + offset + 1;
+                while (theUsedCharLen < numChars && (isValidCombiningChar(characters[theUsedCharLen]) & 1)) {
+                    ++theUsedCharLen;
+                }
+                localUsed = 1;
+                if (maxByteLen != 0) {
+                    bytes[theUsedByteLen] = lossyByte;
+                }
+                goto next;
+            }
+            // The base unit is dropped: the fallback starts after it, and its bytes were subtracted above.
+            theUsedCharLen = toBytesFallback(
+                                 base + 1,
+                                 rest + ~offset,
+                                 bytesAtOffset(bytes, theUsedByteLen),
+                                 precomposeCapacity,
+                                 &localUsed
+                             ) +
+                             index + offset + 1;
+            goto next;
+
+        lossy:
+            theUsedCharLen = index + 1;
+            localUsed = 1;
+            if (maxByteLen != 0) {
+                bytes[theUsedByteLen] = lossyByte;
+            }
+            goto next;
+
+        insufficient:
+            theUsedByteLen += localUsed;
+            if ((flags & 0xff000001) == 1) {
+                localUsed = 0;
+                do {
+                    OCFIndex count =
+                        toBytesFallback(characters + index, numChars - index, NULL, 0, &localUsed);
+                    if (count == 0) {
+                        break;
+                    }
+                    index += localUsed == 0 ? count : 0;
+                } while (index < numChars && localUsed == 0);
+            }
+            result = index < numChars ? 2 : 0;
+            theUsedCharLen = index;
+            goto check;
+
+        next:
+            theUsedByteLen += localUsed;
+            if (theUsedCharLen >= numChars) {
+                break;
+            }
+        }
+    }
+    result = 0;
+
+check:
+    if (maxByteLen != 0 && theUsedCharLen < numChars && result == 0) {
+        if ((flags & 0xff000001) == 1) {
+            localUsed = 0;
+            StringEncodingToBytesFallbackProc toBytesFallback = converter.toBytesFallback;
+            do {
+                OCFIndex count = toBytesFallback(
+                    characters + theUsedCharLen, numChars - theUsedCharLen, NULL, 0, &localUsed
+                );
+                if (count == 0) {
+                    break;
+                }
+                theUsedCharLen += localUsed == 0 ? count : 0;
+            } while (theUsedCharLen < numChars && localUsed == 0);
+        }
+        result = theUsedCharLen < numChars ? 2 : 0;
+    }
+    if (usedByteLen != NULL) {
+        *usedByteLen = theUsedByteLen;
+    }
+    if (usedCharLen != NULL) {
+        *usedCharLen = theUsedCharLen;
+    }
+    return result;
+}
+
+// Native CFStringEncodingGetConverter, 0x1c022a7ec. Hidden (was private external).
+// MacRoman, ISO Latin 1, Windows Latin 1, ASCII, NextStep Latin and UTF-8 are answered directly; an encoding
+// with a nonzero upper halfword goes to __CFStringEncodingGetExternalConverter, and the rest try
+// __CFStringEncodingConverterGetUncommonConverter first (tail call to the external lookup when it fails).
+const StringEncodingConverterRecord *CFStringEncodingGetConverter(uint32_t encoding) {
+    switch (encoding) {
+        case 0:
+            return &__CFConverterMacRoman;
+        case 0x201:
+            return &__CFConverterISOLatin1;
+        case 0x500:
+            return &__CFConverterWinLatin1;
+        case 0x600:
+            return &__CFConverterASCII;
+        case 0xb01:
+            return &__CFConverterNextStepLatin;
+        case 0x8000100:
+            return &__CFConverterUTF8;
+        default:
+            break;
+    }
+    if ((encoding >> 16) == 0) {
+        const StringEncodingConverterRecord *converter =
+            __CFStringEncodingConverterGetUncommonConverter(encoding);
+        if (converter != NULL) {
+            return converter;
+        }
+    }
+    return __CFStringEncodingGetExternalConverter(encoding);
+}
+
+// Native __CFGetConverter, 0x1c022a8ac, with __CFGetConverter.cold.1 (0x1c030ca9c). Non-external; the
+// 48-byte value is returned through X8. The record is chosen as CFStringEncodingGetConverter chooses it (the
+// six common encodings, then the uncommon converter for encodings without an upper halfword, then the
+// external lookup); no record yields 48 zero bytes. Otherwise the value starts as the record and zeros, and
+// the record's class byte selects the wrappers: 1 cheap eight-bit, 2 standard eight-bit, 3 cheap multibyte
+// (to bytes, to Unicode and to canonical Unicode at 8, 16 and 24), 5 the ICU name from
+// __CFStringEncodingGetICUName at 8, 0 and 4 none; any other class crashes ("Cannot create encoding converter
+// for unknown encoding class"). The fallbacks are the record's, or __CFDefaultToBytesFallbackProc and
+// __CFDefaultToUnicodeFallbackProc when NULL.
+StringEncodingRuntimeConverter __CFGetConverter(uint32_t encoding) {
+    const StringEncodingConverterRecord *definition;
+    switch (encoding) {
+        case 0:
+            definition = &__CFConverterMacRoman;
+            break;
+        case 0x201:
+            definition = &__CFConverterISOLatin1;
+            break;
+        case 0x500:
+            definition = &__CFConverterWinLatin1;
+            break;
+        case 0x600:
+            definition = &__CFConverterASCII;
+            break;
+        case 0xb01:
+            definition = &__CFConverterNextStepLatin;
+            break;
+        case 0x8000100:
+            definition = &__CFConverterUTF8;
+            break;
+        default:
+            definition = NULL;
+            if ((encoding >> 16) == 0) {
+                definition = __CFStringEncodingConverterGetUncommonConverter(encoding);
+            }
+            if (definition == NULL) {
+                definition = __CFStringEncodingGetExternalConverter(encoding);
+            }
+            if (definition == NULL) {
+                StringEncodingRuntimeConverter empty;
+                memset(&empty, 0, sizeof(empty));
+                return empty;
+            }
+            break;
+    }
+    StringEncodingRuntimeConverter converter;
+    converter.definition = definition;
+    converter.toBytes.wrapper = NULL;
+    converter.toUnicode = NULL;
+    converter.toCanonicalUnicode = NULL;
+    switch (definition->encodingClass) {
+        case 0:
+        case 4:
+            break;
+        case 1:
+            converter.toBytes.wrapper = __CFToBytesCheapEightBitWrapper;
+            converter.toUnicode = __CFToUnicodeCheapEightBitWrapper;
+            converter.toCanonicalUnicode = __CFToCanonicalUnicodeCheapEightBitWrapper;
+            break;
+        case 2:
+            converter.toBytes.wrapper = __CFToBytesStandardEightBitWrapper;
+            converter.toUnicode = __CFToUnicodeStandardEightBitWrapper;
+            converter.toCanonicalUnicode = __CFToCanonicalUnicodeStandardEightBitWrapper;
+            break;
+        case 3:
+            converter.toBytes.wrapper = __CFToBytesCheapMultiByteWrapper;
+            converter.toUnicode = __CFToUnicodeCheapMultiByteWrapper;
+            converter.toCanonicalUnicode = __CFToCanonicalUnicodeCheapMultiByteWrapper;
+            break;
+        case 5:
+            converter.toBytes.icuName = __CFStringEncodingGetICUName(encoding);
+            break;
+        default:
+            crashWithMessage("Cannot create encoding converter for unknown encoding class");
+    }
+    StringEncodingToBytesFallbackProc toBytesFallback = definition->toBytesFallback;
+    StringEncodingToUnicodeFallbackProc toUnicodeFallback = definition->toUnicodeFallback;
+    converter.toBytesFallback = toBytesFallback == NULL ? __CFDefaultToBytesFallbackProc : toBytesFallback;
+    converter.toUnicodeFallback =
+        toUnicodeFallback == NULL ? __CFDefaultToUnicodeFallbackProc : toUnicodeFallback;
+    return converter;
+}
+
+// Native CFStringEncodingBytesToUnicode, 0x1c022aa6c. External.
+// Classes 4 and 5 forward every argument. Each round converts with the class wrapper (the canonical one when
+// flags & 0xc0) or, without a wrapper, the record's to-Unicode callback. When bytes remain: an exactly used
+// capacity ends with 2; with a capacity, the canonical flags or exactly one unit of room left, the remaining
+// bytes are probed with no buffer (accepted: 2; rejected without bit 0: 1); otherwise bit 0 clear ends with 1
+// and bit 0 set converts one step through the fallback. A loop that stops on the capacity check, or a final
+// result 0 with bytes left and a capacity, yields 2. Results: 0, 1, 2, 3 (no converter).
+uint32_t OCFStringEncodingBytesToUnicode(
+    uint32_t encoding,
+    uint32_t flags,
+    const uint8_t *bytes,
+    OCFIndex numBytes,
+    OCFIndex *usedByteLen,
+    uint16_t *characters,
+    OCFIndex maxCharLen,
+    OCFIndex *usedCharLen
+) {
+    StringEncodingRuntimeConverter converter = __CFGetConverter(encoding);
+    const StringEncodingConverterRecord *definition = converter.definition;
+    if (definition == NULL) {
+        return 3;
+    }
+    if (definition->encodingClass == 4) {
+        return __CFStringEncodingPlatformBytesToUnicode(
+            encoding, flags, bytes, numBytes, usedByteLen, characters, maxCharLen, usedCharLen
+        );
+    }
+    if (definition->encodingClass == 5) {
+        return (uint32_t)__CFStringEncodingICUToUnicode(
+            converter.toBytes.icuName,
+            flags,
+            bytes,
+            numBytes,
+            usedByteLen,
+            characters,
+            maxCharLen,
+            usedCharLen
+        );
+    }
+    OCFIndex theUsedByteLen = 0;
+    OCFIndex theUsedCharLen = 0;
+    uint32_t result = 0;
+    if (numBytes >= 1) {
+        uint32_t isHFS = flags & 0xc0;
+        OCFIndex localUsed = 0;
+        StringEncodingToUnicodeWrapperProc toUnicode = converter.toUnicode;
+        StringEncodingToUnicodeWrapperProc toCanonicalUnicode = converter.toCanonicalUnicode;
+        StringEncodingToUnicodeFallbackProc toUnicodeFallback = converter.toUnicodeFallback;
+        do {
+            if (maxCharLen != 0 && maxCharLen <= theUsedCharLen) {
+                break;
+            }
+            uint16_t *destination = charactersAtOffset(characters, theUsedCharLen);
+            OCFIndex capacity = maxCharLen != 0 ? maxCharLen - theUsedCharLen : 0;
+            OCFIndex processed;
+            if (toUnicode == NULL) {
+                processed = definition->toUnicode.standard(
+                    flags,
+                    bytes + theUsedByteLen,
+                    numBytes - theUsedByteLen,
+                    destination,
+                    capacity,
+                    &localUsed
+                );
+            } else if (isHFS == 0) {
+                processed = toUnicode(
+                    definition,
+                    flags,
+                    bytes + theUsedByteLen,
+                    numBytes - theUsedByteLen,
+                    destination,
+                    capacity,
+                    &localUsed
+                );
+            } else {
+                processed = toCanonicalUnicode(
+                    definition,
+                    flags,
+                    bytes + theUsedByteLen,
+                    numBytes - theUsedByteLen,
+                    destination,
+                    capacity,
+                    &localUsed
+                );
+            }
+            theUsedByteLen += processed;
+            OCFIndex remaining = numBytes - theUsedByteLen;
+            if (remaining > 0) {
+                OCFIndex probeUsed = 0;
+                bool probe = false;
+                if (maxCharLen != 0) {
+                    OCFIndex used = localUsed + theUsedCharLen;
+                    if (maxCharLen == used) {
+                        result = 2;
+                        theUsedCharLen += localUsed;
+                        goto finish;
+                    }
+                    probe = isHFS != 0 || maxCharLen == used + 1;
+                }
+                if (probe) {
+                    OCFIndex accepted;
+                    if (toUnicode == NULL) {
+                        accepted = definition->toUnicode.standard(
+                            flags, bytes + theUsedByteLen, remaining, NULL, 0, &probeUsed
+                        );
+                    } else if (isHFS == 0) {
+                        accepted = toUnicode(
+                            definition, flags, bytes + theUsedByteLen, remaining, NULL, 0, &probeUsed
+                        );
+                    } else {
+                        accepted = toCanonicalUnicode(
+                            definition, flags, bytes + theUsedByteLen, remaining, NULL, 0, &probeUsed
+                        );
+                    }
+                    if (accepted != 0 || (flags & 1) == 0) {
+                        result = accepted != 0 ? 2 : 1;
+                        theUsedCharLen += localUsed;
+                        goto finish;
+                    }
+                } else if ((flags & 1) == 0) {
+                    result = 1;
+                    theUsedCharLen += localUsed;
+                    goto finish;
+                }
+                theUsedCharLen += localUsed;
+                theUsedByteLen += toUnicodeFallback(
+                    bytes + theUsedByteLen,
+                    remaining,
+                    charactersAtOffset(characters, theUsedCharLen),
+                    maxCharLen != 0 ? maxCharLen - theUsedCharLen : 0,
+                    &localUsed
+                );
+            }
+            theUsedCharLen += localUsed;
+        } while (theUsedByteLen < numBytes);
+    }
+    result = 0;
+
+finish:
+    if (result == 0 && theUsedByteLen < numBytes && maxCharLen != 0) {
+        result = 2;
+    }
+    if (usedCharLen != NULL) {
+        *usedCharLen = theUsedCharLen;
+    }
+    if (usedByteLen != NULL) {
+        *usedByteLen = theUsedByteLen;
+    }
+    return result;
+}
+
+// Native CFStringEncodingIsValidEncoding, 0x1c022ada4. Hidden (was private external).
+// The built-in Unicode encodings (0x100, 0x8000100, 0xc000100, 0x10000100, 0x14000100, 0x18000100,
+// 0x1c000100), MacRoman, Windows Latin 1, ASCII, NextStep Latin and 0xbff are valid without a converter
+// lookup.
+bool CFStringEncodingIsValidEncoding(uint32_t encoding) {
+    switch (encoding) {
+        case 0:
+        case 0x100:
+        case 0x500:
+        case 0x600:
+        case 0xb01:
+        case 0xbff:
+        case 0x8000100:
+        case 0xc000100:
+        case 0x10000100:
+        case 0x14000100:
+        case 0x18000100:
+        case 0x1c000100:
+            return true;
+        default:
+            return CFStringEncodingGetConverter(encoding) != NULL;
+    }
+}
+
+// Native CFStringEncodingCharLengthForBytes, 0x1c022ae84. Hidden (was private external).
+// No converter: 0. Classes 4 and 5 tail-call their length functions; one byte per character returns numBytes;
+// a to-Unicode length callback is tail-called. Otherwise each round converts with no buffer through the class
+// wrapper (canonical for flags & 0xc0) or the record's callback, and bit 0 lets the fallback consume what the
+// converter rejects; a rejection without bit 0 returns 0 unless no bytes remain.
+OCFIndex CFStringEncodingCharLengthForBytes(
+    uint32_t encoding, uint32_t flags, const uint8_t *bytes, OCFIndex numBytes
+) {
+    StringEncodingRuntimeConverter converter = __CFGetConverter(encoding);
+    const StringEncodingConverterRecord *definition = converter.definition;
+    if (definition == NULL) {
+        return 0;
+    }
+    if (definition->encodingClass == 4) {
+        return __CFStringEncodingPlatformCharLengthForBytes(encoding, flags, bytes, numBytes);
+    }
+    if (definition->encodingClass == 5) {
+        return __CFStringEncodingICUCharLength(converter.toBytes.icuName, flags, bytes, numBytes);
+    }
+    if (definition->maxBytesPerChar == 1) {
+        return numBytes;
+    }
+    if (definition->toUnicodeLen != NULL) {
+        return definition->toUnicodeLen(flags, bytes, numBytes);
+    }
+    OCFIndex usedCharLen = 0;
+    if (numBytes < 1) {
+        return 0;
+    }
+    OCFIndex totalLength = 0;
+    uint32_t isHFS = flags & 0xc0;
+    StringEncodingToUnicodeWrapperProc toUnicode = converter.toUnicode;
+    StringEncodingToUnicodeWrapperProc toCanonicalUnicode = converter.toCanonicalUnicode;
+    StringEncodingToUnicodeFallbackProc toUnicodeFallback = converter.toUnicodeFallback;
+    for (;;) {
+        OCFIndex processed;
+        if (toUnicode == NULL) {
+            processed =
+                converter.definition->toUnicode.standard(flags, bytes, numBytes, NULL, 0, &usedCharLen);
+        } else if (isHFS == 0) {
+            processed = toUnicode(converter.definition, flags, bytes, numBytes, NULL, 0, &usedCharLen);
+        } else {
+            processed =
+                toCanonicalUnicode(converter.definition, flags, bytes, numBytes, NULL, 0, &usedCharLen);
+        }
+        numBytes -= processed;
+        totalLength = usedCharLen + totalLength;
+        if (numBytes < 1 || (flags & 1) == 0) {
+            return numBytes < 1 ? totalLength : 0;
+        }
+        bytes += processed;
+        OCFIndex consumed = toUnicodeFallback(bytes, numBytes, NULL, 0, &usedCharLen);
+        bytes += consumed;
+        totalLength = usedCharLen + totalLength;
+        numBytes -= consumed;
+        if (numBytes <= 0) {
+            return totalLength;
+        }
+    }
+}
+
+// Native CFStringEncodingByteLengthForCharacters, 0x1c022b0dc. Hidden (was private external).
+// No converter: 0. Classes 4 and 5 tail-call their length functions; one byte per character returns numChars;
+// a to-bytes length callback is tail-called; otherwise the byte count of a count-only
+// CFStringEncodingUnicodeToBytes, or 0 when it does not succeed.
+OCFIndex CFStringEncodingByteLengthForCharacters(
+    uint32_t encoding, uint32_t flags, const uint16_t *characters, OCFIndex numChars
+) {
+    StringEncodingRuntimeConverter converter = __CFGetConverter(encoding);
+    const StringEncodingConverterRecord *definition = converter.definition;
+    if (definition == NULL) {
+        return 0;
+    }
+    if (definition->encodingClass == 4) {
+        return __CFStringEncodingPlatformByteLengthForCharacters(encoding, flags, characters, numChars);
+    }
+    if (definition->encodingClass == 5) {
+        return __CFStringEncodingICUByteLength(converter.toBytes.icuName, flags, characters, numChars);
+    }
+    if (definition->maxBytesPerChar == 1) {
+        return numChars;
+    }
+    if (definition->toBytesLen != NULL) {
+        return definition->toBytesLen(flags, characters, numChars);
+    }
+    OCFIndex usedByteLen = 0;
+    uint32_t result =
+        OCFStringEncodingUnicodeToBytes(encoding, flags, characters, numChars, NULL, NULL, 0, &usedByteLen);
+    return result == 0 ? usedByteLen : 0;
+}
 
 // Native __CFToBytesCheapEightBitWrapper, iOS Simulator 24A434, 0x1c022b484,
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified. Non-external.

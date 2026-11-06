@@ -341,3 +341,46 @@ unit with counts 1, 2, 0 and -1 and capacities 0-5, -1 and `INT64_MIN`, and each
 surrogate unit with eight classes of second unit, into buffers with guard bytes
 on both sides. The standalone suite adds 21 hand-checked assertions. Both run in
 both naming modes.
+
+## Converters, records and the registry (cf-core track)
+
+The cf-core encodings sub-track restores, from the iOS Simulator corpus assembly (no IDA session; iOS Device
+24A446 unread), the 210 functions of `Local/Scratch/cf-core/tasks/encodings.txt`: every table-driven
+`__CFTo*`/`__CFFrom*` converter with its precompose and length functions, the 64 converter definition records,
+the registry (`CFStringEncodingUnicodeToBytes`, `CFStringEncodingBytesToUnicode`, `CFStringEncodingGetConverter`,
+`CFStringEncodingIsValidEncoding`, the two length functions), `__CFStringEncodingConverterGetUncommonConverter`,
+`__CFStringEncodingGetExternalConverter` with `__CFICUBootstrap`, the ICU converters, the UTF-8 decoder and the
+reverse name lookups. Files are grouped by native address cluster: `OCFArabic`, `OCFVietnamese`,
+`OCFSingleByte` (Latin 1 and Latin supplement clusters), `OCFLatin5`, `OCFHebrew`, `OCFCyrillic`, `OCFLatin2`,
+`OCFThai`, `OCFGreek`, `OCFSymbol`, `OCFSimplifiedChinese`, `OCFTraditionalChinese`, `OCFKorean`, `OCFJapanese`,
+`OCFICUConverters`, and additions to the existing registry, platform, UTF-8 and database units. Tables were read
+from the image with `Local/Scratch/cf-core/macho.py`; their generators are under
+`Local/Scratch/cf-core-encodings/`.
+
+**Record.** `StringEncodingConverterRecord` now describes all 72 bytes: to-bytes and to-Unicode callbacks, the
+halfwords `maxBytesPerChar` (offset 16, read with LDRH) and `maxDecomposedCharLen`, the class byte (offset 20),
+and the to-bytes length, to-Unicode length, two fallbacks, precompose and combining-character callbacks. Classes
+are 0 standard, 1 cheap eight-bit, 2 standard eight-bit, 3 cheap multibyte, 4 platform and 5 ICU.
+`__CFGetConverter` (another track) returns a 48-byte `StringEncodingRuntimeConverter` through X8: the record,
+the class wrappers (or, for ICU, the ICU name in the to-bytes slot) and the defaulted fallbacks. The six cheap
+eight-bit kernels restored earlier now return `uint32_t`, matching the callback type the records store.
+
+**Registry.** The uncommon-converter switch was evaluated over every value below 0x10000 (58 encodings).
+`CFStringEncodingUnicodeToBytes` keeps its native order for a unit the converter stops at: insufficient buffer,
+precomposition with the preceding base unit, then the lossy byte or fallback; after a failed precomposition
+with bit 0 and no lossy byte the base unit is dropped (its bytes are subtracted and the fallback starts after
+it). The ICU converters keep per-thread streaming converters in TSD slot 7 (`ICUThreadData`, 16 bytes).
+
+**Defects.** Fixed, each marked `CoreFoundation defect:` at its definition: the out-of-bounds reads before the
+source in the ICU to-bytes overflow back-up; the one-byte writes past the buffer in the NTT Docomo, KDDI and
+SoftBank Shift-JIS encoders; the read before the input in the ISO-2022-JP KDDI encoder. Kept: the ICU back-up
+loop's hang on a non-base unit, the Korean encoders' hang on an unconvertible unit without bits 3 or 4, and the
+well-defined unusual behaviors listed at each definition (for example `__CFFromDOSIcelandic` decoding through
+the DOS Baltic Rim table, the GB HZ mode-tracking errors and the unchecked second-unit reads of several
+precompose functions).
+
+**Open.** The functions of other tracks this family calls (`__CFGetConverter`, `CFUniCharDecompose`,
+`CFUniCharPrecomposeCharacter`, the combining-character and precompose helpers, `JIS0208ToShiftJIS`,
+`ShiftJISToJIS0208`, `__CFICUThreadDataDestructor`, `__CFCanonicalNameCompare`, `__CFCanonicalNameHash`, the
+four CFDictionary entry points) are declared in the cluster headers and left undefined. No differential test
+covers this group yet; its behavior coverage is zero until those are added.

@@ -9,11 +9,15 @@
 @_silgen_name("$ss32_diagnoseUnexpectedEnumCaseValue4type03rawE0s5NeverOxm_q_tr0_lF")
 private func _diagnoseUnexpectedEnumCaseValue<T, Raw>(type: T.Type, rawValue: Raw) -> Never
 
-// Native _NSDecimalCompare(_:_:), 0x1c08c11c4 / iOS Device 0x180ec05bc.
+// Native _NSDecimalCompare C bridge, 0x1c08be844. Hidden (was a private external).
+// The iOS Simulator bridge calls the shared Swift body at 0x1c08c11c4, read at 0x180ec05bc on iOS Device.
+// iOS Device divergence: the C bridge itself remains unread.
 // Foundation UUIDs 49FCDA5F-A93E-3259-857C-FC75AC2C7B03 / C041F1D0-5EF1-30A3-BF96-830976173B56.
 // Confidence: verified. Reading: Documentation/Reference/Research/FoundationDecimal.md.
 // iOS Device divergence: the function at the device address above authenticates calls/returns;
 // the independently read arithmetic/error branches agree.
+// Constructing and diagnosing the imported comparison enum induces its foreign metadata accessor at
+// 0x1c06e9bcc. The native compiler merges the accessor tail at 0x1c06eb71c with NSRunLoopMode's accessor.
 @_cdecl("_ONSDecimalCompare")
 func _ONSDecimalCompare(
     _ leftOperand: UnsafePointer<ONSDecimal>, _ rightOperand: UnsafePointer<ONSDecimal>
@@ -397,7 +401,9 @@ func ONSDecimalSubtract(
     }
 }
 
-// Native NSDecimalMultiply(_:_:_:_:), 0x1c08c059c / iOS Device 0x18119031c.
+// Native _NSDecimalMultiply C bridge, 0x1c08be834. Hidden (was a private external).
+// The iOS Simulator bridge tail-calls the Swift body at 0x1c08c059c, read at 0x18119031c on iOS Device.
+// iOS Device divergence: the C bridge itself remains unread.
 // Foundation UUIDs 49FCDA5F-A93E-3259-857C-FC75AC2C7B03 / C041F1D0-5EF1-30A3-BF96-830976173B56.
 // Confidence: verified. Reading: Documentation/Reference/Research/FoundationDecimal.md.
 // iOS Device divergence: the function at the device address above authenticates calls/returns;
