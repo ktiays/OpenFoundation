@@ -32,7 +32,7 @@ typedef struct {
     } state;
 } SetMStorage;
 
-_Static_assert(sizeof(SetMStorage) == 16, "The __NSSetM storage ivar is 16 bytes.");
+OF_ABI_ASSERT(sizeof(SetMStorage) == 16, "The __NSSetM storage ivar is 16 bytes.");
 
 #ifdef __OBJC__
 // Native class __NSSetM (__DATA,__objc_data 0x22e6ce490, was a private external), the mutable hashed set, an

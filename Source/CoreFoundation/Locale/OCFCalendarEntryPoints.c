@@ -28,10 +28,10 @@ extern id objc_retain(id value);
 extern void objc_release(id value);
 
 // The class the entry points message (NSCalendar, restored in Objective-C/OCFNSCalendar.m).
-extern char calendarClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCalendar));
+extern char calendarClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCalendar));
 
 // The NSDateComponents class reference (off_2227CE2E0), restored in Objective-C/OCFNSDateComponents.m.
-extern char calendarDateComponentsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDateComponents));
+extern char calendarDateComponentsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDateComponents));
 
 // Native CFCalendarGetTypeID, 0x1c01ced18. External. The builtin type ID 49 (MOV W0, #0x31).
 OCFTypeID OCFCalendarGetTypeID(void) {

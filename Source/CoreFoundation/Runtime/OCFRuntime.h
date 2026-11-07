@@ -57,7 +57,7 @@ typedef struct __OCFRuntimeClass {
     uintptr_t requiredAlignment;
 } OCFRuntimeClass;
 
-_Static_assert(sizeof(OCFRuntimeClass) == 96, "The native class record is 96 bytes.");
+OF_ABI_ASSERT(sizeof(OCFRuntimeClass) == 96, "The native class record is 96 bytes.");
 
 enum {
     kOCFRuntimeBuiltinClassCount = 72,
@@ -101,10 +101,10 @@ struct __OCFAllocator {
     OCFAllocatorTypedReallocateCallBack typedReallocate;
 };
 
-_Static_assert(sizeof(struct __OCFAllocator) == 224, "The native allocator object is 224 bytes.");
-_Static_assert(offsetof(struct __OCFAllocator, allocator) == 128, "Owning allocator at 128.");
-_Static_assert(offsetof(struct __OCFAllocator, context.info) == 144, "Context info at 144.");
-_Static_assert(offsetof(struct __OCFAllocator, typedAllocate) == 208, "Typed allocate at 208.");
+OF_ABI_ASSERT(sizeof(struct __OCFAllocator) == 224, "The native allocator object is 224 bytes.");
+OF_ABI_ASSERT(offsetof(struct __OCFAllocator, allocator) == 128, "Owning allocator at 128.");
+OF_ABI_ASSERT(offsetof(struct __OCFAllocator, context.info) == 144, "Context info at 144.");
+OF_ABI_ASSERT(offsetof(struct __OCFAllocator, typedAllocate) == 208, "Typed allocate at 208.");
 
 // Class tables: 72 builtin class records and their bridged Objective-C classes, then up to 16 pages of 64
 // dynamically registered records (__CFRuntimeClassTables[0..15]) and their Objective-C classes

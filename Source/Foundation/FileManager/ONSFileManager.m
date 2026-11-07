@@ -37,11 +37,11 @@ extern xpc_object_t xpc_copy_entitlement_for_token(const char *entitlement, audi
 extern void *objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *pool);
 
-extern char fileManagerClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSFileManager));
-extern char fileManagerDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char fileManagerErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char
-    fileManagerNotificationCenterClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotificationCenter));
+extern char fileManagerClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSFileManager));
+extern char fileManagerDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char fileManagerErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char fileManagerNotificationCenterClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(ONSNotificationCenter));
 
 // The messages the unit sends to objects of other classes (URLs, errors, dictionaries, weak values and the
 // CloudDocs category of NSFileManager), declared for the sends only.

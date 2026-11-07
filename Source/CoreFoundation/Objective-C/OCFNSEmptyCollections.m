@@ -18,7 +18,7 @@
 // the evidence is the static data at the addresses above.
 
 // The __NSArray0 class symbol, the empty array's isa (class restored in Objective-C/OCFNSArray0.m).
-extern char emptyArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArray0));
+extern char emptyArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSArray0));
 
 // Native __NSArray0__struct, 0x2227cc250 (__DATA_CONST,__const_cfobj2, 16 bytes). External: the empty
 // immutable array, an object whose isa is __NSArray0, then a zero word. Objective-C/OCFNSEmptyCollections.h
@@ -28,7 +28,7 @@ extern char emptyArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArray0)
 __attribute__((visibility("default"))) const struct {
     const void *isa;
     uintptr_t unused;
-} emptyArrayObject __asm("_" OF_NAME_STRING(__ONSArray0__struct)) = {emptyArrayClass, 0};
+} emptyArrayObject __asm(OF_SYMBOL("") OF_NAME_STRING(__ONSArray0__struct)) = {emptyArrayClass, 0};
 
 // Native __NSArray0__, 0x222429080 (__DATA_CONST,__const, 8 bytes). External: the address of the empty
 // immutable array __NSArray0__struct (the word holds 0x2227cc250, read with Local/Scratch/cf-core/macho.py).

@@ -19,7 +19,7 @@
 static volatile uint64_t foundationCrashAnnotations[41]
     __attribute__((used, section("__DATA,__crash_info"))) = {7};
 
-extern char constantDecimalNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumber));
+extern char constantDecimalNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDecimalNumber));
 
 @implementation ONSConstantIntegerNumber
 

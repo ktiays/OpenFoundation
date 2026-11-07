@@ -21,8 +21,8 @@
 
 // The __NSFastEnumerationEnumerator class symbol, loaded natively through its class reference
 // (off_2227CE440).
-extern char
-    fastEnumerationEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char fastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(__ONSFastEnumerationEnumerator));
 
 // The mutability raise of the three mutation fragments.
 // raiseImmutableSet is a local descriptive name.

@@ -25,7 +25,7 @@ typedef struct {
     unsigned short current;
 } StringScanBuffer;
 
-_Static_assert(sizeof(StringScanBuffer) == 0x70, "The scanning character buffer is 0x70 bytes.");
+OF_ABI_ASSERT(sizeof(StringScanBuffer) == 0x70, "The scanning character buffer is 0x70 bytes.");
 
 // Native __NSScanLongLongFromString (0x1c05c0c74) and __NSScanIntFromString (0x1c05c11f8): skip the skip
 // set's characters, an optional sign and the skip set again, then scan decimal digits from *location. The

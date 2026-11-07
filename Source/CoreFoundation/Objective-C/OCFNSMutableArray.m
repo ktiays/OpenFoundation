@@ -61,9 +61,9 @@ extern id objc_msgSendSuper2(struct objc_super *super, SEL op, ...);
 
 // Class symbols the methods use directly (_OBJC_CLASS_$_NSException, _OBJC_CLASS_$_NSSet,
 // _OBJC_CLASS_$_NSMutableArray).
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 
 // Selectors the methods send to their arguments, to classes and to the receiver that the restored classes of
 // this unit do not declare (NSArray's, NSIndexSet's, NSOrderedSet's, NSSet's and NSException's); declared for
@@ -274,7 +274,7 @@ static inline void releaseTemporaryStorage(void **storage) {
             count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             22,
@@ -478,7 +478,7 @@ static inline void releaseTemporaryStorage(void **storage) {
             count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             22,
@@ -537,7 +537,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         raiseIndexBeyondBounds(methodName("insertObjectsFromArray:range:atIndex:"), index, count);
     }
     NSUInteger length = (NSUInteger)range.length;
-    if (length >> 60 != 0) {
+    if (OF_WORD_SHIFT(length, 60) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     size_t bufferCount = length > 1 ? length : 1;
@@ -574,7 +574,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         raiseIndexBeyondBounds(methodName("insertObjectsFromArray:atIndex:"), index, count);
     }
     NSUInteger otherCount = [array count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -620,7 +620,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         raiseIndexBeyondBounds(methodName("insertObjectsFromOrderedSet:range:atIndex:"), index, count);
     }
     NSUInteger length = (NSUInteger)range.length;
-    if (length >> 60 != 0) {
+    if (OF_WORD_SHIFT(length, 60) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     size_t bufferCount = length > 1 ? length : 1;
@@ -656,7 +656,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         raiseIndexBeyondBounds(methodName("insertObjectsFromOrderedSet:atIndex:"), index, count);
     }
     NSUInteger otherCount = [orderedSet count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -692,7 +692,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         raiseIndexBeyondBounds(methodName("insertObjectsFromSet:atIndex:"), index, count);
     }
     NSUInteger otherCount = [set count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -763,7 +763,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger bufferObjectCount = [objects count];
-    if (bufferObjectCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(bufferObjectCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(bufferObjectCount);
     }
     size_t bufferCount = bufferObjectCount > 1 ? bufferObjectCount : 1;
@@ -831,7 +831,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     id moved = [self objectsAtIndexes:indexes];
     [self removeObjectsAtIndexes:indexes];
     NSUInteger movedCount = [moved count];
-    if (movedCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(movedCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(movedCount);
     }
     size_t bufferCount = movedCount > 1 ? movedCount : 1;
@@ -1510,7 +1510,7 @@ static inline void releaseTemporaryStorage(void **storage) {
             count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             22,
@@ -1615,7 +1615,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger bufferObjectCount = [objects count];
-    if (bufferObjectCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(bufferObjectCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(bufferObjectCount);
     }
     size_t bufferCount = bufferObjectCount > 1 ? bufferObjectCount : 1;
@@ -1673,7 +1673,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger length = (NSUInteger)otherRange.length;
-    if (length >> 60 != 0) {
+    if (OF_WORD_SHIFT(length, 60) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     size_t bufferCount = length > 1 ? length : 1;
@@ -1716,7 +1716,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger otherCount = [array count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -1770,7 +1770,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger length = (NSUInteger)otherRange.length;
-    if (length >> 60 != 0) {
+    if (OF_WORD_SHIFT(length, 60) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     size_t bufferCount = length > 1 ? length : 1;
@@ -1812,7 +1812,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger otherCount = [orderedSet count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -1854,7 +1854,7 @@ static inline void releaseTemporaryStorage(void **storage) {
         );
     }
     NSUInteger otherCount = [set count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -1924,7 +1924,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     }
     NSUInteger count = [self count];
     NSUInteger otherCount = [array count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -1972,7 +1972,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     }
     NSUInteger count = [self count];
     NSUInteger otherCount = [orderedSet count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -2002,7 +2002,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     }
     NSUInteger count = [self count];
     NSUInteger otherCount = [set count];
-    if (otherCount >> 60 != 0) {
+    if (OF_WORD_SHIFT(otherCount, 60) != 0) {
         raiseTemporaryBufferTooLarge(otherCount);
     }
     size_t bufferCount = otherCount > 1 ? otherCount : 1;
@@ -2060,7 +2060,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     if (length < 2) {
         return;
     }
-    if (length >> 60 != 0) {
+    if (OF_WORD_SHIFT(length, 60) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     id stackObjects[length < 0x101 ? length : 1];
@@ -2075,7 +2075,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     OCFIndex stackIndexes[length > 0x1000 ? 1 : length];
     OCFIndex *indexes = stackIndexes;
     if (length > 0x1000) {
-        indexes = malloc_type_malloc(length << 3, 0x100004000313F17ULL);
+        indexes = malloc_type_malloc(length * sizeof(OCFIndex), 0x100004000313F17ULL);
     }
     OCFSortIndexes(
         indexes, (OCFIndex)length, (OCFOptionFlags)options, ^OCFComparisonResult(OCFIndex i1, OCFIndex i2) {
@@ -2239,7 +2239,7 @@ static inline void releaseTemporaryStorage(void **storage) {
             count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             22,
@@ -2285,7 +2285,7 @@ static inline void releaseTemporaryStorage(void **storage) {
     NSUInteger otherCount = [array count];
     NSUInteger count = [self count];
     NSUInteger total = count + otherCount;
-    if (total >> 60 != 0) {
+    if (OF_WORD_SHIFT(total, 60) != 0) {
         raiseTemporaryBufferTooLarge(total);
     }
     size_t allocatedSize = 0;

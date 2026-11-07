@@ -56,8 +56,8 @@ __attribute__((visibility("hidden")))
     NSUInteger count;
     NSUInteger capacity;
     NSUInteger mutations;
-    NSUInteger options : 63;
-    NSUInteger hasDynamicSlice : 1;
+    OF_UINT64_BITFIELD(NSUInteger) options : 63;
+    OF_UINT64_BITFIELD(NSUInteger) hasDynamicSlice : 1;
 }
 
 - (NSUInteger)hash;

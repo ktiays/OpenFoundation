@@ -18,8 +18,8 @@
 // written yet).
 
 // The class symbol of __NSCFStreamWeakDelegateWrapper (an image-local class, addressed directly natively).
-extern char
-    weakDelegateWrapperClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFStreamWeakDelegateWrapper));
+extern char weakDelegateWrapperClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                 OF_NAME_STRING(__ONSCFStreamWeakDelegateWrapper));
 
 // The client events -setDelegate: subscribes: open completed, bytes available, error and end (0x1B) for
 // input; open completed, can accept bytes, error and end (0x1D) for output.

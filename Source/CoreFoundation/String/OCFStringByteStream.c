@@ -9,6 +9,7 @@
 #include "CoreFoundation/Base/OCFUtilities.h"
 #include "CoreFoundation/Runtime/OCFRuntime.h"
 #include "CoreFoundation/StringEncoding/OCFSingleByte.h"
+#include "CoreFoundation/StringEncoding/OCFStringEncodingConverter.h"
 
 #include <dispatch/dispatch.h>
 #include <stdio.h>
@@ -60,7 +61,7 @@ static uint8_t __CFWantsToUseASCIICompatibleConversion;
 // the cheap eight-bit class. Read as a raw byte; the record type in StringEncoding/ describes only offsets 0
 // and 8.
 static uint8_t converterEncodingClass(const void *converter) {
-    return *((const uint8_t *)converter + 0x14);
+    return *((const uint8_t *)converter + offsetof(StringEncodingConverterRecord, encodingClass));
 }
 
 // The ASCII-superset test both byte-stream functions inline: on the encoding's second byte (bits 8-15),
@@ -1242,9 +1243,9 @@ OCFIndex OCFStringGetMaximumSizeOfFileSystemRepresentation(OCFStringRef string) 
     OCFIndex length = OCFStringGetLength(string);
     OCFStringEncoding fastest = OCFStringGetFastestEncoding(string);
     if (fastest == 0x600 || fastest == 0) {
-        return length > 0x2aaaaaaaaaaaaaaa ? -1 : length * 3 + 1;
+        return length > (LONG_MAX / 3) ? -1 : length * 3 + 1;
     }
-    return length > 0x0e38e38e38e38e38 ? -1 : length * 9 + 1;
+    return length > (LONG_MAX / 9) ? -1 : length * 9 + 1;
 }
 
 // Native _CFStringGetUserDefaultEncoding, 0x1c022de0c. External. Parses __CF_USER_TEXT_ENCODING as
@@ -1318,7 +1319,7 @@ static uint32_t encodingsGetTaggedPointerTag(const void *ptr) {
         ++index;
     } while (index != 7);
     if ((index & 7) == 7) {
-        return (uint32_t)(((index | decoded) >> 55) & 0xFF) + 8;
+        return (uint32_t)((OF_WORD_SHIFT((index | decoded), 55)) & 0xFF) + 8;
     }
     return (uint32_t)(index & 7);
 }

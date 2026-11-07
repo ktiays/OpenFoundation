@@ -57,7 +57,7 @@ extern void objc_release(id object);
 
 // The class _CFBundleCopyLocalizedStringForLocalizationTableURLAndMarkdownOption, _loadLocTable and
 // _CFBundleGetLocTableProvenanceForLanguage allocate (NSSet, an Objective-C class of this image).
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
 
 // The fast-enumeration state of -countByEnumeratingWithState:objects:count: (64 bytes, zeroed by the caller).
 // FastEnumerationState is a local name for the layout of NSFastEnumerationState.
@@ -93,7 +93,7 @@ typedef struct {
     OCFMutableDictionaryRef stringsTable; // +88: the .strings entries.
 } StringsRequest;
 
-_Static_assert(sizeof(StringsRequest) == 96, "The table request is 96 bytes.");
+OF_ABI_ASSERT(sizeof(StringsRequest) == 96, "The table request is 96 bytes.");
 
 // The context of the three rule appliers (40 bytes on the native stack). ApplierContext is a local name.
 typedef struct {

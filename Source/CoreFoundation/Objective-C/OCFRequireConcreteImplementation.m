@@ -23,7 +23,7 @@
 extern Class objc_opt_class(id object);
 
 // The NSException class symbol (_OBJC_CLASS_$_NSException), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // Native __CFRequireConcreteImplementation, 0x1c030fa8c, with OUTLINED_FUNCTION_0_43 (0x1c029eed8: the tail
 // call of __CFFullMethodName with the object and the selector kept in X19 and X21). Hidden (was a private

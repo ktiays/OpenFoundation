@@ -20,7 +20,7 @@
 #include <os/log.h>
 
 // Class objects referenced by direct libobjc class queries in the native capture.
-extern char runtimeONSMorphologyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMorphology));
+extern char runtimeONSMorphologyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMorphology));
 
 // Inferred organization: the native source file is NSAttributedString_Inflection.m (the name its assertions
 // pass). Its part in this family spans 0x1c052fb64-0x1c05343a3 of the iOS Simulator __text section: the
@@ -49,33 +49,34 @@ extern char runtimeONSMorphologyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ON
 // __kCFBooleanTrue 0x2222807e8 (the @NO and @YES literals). The code loads each slot and uses the value
 // directly; the restored code references the same symbols.
 
-extern char
-    inflectionMutableAttributedClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableAttributedString));
+extern char inflectionMutableAttributedClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(ONSMutableAttributedString));
 
 // Class symbols the unit references (the classes are declared in the header).
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char assertionHandlerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAssertionHandler));
-extern char bundleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSBundle));
-extern char characterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char inflectionRuleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSInflectionRule));
-extern char localeClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
-extern char
-    localizedNumberFormatRuleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocalizedNumberFormatRule));
-extern char morphologyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMorphology));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char mutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char nullClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNull));
-extern char numberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char termOfAddressClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTermOfAddress));
-extern char threadClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSThread));
-extern char valueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSValue));
-extern char
-    grammarInflectionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAttributedStringGrammarInflection));
-extern char inflectionRuleExplicitClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSInflectionRuleExplicit));
-extern char
-    lexiconMorphunDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSLexiconMorphunDictionary));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char assertionHandlerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSAssertionHandler));
+extern char bundleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSBundle));
+extern char characterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char inflectionRuleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSInflectionRule));
+extern char localeClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
+extern char localizedNumberFormatRuleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(ONSLocalizedNumberFormatRule));
+extern char morphologyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMorphology));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char mutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableDictionary));
+extern char nullClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNull));
+extern char numberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char termOfAddressClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTermOfAddress));
+extern char threadClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSThread));
+extern char valueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSValue));
+extern char grammarInflectionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                               OF_NAME_STRING(_ONSAttributedStringGrammarInflection));
+extern char inflectionRuleExplicitClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(_ONSInflectionRuleExplicit));
+extern char lexiconMorphunDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(_ONSLexiconMorphunDictionary));
 
 // The messages the unit sends to objects of other classes (replacements, rules, morphologies, strings,
 // collections, locales, the observer), declared for the sends only; no protocol object is emitted.
@@ -208,7 +209,7 @@ __attribute__((visibility("hidden"))) os_log_t inflectionLogObject;
 __attribute__((visibility("hidden"))) dispatch_once_t inflectionLogOnceToken;
 
 // Native ____NSInflectionLog_block_invoke, 0x1c0fdcb88. Non-external (was a private external).
-OF_EXTERN void inflectionLogInvoke(void *block) __asm("____NSInflectionLog_block_invoke");
+OF_EXTERN void inflectionLogInvoke(void *block) __asm(OF_SYMBOL("___NSInflectionLog_block_invoke"));
 
 void inflectionLogInvoke(void *block) {
     (void)block;
@@ -230,7 +231,7 @@ __attribute__((visibility("hidden"))) const struct {
     int32_t reserved;
     void (*invoke)(void *);
     const void *descriptor;
-} inflectionLogBlockLiteral __asm("_inflectionLogGlobalBlock") = {
+} inflectionLogBlockLiteral __asm(OF_SYMBOL("inflectionLogGlobalBlock")) = {
     _NSConcreteGlobalBlock, 0x50000000, 0, inflectionLogInvoke, &kInflectionLogDescriptor
 };
 

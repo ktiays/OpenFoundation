@@ -29,12 +29,12 @@ extern BOOL objc_opt_respondsToSelector(id object, SEL selector);
 extern pthread_t pthread_main_thread_np(void);
 extern void thread_stack_async_pcs(void **frames, unsigned int capacity, unsigned int *count);
 
-extern char threadClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSThread));
-extern char threadDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSThreadData));
-extern char callStackArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSCallStackArray));
-extern char notificationCenterClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotificationCenter));
-extern char mutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char threadClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSThread));
+extern char threadDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSThreadData));
+extern char callStackArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSCallStackArray));
+extern char notificationCenterClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNotificationCenter));
+extern char mutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableDictionary));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 @protocol ThreadMessages
 + (id)arrayWithFrames:(void **)frames count:(unsigned int)count symbols:(BOOL)symbols;
@@ -61,7 +61,7 @@ static _Atomic(unsigned int) threadSequenceNumber;
 // Invoke 0x1c05e5254 was independently read through IDA on 2026/11/03 (additional-ida.json).
 static dispatch_once_t mainThreadOnce;
 __attribute__((visibility("hidden"))) id sharedMainThread;
-extern char mainThreadClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSMainThread));
+extern char mainThreadClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSMainThread));
 
 static id _NSThreadGet0(int current);
 static void __NSFinalizeThreadData(void *value);

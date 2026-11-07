@@ -6,6 +6,7 @@
 #include "CoreFoundation/String/OCFIndirectTaggedPointerString.h"
 
 #include "CoreFoundation/Base/OCFUtilities.h"
+#include "CoreFoundation/OFPortHooks.h"
 
 #include <objc/message.h>
 #include <objc/runtime.h>
@@ -67,6 +68,7 @@ static const uint8_t charToSixBitLookup[256] = {
 // value's since the value's low bits are zero). Anything else returns NULL; dyld is asked even when the
 // length is out of range.
 OCFStringRef _OCFStringCreateIndirectASCIITaggedPointerString(const UInt8 *bytes, OCFIndex length) {
+    OF_PORT_RETURN(indirectASCIITaggedPointerString, bytes, length);
     if (length == 0) {
         return kOCFEmptyString;
     }
@@ -119,8 +121,8 @@ OCFStringRef _OCFStringCreateIndirectASCIITaggedPointerString(const UInt8 *bytes
     if (((uintptr_t)length >> 13) != 0 || !linked) {
         return NULL;
     }
-    uintptr_t value =
-        ((uintptr_t)length << 50) | (((uintptr_t)bytes & UINT64_C(0x7FFFFFFFFFFF)) << 3) | 0x8000000000000000;
+    uintptr_t value = ((uint64_t)length << 50) |
+                      (((uint64_t)(uintptr_t)bytes & UINT64_C(0x7FFFFFFFFFFF)) << 3) | 0x8000000000000000;
     uintptr_t obfuscated = objc_debug_taggedpointer_obfuscator ^ value;
     if ((~obfuscated & 0xC000000000000007) == 0) {
         return (OCFStringRef)value;
@@ -141,7 +143,7 @@ const UInt8 *_OCFIndirectTaggedPointerStringGetContents(OCFStringRef string, uin
     if (length != NULL) {
         uintptr_t decoded = (flags == 0xC000000000000007 ? 0 : obfuscator) ^ pointer;
         uint32_t mask = (~(uint32_t)decoded & 7) == 0 ? 0x1F : 0x1FFF;
-        *length = (uint16_t)(mask & (uint32_t)(decoded >> 50));
+        *length = (uint16_t)(mask & (uint32_t)(OF_WORD_SHIFT(decoded, 50)));
     }
     uintptr_t decoded = (flags == 0xC000000000000007 ? flags : obfuscator) ^ pointer;
     return (const UInt8 *)((decoded >> 3) & UINT64_C(0x7FFFFFFFFFFF));
@@ -167,7 +169,7 @@ static bool isEqualToTaggedPointer(OCFTypeRef string, OCFTypeRef other) {
     uintptr_t lengthMask =
         (~(uint32_t)decoded & 7) == 0 ? UINT64_C(0xF800000000000) : UINT64_C(0xFFF800000000000);
     uintptr_t lengthField = lengthMask & (decoded >> 3);
-    size_t length = lengthField >> 47;
+    size_t length = OF_WORD_SHIFT(lengthField, 47);
     uintptr_t otherPointer = (uintptr_t)other;
     uintptr_t otherDecoded = ((~otherPointer & 0xC000000000000007) == 0 ? 0 : obfuscator) ^ otherPointer;
     uintptr_t otherLow = otherDecoded & 7;
@@ -180,7 +182,7 @@ static bool isEqualToTaggedPointer(OCFTypeRef string, OCFTypeRef other) {
     } while (index != 7);
     uint32_t tag = (uint32_t)(index & 7);
     if (tag == 7) {
-        tag = (uint32_t)(((index | otherDecoded) >> 55) & 0xFF) + 8;
+        tag = (uint32_t)((OF_WORD_SHIFT((index | otherDecoded), 55)) & 0xFF) + 8;
     }
     if (tag == 22) {
         return isEqualToString(string, other, false);
@@ -224,7 +226,7 @@ static bool isEqualToString(OCFTypeRef string, OCFTypeRef other, bool isCF) {
     uintptr_t flags = pointer & 0xC000000000000007;
     uintptr_t decoded = (flags == 0xC000000000000007 ? 0 : objc_debug_taggedpointer_obfuscator) ^ pointer;
     uintptr_t lengthMask = (~(uint32_t)decoded & 7) == 0 ? 0x1F : 0x1FFF;
-    size_t length = lengthMask & (decoded >> 50);
+    size_t length = lengthMask & (OF_WORD_SHIFT(decoded, 50));
     OCFIndex otherLength = 0;
     Boolean isMutable = false;
     Boolean isEightBit = false;

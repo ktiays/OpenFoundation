@@ -28,8 +28,8 @@
 // are the native string literals ("-[NSMutableDictionary ...]"), spelled with the class's selected name.
 
 // Class symbols sent to directly (class references off_2227CE390, off_2227CE360).
-extern char mutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char mutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 
 // Selectors this unit sends that no included header declares, declared for the message sends only; the
 // protocol is never adopted and no protocol object is emitted.
@@ -121,7 +121,7 @@ extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutable
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -243,7 +243,7 @@ extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutable
     [self _mutate];
     dictionaryTSANWrite(self, returnAddress);
     NSUInteger count = [(id)self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         OCFStringRef reason = OCFStringCreateWithFormat(
             NULL,
             NULL,
@@ -434,7 +434,7 @@ extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutable
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -571,7 +571,7 @@ extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutable
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -763,7 +763,7 @@ extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutable
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

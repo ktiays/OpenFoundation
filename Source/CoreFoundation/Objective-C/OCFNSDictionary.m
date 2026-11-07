@@ -38,11 +38,11 @@ extern void *objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *pool);
 
 // Class symbols the methods load through class references or address directly.
-extern char dictionaryArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char dictionarySetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char dictionaryMutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char
-    dictionaryObjectEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSDictionaryObjectEnumerator));
+extern char dictionaryArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char dictionarySetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char dictionaryMutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char dictionaryObjectEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                        OF_NAME_STRING(__ONSDictionaryObjectEnumerator));
 
 // Selectors the methods send that no other visible declaration makes, with Foundation's signatures (objects
 // spelled id). Declared for the message sends only; no class adopts the protocol.
@@ -124,7 +124,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (id)allKeysForObject:(id)anObject {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     NSUInteger size = count > 1 ? count : 1;
@@ -161,7 +161,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (id)allKeys {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     size_t storageCount = 0;
@@ -183,7 +183,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (id)allObjects {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     size_t storageCount = 0;
@@ -206,7 +206,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (id)allValues {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     size_t storageCount = 0;
@@ -264,7 +264,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -344,7 +344,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (id)descriptionWithLocale:(id)locale indent:(NSUInteger)level {
     NSUInteger clamped = level < 100 ? level : 100;
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     NSUInteger size = count > 1 ? count : 1;
@@ -509,7 +509,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 // three bits set raises when the objects buffer, then when the keys buffer, is given; then fast enumeration
 // stores up to count keys (when wanted) and their -objectForKey: results (when wanted), keys first.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -518,7 +518,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -553,7 +553,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (void)getObjects:(id *)objects andKeys:(id *)keys {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -562,7 +562,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -578,7 +578,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (void)getKeys:(id *)keys {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -594,7 +594,7 @@ static __attribute__((noreturn)) void raiseWithProem(id object, SEL selector, OC
 - (void)getObjects:(id *)objects {
     dictionaryTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -792,7 +792,7 @@ static void freeBuffer(id **buffer) {
     if (count == 0) {
         return [(id)dictionaryArrayClass array];
     }
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     id *keys = alloca((count < 0x101 ? count : 1) * sizeof(id));
@@ -895,7 +895,7 @@ static void freeBuffer(id **buffer) {
         );
     }
     NSUInteger count = [keys count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     NSUInteger size = count > 1 ? count : 1;
@@ -977,7 +977,7 @@ static void freeBuffer(id **buffer) {
         );
     }
     NSUInteger count = [otherDictionary count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     NSUInteger size = count > 1 ? count : 1;
@@ -1069,7 +1069,7 @@ static void freeBuffer(id **buffer) {
             va_end(arguments);
             return result;
         }
-        if (total >= 0x1FFFFFFFFFFFFFFF) {
+        if (total >= (ULONG_MAX >> 3)) {
             raiseTemporaryBufferException(pairs);
         }
     } else {
@@ -1163,7 +1163,7 @@ static void freeBuffer(id **buffer) {
                                                    userInfo:nil];
         objc_exception_throw(exception);
     }
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferException(count);
     }
     NSUInteger size = count > 1 ? count : 1;
@@ -1249,7 +1249,7 @@ static id __createDictionary(id dictionary, id object, id key) {
             va_end(arguments);
             return [result autorelease];
         }
-        if (total >= 0x1FFFFFFFFFFFFFFF) {
+        if (total >= (ULONG_MAX >> 3)) {
             raiseTemporaryBufferException(pairs);
         }
     } else {
@@ -1313,7 +1313,7 @@ static id __createDictionary(id dictionary, id object, id key) {
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

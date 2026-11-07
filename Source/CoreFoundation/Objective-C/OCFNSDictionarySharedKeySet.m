@@ -16,9 +16,10 @@
 
 // Class symbols sent to directly: NSSharedKeySet (class reference off_2227CE3C0, and ___SCR_NSSharedKeySet
 // for the kind test), NSMutableDictionary (off_2227CE378) and NSSharedKeyDictionary (addressed directly).
-extern char sharedKeySetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSharedKeySet));
-extern char sharedKeyDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSharedKeyDictionary));
-extern char mutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
+extern char sharedKeySetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSharedKeySet));
+extern char sharedKeyDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                 OF_NAME_STRING(ONSSharedKeyDictionary));
+extern char mutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableDictionary));
 
 // Selectors this unit sends that no included header declares, declared for the message sends only; the
 // protocol is never adopted and no protocol object is emitted.

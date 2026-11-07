@@ -21,7 +21,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (_OBJC_CLASS_$_NSException), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // Native _NSArrayRaiseBoundException, 0x1c030aea0; defined after the class, in native address order.
 static __attribute__((noreturn)) void
@@ -324,7 +324,7 @@ static void _NSArrayRaiseBoundException(const void *object, SEL selector, OCFInd
         _os_log_pack_fill(pack, size, 0, &__dso_handle, "-[%s %s]: index (%ld%s) beyond bounds (%ld)");
     const char *className = PROEM_CLS(object);
     const char *selectorName = PROEM_SEL(selector);
-    const char *larger = ((uintptr_t)index >> 62) != 0 ? " (or possibly larger)" : "";
+    const char *larger = (OF_WORD_SHIFT((uintptr_t)index, 62)) != 0 ? " (or possibly larger)" : "";
     __builtin_os_log_format(
         buffer, "-[%s %s]: index (%ld%s) beyond bounds (%ld)", className, selectorName, index, larger, count
     );

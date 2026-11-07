@@ -21,10 +21,10 @@
 // extracted image. Blocks capture object references as __unsafe_unretained to preserve the native 0xc0000000
 // stack blocks' absence of object copy/dispose helpers. The byref flag is a single byte.
 
-extern char formattingNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char formattingLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
-extern char
-    formattingReplacementClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAttributedStringReplacement));
+extern char formattingNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char formattingLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
+extern char formattingReplacementClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                   OF_NAME_STRING(_ONSAttributedStringReplacement));
 
 @protocol AttributedStringFormattingMessages
 - (id)pluralizationNumber;
@@ -133,8 +133,8 @@ static OCFStringRef _NSAttributedStringDescriptionWithLocaleFunc(void *object, c
             id lengthNumber = [record objectForKeyedSubscript:sourceLengthKey];
             numberClass = objc_opt_class((id)formattingNumberClass);
             BOOL lengthValid = objc_opt_isKindOfClass(lengthNumber, (id)numberClass);
-            NSUInteger sourceLocation = 0x7FFFFFFFFFFFFFFF;
-            NSUInteger sourceLength = 0x7FFFFFFFFFFFFFFF;
+            NSUInteger sourceLocation = LONG_MAX;
+            NSUInteger sourceLength = LONG_MAX;
             if ((locationValid & (locationNumber != nil) & lengthValid) == 1 && lengthNumber != nil) {
                 sourceLocation = (NSUInteger)[locationNumber integerValue];
                 sourceLength = (NSUInteger)[lengthNumber integerValue];
@@ -177,8 +177,8 @@ static OCFStringRef _NSAttributedStringDescriptionWithLocaleFunc(void *object, c
             lengthNumber = [record objectForKeyedSubscript:targetLengthKey];
             numberClass = objc_opt_class((id)formattingNumberClass);
             lengthValid = objc_opt_isKindOfClass(lengthNumber, (id)numberClass);
-            NSUInteger targetLocation = 0x7FFFFFFFFFFFFFFF;
-            NSUInteger targetLength = 0x7FFFFFFFFFFFFFFF;
+            NSUInteger targetLocation = LONG_MAX;
+            NSUInteger targetLength = LONG_MAX;
             if ((locationValid & (locationNumber != nil) & lengthValid) == 1 && lengthNumber != nil) {
                 targetLocation = (NSUInteger)[locationNumber integerValue];
                 targetLength = (NSUInteger)[lengthNumber integerValue];
@@ -258,13 +258,13 @@ static OCFStringRef _NSAttributedStringDescriptionWithLocaleFunc(void *object, c
             id lengthNumber = [record objectForKeyedSubscript:lengthKey];
             numberClass = objc_opt_class((id)formattingNumberClass);
             BOOL lengthValid = objc_opt_isKindOfClass(lengthNumber, (id)numberClass);
-            NSUInteger location = 0x7FFFFFFFFFFFFFFF;
-            NSUInteger length = 0x7FFFFFFFFFFFFFFF;
+            NSUInteger location = LONG_MAX;
+            NSUInteger length = LONG_MAX;
             if ((locationValid & lengthValid & (locationNumber != nil)) == 1 && lengthNumber != nil) {
                 location = (NSUInteger)[locationNumber integerValue];
                 length = (NSUInteger)[lengthNumber integerValue];
             }
-            if (replacement != nil && location != 0x7FFFFFFFFFFFFFFF && length != 0x7FFFFFFFFFFFFFFF) {
+            if (replacement != nil && location != LONG_MAX && length != LONG_MAX) {
                 id key = (id)OF_STR("NSReplacementIndex");
                 id attributes = [(id)attributedStringDictionaryClass dictionaryWithObjects:&replacement
                                                                                    forKeys:&key

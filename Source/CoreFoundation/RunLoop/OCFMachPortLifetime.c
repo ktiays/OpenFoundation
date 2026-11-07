@@ -178,7 +178,8 @@ _cfmp_log_failure(const char *message, const MachPortDeallocationRecord *record,
             buffer[1] = 0x0D;
             buffer[2] = 0x22;
             buffer[3] = 0x08;
-            memcpy(&buffer[4], &message, 8);
+            uint64_t messageValue = (uint64_t)(uintptr_t)message;
+            memcpy(&buffer[4], &messageValue, 8);
             for (int idx = 0; idx < 12; idx++) {
                 buffer[12 + idx * 6] = idx == 0 ? 0x01 : 0x00;
                 buffer[13 + idx * 6] = 0x04;
@@ -195,7 +196,8 @@ _cfmp_log_failure(const char *message, const MachPortDeallocationRecord *record,
         buffer[1] = 0x03;
         buffer[2] = 0x22;
         buffer[3] = 0x08;
-        memcpy(&buffer[4], &message, 8);
+        uint64_t messageValue = (uint64_t)(uintptr_t)message;
+        memcpy(&buffer[4], &messageValue, 8);
         buffer[12] = 0x00;
         buffer[13] = 0x04;
         memcpy(&buffer[14], &lowByte, 4);

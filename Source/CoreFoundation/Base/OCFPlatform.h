@@ -32,7 +32,7 @@ typedef struct {
     OCFTSDDestructor destructors[kOCFTSDSlotCount];
 } OCFTSDTable;
 
-_Static_assert(sizeof(OCFTSDTable) == 0x468, "The native per-thread table is 1,128 bytes.");
+OF_ABI_ASSERT(sizeof(OCFTSDTable) == 0x468, "The native per-thread table is 1,128 bytes.");
 
 // Set when the main thread's per-thread data is finalized.
 OF_EXTERN uint8_t __CFMainThreadHasExited;

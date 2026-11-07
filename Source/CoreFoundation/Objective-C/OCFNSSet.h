@@ -202,8 +202,8 @@ static inline void setTSANWrite(const void *object, void *returnAddress) {
 // The NSException class symbol (_OBJC_CLASS_$_NSException, loaded natively through the class reference
 // 0x2227ce300), the NSArray class symbol (0x2227ce2a0) and the NSMutableSet and NSSet class symbols
 // (0x2227ce390, 0x2227ce3b8; the __SCR_ GOT slots hold the same symbols).
-extern char setExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char setArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
+extern char setExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char setArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
 
 // The raise every argument check of the two units inlines: an os_log pack sized by the format's buffer
 // (_os_log_pack_size of 12, 22, 32 or 42 bytes for the formats here), on the stack, filled with errno 0 and
@@ -254,7 +254,7 @@ static inline __attribute__((noreturn)) void raiseTemporaryBufferTooLarge(unsign
 // _CFCreateArrayStorage(max(count, 1), false, &size), whose storage the caller frees with free(nameHeap).
 // temporaryIDBuffer is a local descriptive name for the inlined code.
 #define temporaryIDBuffer(name, count)                                                                       \
-    if ((unsigned long)(count) >> 60 != 0) {                                                                 \
+    if (OF_WORD_SHIFT((unsigned long)(count), 60) != 0) {                                                    \
         raiseTemporaryBufferTooLarge(count);                                                                 \
     }                                                                                                        \
     unsigned long name##Count = (unsigned long)(count) > 1 ? (unsigned long)(count) : 1;                     \

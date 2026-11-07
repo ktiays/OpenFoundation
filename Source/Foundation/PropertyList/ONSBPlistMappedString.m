@@ -23,8 +23,8 @@
 
 extern uintptr_t objc_debug_taggedpointer_mask;
 extern void _objc_registerTaggedPointerClass(uint16_t tag, Class cls);
-extern char mappedPlistStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSBPlistMappedString));
-extern char mappedPlistDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSBPlistMappedData));
+extern char mappedPlistStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSBPlistMappedString));
+extern char mappedPlistDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSBPlistMappedData));
 
 // Native _enableTaggedPointerBPlistMappedStrings, 0x22e6fcb58. Non-external. When set, use heap objects.
 static BOOL enableTaggedPointerBPlistMappedStrings;

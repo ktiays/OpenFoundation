@@ -23,8 +23,8 @@ typedef struct ForwardingArgumentRecord {
     uint16_t flags;
 } ForwardingArgumentRecord;
 
-_Static_assert(__builtin_offsetof(ForwardingArgumentRecord, offset) == 0x1C, "The frame offset is at 0x1C.");
-_Static_assert(__builtin_offsetof(ForwardingArgumentRecord, flags) == 0x22, "The flags are at 0x22.");
+OF_ABI_ASSERT(__builtin_offsetof(ForwardingArgumentRecord, offset) == 0x1C, "The frame offset is at 0x1C.");
+OF_ABI_ASSERT(__builtin_offsetof(ForwardingArgumentRecord, flags) == 0x22, "The flags are at 0x22.");
 
 typedef struct {
     const ForwardingArgumentRecord *returnRecord;

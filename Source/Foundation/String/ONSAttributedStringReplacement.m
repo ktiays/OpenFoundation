@@ -15,8 +15,8 @@
 // Confidence: verified except shared-cache GOT bindings (medium). iOS Device divergence: iOS Device 24A446
 // remains unread. Reading: Local/Scratch/cf-core-r2-fg/Reading.md. The native retains/releases use MRC.
 
-extern char replacementMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char numberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
+extern char replacementMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char numberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
 
 @implementation _ONSAttributedStringReplacement
 

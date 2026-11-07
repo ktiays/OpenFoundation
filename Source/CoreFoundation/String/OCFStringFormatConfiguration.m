@@ -34,7 +34,7 @@
 // D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC; confidence: verified (assembly read in full). iOS Device 24A446:
 // unread. Reading: Documentation/Reference/Research/CoreFoundationStringFormat.md.
 
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // libobjc entry points the native code calls directly (re-exported libobjc.A.dylib); supplied, never
 // reimplemented. The SDK's public headers do not declare them.
@@ -218,7 +218,7 @@ OCFTypeRef _CFCopyResolvedFormatStringWithConfiguration(
             if (integer == 0 && !OCFNumberIsFloatType(argument)) {
                 selected = OCFDictionaryGetValue(configuration, OF_STR("zero"));
             }
-            if (integer == INT64_MAX) {
+            if (integer == LONG_MAX) {
                 selected = OCFDictionaryGetValue(configuration, OF_STR("other"));
             }
             if (selected != NULL) {
@@ -387,7 +387,7 @@ OCFTypeRef _CFCopyResolvedFormatStringWithConfiguration(
                 familyRules = OCFDictionaryGetValue(localeInfo, OF_STR("NSStringFormatRuleInfoKey"));
             }
             OCFIndex count = OCFDictionaryGetCount(familyRules);
-            if ((size_t)count >> 60 != 0) {
+            if (OF_WORD_SHIFT((size_t)count, 60) != 0) {
                 OCFStringRef reason = OCFStringCreateWithFormat(
                     NULL,
                     NULL,

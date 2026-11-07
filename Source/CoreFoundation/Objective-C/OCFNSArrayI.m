@@ -58,7 +58,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The message this unit sends that the shared declarations do not carry; declared for the send only.
 @protocol ArrayIMessages
@@ -103,7 +103,7 @@ extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException)
                 (unsigned long)(count)                                                                       \
             );                                                                                               \
         }                                                                                                    \
-        if (((count) >> 61) != 0) {                                                                          \
+        if (OF_WORD_SHIFT((count), 61) != 0) {                                                               \
             RAISE_LOGGED_EXCEPTION(                                                                          \
                 ONSInvalidArgumentException,                                                                 \
                 0x16,                                                                                        \
@@ -194,7 +194,7 @@ static __attribute__((noreturn)) void __boundsFail(NSUInteger index, NSUInteger 
     }
     const id *source = list + location;
     if (length > 4) {
-        memmove(objects, source, length << 3);
+        memmove(objects, source, length * sizeof(id));
         return;
     }
     for (NSUInteger index = 0; index < length; index++) {
@@ -303,7 +303,7 @@ static __attribute__((noreturn)) void __boundsFail(NSUInteger index, NSUInteger 
 // (bit 63 clear) is retained; then used is set to the count. An empty array is answered as allocated.
 // Evidence: iphone-simulator-corpus-delta8.json.
 id __NSArrayI_new(const id *objects, va_list arguments, NSUInteger count, BOOL noRetain) {
-    __ONSArrayI *object = __CFAllocateObject([__ONSArrayI self], count << 3);
+    __ONSArrayI *object = __CFAllocateObject([__ONSArrayI self], count * sizeof(id));
     if (count != 0) {
         id *items = object->list;
         if (arguments != NULL) {
@@ -312,7 +312,7 @@ id __NSArrayI_new(const id *objects, va_list arguments, NSUInteger count, BOOL n
                 items[index] = va_arg(arguments, id);
             }
         } else if (objects != NULL) {
-            memmove(items, objects, count << 3);
+            memmove(items, objects, count * sizeof(id));
         }
         if (!(noRetain & 1)) {
             id *item = items;
@@ -418,7 +418,7 @@ id __NSArrayI_new(const id *objects, va_list arguments, NSUInteger count, BOOL n
     }
     const id *source = _list + location;
     if (length > 4) {
-        memmove(objects, source, length << 3);
+        memmove(objects, source, length * sizeof(id));
         return;
     }
     for (NSUInteger index = 0; index < length; index++) {

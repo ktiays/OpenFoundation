@@ -48,7 +48,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (_OBJC_CLASS_$_NSException), sent to directly.
-extern char orderedSetHelperExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char orderedSetHelperExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The messages this unit sends to the index sets it is given and to objects through id, declared for the
 // sends only (no protocol object is emitted). -__getContainmentVector:inRange: is tested as a 64-bit word

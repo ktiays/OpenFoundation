@@ -84,15 +84,15 @@ typedef struct {
     bool decodedCollection;
 } KeyedUnarchiverHelperFields;
 
-_Static_assert(offsetof(KeyedUnarchiverHelperFields, lastRef) == 16, "The last reference is at offset 16.");
-_Static_assert(
+OF_ABI_ASSERT(offsetof(KeyedUnarchiverHelperFields, lastRef) == 16, "The last reference is at offset 16.");
+OF_ABI_ASSERT(
     offsetof(KeyedUnarchiverHelperFields, allowedClasses) == 24, "Allowed classes are at offset 24."
 );
-_Static_assert(offsetof(KeyedUnarchiverHelperFields, decodeError) == 32, "The decode error is at offset 32.");
-_Static_assert(
+OF_ABI_ASSERT(offsetof(KeyedUnarchiverHelperFields, decodeError) == 32, "The decode error is at offset 32.");
+OF_ABI_ASSERT(
     offsetof(KeyedUnarchiverHelperFields, expectsUnnestedCollection) == 40, "Collection flags start at 40."
 );
-_Static_assert(
+OF_ABI_ASSERT(
     offsetof(KeyedUnarchiverHelperFields, decodedCollection) == 41, "The second collection flag is at 41."
 );
 
@@ -150,27 +150,31 @@ _Static_assert(
 
 // Direct class-object bindings preserve the native distinction between loading a class reference and
 // sending +class (which user subclasses may override).
-extern char archivingStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char archivingMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char archivingNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char archivingExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char archivingErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char archivingBundleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSBundle));
-extern char archivingProcessInfoClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSProcessInfo));
-extern char archivingArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char archivingMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char archivingMutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char archivingSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char archivingDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char archivingMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char archivingDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char archivingMutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
-extern char archivingObjectClass[] __asm("_OBJC_CLASS_$_NSObject");
-extern char archivingArchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedArchiver));
-extern char archivingUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
-extern char archivingHelperClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSKeyedUnarchiverHelper));
-extern char archivingPerformanceMeterClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSPerformanceMeter));
-extern char archivingOldStyleArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSKeyedCoderOldStyleArray));
+extern char archivingStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char archivingMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char archivingNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char archivingExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char archivingErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char archivingBundleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSBundle));
+extern char archivingProcessInfoClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSProcessInfo));
+extern char archivingArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char archivingMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char archivingMutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char archivingSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char archivingDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char archivingMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                        OF_NAME_STRING(ONSMutableDictionary));
+extern char archivingDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char archivingMutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
+extern char archivingObjectClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_NSObject"));
+extern char archivingArchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedArchiver));
+extern char archivingUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char archivingHelperClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                             OF_NAME_STRING(_ONSKeyedUnarchiverHelper));
+extern char archivingPerformanceMeterClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(_ONSPerformanceMeter));
+extern char archivingOldStyleArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(_ONSKeyedCoderOldStyleArray));
 @class __ONSLocalTimeZone;
 @class __ONSLocalTimeZoneI;
 

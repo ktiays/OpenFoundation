@@ -24,11 +24,12 @@
 // (Foundation's, GOT slots 0x22289f3d8 and 0x22289f118) and NSException (CoreFoundation's; the uniqued GOT
 // slot 0x22227fae0 lies outside the image and is bound by the selector sent and the slots' alphabetical
 // order, as is the exception name 0x22227f4e0, NSGenericException; confidence: medium).
-extern char notificationClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotification));
-extern char concreteNotificationClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConcreteNotification));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char mutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char notificationClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNotification));
+extern char concreteNotificationClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                  OF_NAME_STRING(ONSConcreteNotification));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char mutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // Selectors this unit sends to objects of classes outside it (NSString, NSMutableString, NSDictionary,
 // NSException and NSCoder), declared for the message sends only; no protocol object is emitted.

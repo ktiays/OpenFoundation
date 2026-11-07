@@ -16,7 +16,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The NSException class symbol, loaded natively through its class reference (off_2227CE300).
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The keyed-archive keys "NSRange" and "NSString" are data, not runtime names: they keep their native
 // spelling in both naming modes. Each is written as two adjacent literals because the prefix tool's
@@ -213,7 +213,7 @@ extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException)
     }
     if (type == 3) {
         OCFRange range = _OCFCharacterSetGetKeyedCodingRange((OCFCharacterSetRef)self);
-        [coder encodeInt64:(int64_t)(range.length | (range.location << 32))
+        [coder encodeInt64:(int64_t)(range.length | ((uint64_t)range.location << 32))
                     forKey:(id)OF_STR(
                                "NS"
                                "Range"

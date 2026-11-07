@@ -27,7 +27,7 @@ typedef struct {
     OCFTypeRef context;
 } NotificationHandler;
 
-_Static_assert(sizeof(NotificationHandler) == 16, "The native handler is 16 bytes.");
+OF_ABI_ASSERT(sizeof(NotificationHandler) == 16, "The native handler is 16 bytes.");
 
 // One matched observer (64 bytes): the name and object it matched (copies owned by the record), the observer
 // (retained when flag 0x400 marks a weak observer), the observer flags, the handler, the token (observer
@@ -42,7 +42,7 @@ typedef struct {
     uint64_t context;
 } NotificationRegistration;
 
-_Static_assert(sizeof(NotificationRegistration) == 64, "The native registration record is 64 bytes.");
+OF_ABI_ASSERT(sizeof(NotificationRegistration) == 64, "The native registration record is 64 bytes.");
 
 // The registration buffer the find functions fill: a count, a capacity, whether the records own their object
 // (the registrar's option bit 1), and the records, initially the caller's inline storage that follows the
@@ -54,7 +54,7 @@ typedef struct {
     NotificationRegistration *records;
 } NotificationRegistrationBuffer;
 
-_Static_assert(sizeof(NotificationRegistrationBuffer) == 24, "The native buffer header is 24 bytes.");
+OF_ABI_ASSERT(sizeof(NotificationRegistrationBuffer) == 24, "The native buffer header is 24 bytes.");
 
 // Native CFXNotificationHandlerCopy, 0x1c02bb134. External.
 OF_EXPORT void

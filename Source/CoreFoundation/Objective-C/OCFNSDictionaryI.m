@@ -48,16 +48,16 @@ static const uint64_t __NSDictionaryCapacities[40] = {
 
 // The __NSFastEnumerationEnumerator, NSMutableSet, NSSet and NSException class symbols, loaded natively
 // through their class references (off_2227CE440, off_2227CE390, off_2227CE3B8, off_2227CE300).
-extern char dictionaryIFastEnumerationEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator)
-);
-extern char dictionaryIMutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char dictionaryISetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
+extern char
+    dictionaryIFastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char dictionaryIMutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char dictionaryISetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
 
 // The offset of __NSDictionaryM's storage instance variable (_OBJC_IVAR_$___NSDictionaryM.storage), which
 // -_cfMutableCopy writes in the copy it makes.
-extern const int32_t
-    dictionaryMStorageIvarOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSDictionaryM) ".storage");
+extern const int32_t dictionaryMStorageIvarOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                            OF_NAME_STRING(__ONSDictionaryM) ".storage");
 
 // Selectors this unit sends that no included header declares, for the message sends only.
 @protocol DictionaryIMessages
@@ -131,7 +131,7 @@ static id _NSDictionaryI_mutableCopyWithZone(__ONSDictionaryI *self);
 // buffer 0x16: the method name and the count). Then the occupied slots are copied in table order, at most
 // min(count, _used) entries.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -140,7 +140,7 @@ static id _NSDictionaryI_mutableCopyWithZone(__ONSDictionaryI *self);
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -228,7 +228,7 @@ static id _NSDictionaryI_mutableCopyWithZone(__ONSDictionaryI *self);
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

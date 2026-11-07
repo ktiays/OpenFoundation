@@ -18,7 +18,8 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char concreteMutableRLEArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableRLEArray));
+extern char concreteMutableRLEArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(ONSMutableRLEArray));
 
 @protocol ConcreteAttributedStringMessages
 - (ONSRLEArray *)_runArrayHoldingAttributes;

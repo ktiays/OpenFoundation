@@ -74,7 +74,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (_OBJC_CLASS_$_NSException), sent to directly.
-extern char dictionaryExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char dictionaryExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The raise the dictionary methods inline for an invalid argument: an os_log pack of the format buffer size
 // on the stack (_os_log_pack_size, the size rounded up to 16 bytes, _os_log_pack_fill with errno 0 and the

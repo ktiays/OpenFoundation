@@ -40,8 +40,8 @@
 // follow the alphabetical order of the imported names, as the exception slots do).
 
 // The NSPlaceholderMutableString class symbol, the isa of __mutablePlaceholder.
-extern char
-    mutableStringPlaceholderClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPlaceholderMutableString));
+extern char mutableStringPlaceholderClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSPlaceholderMutableString));
 
 // The NSException class symbol (CoreFoundation), loaded natively through GOT slot 0x22227FAE0.
 
@@ -320,7 +320,7 @@ id _ONSNewStringByAppendingStrings(struct _NSZone *zone, ...) {
         lengths[index] = length;
     }
     if (((allEightBit | allASCII) & 1) == 0) {
-        if ((total >> 63) != 0) {
+        if ((OF_WORD_SHIFT(total, 63)) != 0) {
             return nil;
         }
         unsigned short *characters;

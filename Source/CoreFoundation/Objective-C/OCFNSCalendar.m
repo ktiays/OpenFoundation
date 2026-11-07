@@ -38,7 +38,7 @@
 
 // The NSCalendar class reference (off_2227CE2B8, and the self class reference ___SCR_NSCalendar, the same
 // class).
-extern char calendarClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCalendar));
+extern char calendarClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCalendar));
 
 // Selectors this unit sends to objects of other classes (NSDate, NSString, NSThread's class), declared for
 // the message sends only; no protocol object is emitted.
@@ -839,7 +839,7 @@ static inline id formatterSymbols(ONSCalendar *calendar, OCFDateFormatterKey key
     for (NSUInteger index = 0; index < 14; index++) {
         NSUInteger unit = kMatchUnits[index];
         NSInteger value = [components valueForComponent:unit];
-        unitFlags |= value == 0x7fffffffffffffff ? 0 : unit;
+        unitFlags |= value == LONG_MAX ? 0 : unit;
     }
     if (unitFlags == 0 && [components isLeapMonthSet]) {
         return [[self components:0x8 fromDate:date] isLeapMonthSet];
@@ -853,7 +853,7 @@ static inline id formatterSymbols(ONSCalendar *calendar, OCFDateFormatterKey key
         [copy setRepeatedDay:[dateComponents isRepeatedDay]];
     }
     NSInteger nanosecond = [dateComponents valueForComponent:0x8000];
-    if (nanosecond != 0x7fffffffffffffff) {
+    if (nanosecond != LONG_MAX) {
         NSInteger copyNanosecond = [copy valueForComponent:0x8000];
         if ((uint64_t)nanosecond - (uint64_t)copyNanosecond - 501 < (uint64_t)-1001) {
             return NO;

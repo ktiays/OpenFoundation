@@ -48,12 +48,12 @@ typedef struct {
     const void *const *objects;
 } ConstantArray;
 
-_Static_assert(sizeof(ConstantDictionary) == 40, "A constant dictionary is 40 bytes.");
+OF_ABI_ASSERT(sizeof(ConstantDictionary) == 40, "A constant dictionary is 40 bytes.");
 _Static_assert(sizeof(ConstantArray) == 24, "A constant array is 24 bytes.");
 
-extern char constantDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantDictionary));
-extern char constantArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantArray));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char constantDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantDictionary));
+extern char constantArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantArray));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // Native constant dictionary 0x2227cde78 (__objc_dictobj) and the objects it reaches, generated from the
 // image's records in native key order; every string is the image's literal (UTF-16 where the native literal
@@ -413,7 +413,7 @@ _CFStringGetInputIdentifierFormatterMappingFromDescriptor(OCFDictionaryRef descr
       );
       OCFIndex count = OCFDictionaryGetCount(descriptor);
       size_t bufferCount = (size_t)count * 2;
-      if (((size_t)count >> 59 & 0xf) != 0) {
+      if ((OF_WORD_SHIFT((size_t)count, 59) & 0xf) != 0) {
           OCFStringRef reason = OCFStringCreateWithFormat(
               NULL,
               NULL,
@@ -500,7 +500,7 @@ _CFStringGetRelevantLocaleInfoFromLocaleSummary(OCFDictionaryRef localeSummary, 
     if (keyArray == NULL) {
         return value;
     }
-    if ((size_t)count >> 60 != 0) {
+    if (OF_WORD_SHIFT((size_t)count, 60) != 0) {
         OCFStringRef reason = OCFStringCreateWithFormat(
             NULL,
             NULL,

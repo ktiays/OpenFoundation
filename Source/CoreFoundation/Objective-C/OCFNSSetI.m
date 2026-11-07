@@ -44,15 +44,14 @@
 // (8: the low 58 bits of a 64-bit word), _szidx (15: the top six bits of that word's last byte) and _list
 // (16: the slot array), defined by this unit's @implementation; __NSSetI_new reaches them through the
 // symbols, as natively.
-extern char setIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSetI));
-extern const int32_t setIUsedOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSetI) "._used");
-extern const int32_t setISizeIndexOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSetI) "._szidx");
-extern const int32_t setIListOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSetI) "._list");
+extern char setIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSetI));
+extern const int32_t setIUsedOffset __asm(OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSSetI) "._used");
+extern const int32_t setISizeIndexOffset __asm(OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSSetI) "._szidx");
+extern const int32_t setIListOffset __asm(OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSSetI) "._list");
 
 // The __NSFastEnumerationEnumerator class symbol (class reference off_2227CE440), sent +allocWithZone:.
-extern char setIFastEnumerationEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator)
-);
+extern char setIFastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(__ONSFastEnumerationEnumerator));
 
 // Native __NSSetCapacities, 0x1c0376740 (__TEXT,__const), non-external: the largest count of each size index.
 static const uint64_t __NSSetCapacities[40] = {
@@ -198,7 +197,7 @@ static int _compare_clumpiness(const void *first, const void *second);
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -298,7 +297,7 @@ static int _compare_clumpiness(const void *first, const void *second);
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",

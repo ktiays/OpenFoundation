@@ -22,7 +22,7 @@
 // Native NSAllocateObjectArray, 0x1c0593b60. External. Counts with any of bits 61-63 set throw before
 // calling the allocator; the good allocation size and type ID are preserved, including count zero.
 id *ONSAllocateObjectArray(NSUInteger count) {
-    if (count >> 61) {
+    if (OF_WORD_SHIFT(count, 61)) {
         id reason = [(id)attributedStringStringClass
             stringWithFormat:(id)OF_STR(
                                  "*** attempt to allocate id buffer with too large of a count (%lu) -- "
@@ -42,7 +42,7 @@ id *ONSAllocateObjectArray(NSUInteger count) {
 // allocated (kept). Copy min(malloc_size(old), requested bytes), zero the remaining good-size bytes, then
 // free the old allocation only on success.
 id *ONSReallocateObjectArray(id *objects, NSUInteger count) {
-    if (count >> 61) {
+    if (OF_WORD_SHIFT(count, 61)) {
         id reason = [(id)attributedStringStringClass
             stringWithFormat:(id)OF_STR(
                                  "*** attempt to allocate id buffer with too large of a count (%lu) -- "

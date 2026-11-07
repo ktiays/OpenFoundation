@@ -27,9 +27,9 @@
 // followed by the open-addressing index table. Its methods are restored in Objective-C/OCFNSOrderedSetI.m.
 @interface __ONSOrderedSetI : ONSOrderedSet {
     @public
-    NSUInteger _used : 56;
+    OF_UINT64_BITFIELD(NSUInteger) _used : 56;
     unsigned int _stride : 2;
-    NSUInteger _szidx : 6;
+    OF_UINT64_BITFIELD(NSUInteger) _szidx : 6;
     id _list[0];
 }
 @end

@@ -98,10 +98,10 @@
 // Class references used by the restored daemon source methods. The classes are owned by this image.
 @class ONSString;
 @class ONSMutableString;
-extern char dataBufferClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDDataBuffer));
-extern char lookupKeyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDSourceLookUpKey));
-extern char preferenceStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char preferenceMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
+extern char dataBufferClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDDataBuffer));
+extern char lookupKeyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDSourceLookUpKey));
+extern char preferenceStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char preferenceMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
 
 @protocol PreferenceBufferMessages
 + (id)newBufferFromFile:(int)fd allowMappingIfSafe:(BOOL)allowMapping;
@@ -340,19 +340,20 @@ static bool _canDup(void) {
 // absent from the captures remain undefined and keep this dependency group open.
 
 // libdispatch's interval source (private SPI); supplied, never implemented here.
-extern const struct dispatch_source_type_s intervalSourceType __asm("__dispatch_source_type_interval");
+extern const struct dispatch_source_type_s
+    intervalSourceType __asm(OF_SYMBOL("_dispatch_source_type_interval"));
 
 // libsystem_platform's os_unfair_lock_lock_with_options (private SPI, no SDK declaration); supplied. The
 // native call passes 0x10000 (data synchronization).
 extern void os_unfair_lock_lock_with_options(os_unfair_lock_t lock, uint32_t options);
 
 // Class symbols of the restored sources, used by the SourceSupport blocks.
-extern char sourceClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDSource));
-extern char tombstoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDObserverOnlyTombstone));
+extern char sourceClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDSource));
+extern char tombstoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDObserverOnlyTombstone));
 
 // Selectors this unit sends to the daemon-side sources, declared for the message sends only; no protocol
 // object is emitted.
-extern char cloudSourceClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDCloudSource));
+extern char cloudSourceClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDCloudSource));
 
 @protocol CloudSourceMessages
 - (id)initWithDomain:(OCFStringRef)domain

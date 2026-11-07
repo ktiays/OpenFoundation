@@ -15,8 +15,8 @@
 extern id objc_opt_self(id object);
 extern void *objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *pool);
-extern char scannerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSScanner));
-extern char concreteScannerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConcreteScanner));
+extern char scannerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSScanner));
+extern char concreteScannerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConcreteScanner));
 
 // Native _NSScanDoubleFromString 0x1c05c18d0 and _NSScanIntFromString 0x1c05c11f8, both private externals.
 // Missing from the supplied capture; these signatures follow the argument registers, and stay undefined.

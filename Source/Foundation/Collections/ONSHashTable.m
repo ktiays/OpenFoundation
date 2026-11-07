@@ -28,12 +28,13 @@
 extern void objc_release(id object);
 extern id objc_autorelease(id object);
 
-extern char hashTableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char hashTableMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char hashTableErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char hashTableExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char hashTableMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char hashTableKeyedUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char hashTableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char hashTableMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char hashTableErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char hashTableExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char hashTableMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char hashTableKeyedUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSKeyedUnarchiver));
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol HashTableMessages

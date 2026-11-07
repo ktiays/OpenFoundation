@@ -38,6 +38,7 @@
 #include "CoreFoundation/String/OCFStringTokenizer.h"
 #include "CoreFoundation/URL/OCFURL.h"
 #include "CoreFoundation/UUID/OCFUUID.h"
+#include "CoreFoundation/OFPortHooks.h"
 #include <OpenCoreFoundation/Date/OCFDate.h>
 
 #include <dispatch/dispatch.h>
@@ -256,13 +257,13 @@ static unsigned taggedPointerTag(OCFTypeRef cf) {
         ++index;
     }
     if ((index & 7) == 7) {
-        return (uint8_t)((index | value) >> 55) + 8;
+        return (uint8_t)(OF_WORD_SHIFT((index | value), 55)) + 8;
     }
     return (unsigned)(index & 7);
 }
 
 static bool isTagged(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0;
 }
 
 static uintptr_t sendMessage(OCFTypeRef cf, const char *selector) {
@@ -1138,7 +1139,7 @@ OCFIndex OCFGetRetainCount(OCFTypeRef cf) {
         crashWithMessage("*** CFGetRetainCount() called with NULL ***");
     }
     if (isTagged(cf)) {
-        return 0x7FFFFFFFFFFFFFFF;
+        return LONG_MAX;
     }
     if (__CF_IS_OBJC(typeOf(cf), cf) != 0) {
         return (OCFIndex)sendMessage(cf, "retainCount");
@@ -1155,7 +1156,7 @@ OCFIndex OCFGetRetainCount(OCFTypeRef cf) {
         return (OCFIndex)(uint32_t)cls->refcount(0, cf);
     }
     OCFIndex count = (OCFIndex)(infoOf(cf) >> kOCFInfoRetainShift);
-    return count != 0 ? count : 0xFFFFFFFFFFFFFFF;
+    return count != 0 ? count : (OCFIndex)(ULONG_MAX >> 4);
 }
 
 // Native _CFNonObjCEqual, 0x1c01e6bec. External. As CFEqual, with the second argument deciding Objective-C
@@ -1518,7 +1519,8 @@ void __OCFInitialize(void) {
     _OCFRuntimeBridgeClasses(OCFWriteStreamGetTypeID(), OF_NAME_STRING(__ONSCFOutputStream));
     _OCFProcessPath();
     _dispatch_begin_NSAutoReleasePool = _OCFAutoreleasePoolPush;
-    _dispatch_end_NSAutoReleasePool = (void (*)(void *))(void *)_OCFAutoreleasePoolPop;
+    _dispatch_end_NSAutoReleasePool =
+        OF_PORT_ANSWER(autoreleasePoolPopHook, (void (*)(void *))(void *)_OCFAutoreleasePoolPop, );
     __CFOAInitialize();
     __CFStringInitializeSystemEncoding();
     __CFMakeNSBlockClasses();

@@ -1122,7 +1122,7 @@ static void _NSExpandTildeInPath(unsigned short *path, ONSInteger *lengthPtr) {
     }
 
     ONSUInteger count = [components count];
-    if (count >> 60 != 0) {
+    if (OF_WORD_SHIFT(count, 60) != 0) {
         OCFStringRef reason = OCFStringCreateWithFormat(
             NULL,
             NULL,
@@ -1696,7 +1696,7 @@ scanForNul:
                     ONSUInteger receiverLength;
                 } payload = {138478595, string, 2048, appendedLength, 2113, self, 2048, receiverLength};
 
-                _Static_assert(sizeof(payload) == 42, "The native fault payload is 42 bytes.");
+                OF_ABI_ASSERT(sizeof(payload) == 42, "The native fault payload is 42 bytes.");
                 _os_log_fault_impl(
                     &__dso_handle,
                     log,

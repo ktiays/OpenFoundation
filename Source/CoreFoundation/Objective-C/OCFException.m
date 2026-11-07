@@ -43,7 +43,7 @@ extern BOOL objc_opt_isKindOfClass(id object, Class cls);
 extern Class objc_opt_class(id object);
 
 // The bridged exception class (the native __SCR_NSException GOT slot holds _OBJC_CLASS_$_NSException).
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 typedef struct {
     Class isa;

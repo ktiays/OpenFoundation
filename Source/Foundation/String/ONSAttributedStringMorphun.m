@@ -100,7 +100,7 @@ static BOOL _NSLanguageIdentifierBeginsWithLanguageCode(id identifier, id code) 
 - (BOOL)addConstraintsTo:(void *)inflectable;
 @end
 
-extern char morphunLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
+extern char morphunLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
 
 // Native ___block_literal_global (IDA ___block_literal_global_29), 0x22281cdd8. Static data: global
 // block flags 0x50000000, invoke 0x1c0582224, descriptor 0x2227d03f8 {0x50000000, 32, "v8@?0", NULL}.
@@ -145,8 +145,10 @@ static inline void morphunLogError(const char *operation, OCFTypeRef error) {
 
 // Morphun descriptor keys and values come from the constant dictionaries at 0x22289c010–0x22289c358.
 // Each dictionary has options 1, two shared string keys, and two NSConstantIntegerNumber values.
-extern char morphunConstantIntegerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantIntegerNumber));
-extern char morphunConstantDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantDictionary));
+extern char morphunConstantIntegerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(ONSConstantIntegerNumber));
+extern char morphunConstantDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(ONSConstantDictionary));
 
 #define MORPHUN_STRING(text) {(uintptr_t)__OCFConstantStringClassReference, 0x7c8, text, sizeof(text) - 1}
 
@@ -916,7 +918,7 @@ static void _DisplayValueRelease(OCFAllocatorRef allocator, const void *value) {
 // Native __DisplayValueArrayCallbacks at 0x2227d5d90: version 0, only release is set.
 static const OCFArrayCallBacks kDisplayValueArrayCallbacks = {0, NULL, _DisplayValueRelease, NULL, NULL};
 
-extern char morphunConstantArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantArray));
+extern char morphunConstantArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantArray));
 
 static const OCFConstantString kCaseFeature = MORPHUN_STRING("case");
 static const OCFConstantString kDeterminationFeature = MORPHUN_STRING("determination");

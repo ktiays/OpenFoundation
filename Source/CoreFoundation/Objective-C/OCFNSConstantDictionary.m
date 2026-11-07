@@ -25,11 +25,11 @@
 
 // The class symbols this unit sends to directly: NSArray (+arrayWithObjects:count:), NSMutableSet (+set),
 // NSSet (+setWithSet:), NSDictionary (+new) and __NSConstantDictionaryEnumerator (objc_alloc).
-extern char constantArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char constantMutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char constantSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char
-    constantEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSConstantDictionaryEnumerator));
+extern char constantArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char constantMutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char constantSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char constantEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                OF_NAME_STRING(__ONSConstantDictionaryEnumerator));
 
 // Selectors this unit sends that no included header declares, for the message sends only.
 @protocol ConstantDictionaryMessages
@@ -150,7 +150,7 @@ search:;
 // then the objects (a tail call), are copied with memmove for the receiver's own count, not the argument's
 // (native behavior kept: the callers pass the receiver's count).
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -159,7 +159,7 @@ search:;
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -230,7 +230,7 @@ search:;
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

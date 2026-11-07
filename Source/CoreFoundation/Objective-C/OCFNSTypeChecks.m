@@ -43,12 +43,12 @@ extern uintptr_t objc_debug_taggedpointer_obfuscator;
 extern const uint8_t objc_debug_tag60_permutations[8];
 
 // The class symbols the checks load through their class references.
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char dataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char orderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSOrderedSet));
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char timeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTimeZone));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char dataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char orderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSOrderedSet));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char timeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTimeZone));
 
 // Native __NSStringClass (0x22e6d3820) and __NSIndexSetClass (0x22e6d3830), __DATA,__bss. Non-external; the
 // NSString and NSIndexSet classes, looked up on first use.
@@ -124,7 +124,7 @@ BOOL _ONSIsNSString(id object) {
         }
         uint32_t tag = (uint32_t)(index & 7);
         if (tag == 7) {
-            tag = (uint32_t)(((index | value) >> 55) & 0xFF) + 8;
+            tag = (uint32_t)((OF_WORD_SHIFT((index | value), 55)) & 0xFF) + 8;
         }
         if (tag >= 0x17) {
             return NO;

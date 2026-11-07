@@ -32,7 +32,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The address of the class itself, as the native code loads it from its GOT slot (___SCR___NSCFString).
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFString));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFString));
 
 // Native enc (__DATA,__data 0x22e6cf708, non-external): the system encoding, cached on first use; it starts
 // as 0xFFFFFFFF (kCFStringEncodingInvalidId).

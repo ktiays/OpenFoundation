@@ -28,7 +28,7 @@ typedef struct {
     uint32_t used;
 } ArrayMStorage;
 
-_Static_assert(sizeof(ArrayMStorage) == 24, "The __NSArrayM storage ivar is 24 bytes.");
+OF_ABI_ASSERT(sizeof(ArrayMStorage) == 24, "The __NSArrayM storage ivar is 24 bytes.");
 
 #ifdef __OBJC__
 #import "CoreFoundation/Objective-C/OCFNSMutableArray.h"

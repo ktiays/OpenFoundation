@@ -44,7 +44,7 @@ typedef struct {
     UInt32 additionalFlags;
 } OCFURLAdditionalData;
 
-_Static_assert(sizeof(OCFURLAdditionalData) == 0x18, "The native additional data block is 24 bytes.");
+OF_ABI_ASSERT(sizeof(OCFURLAdditionalData) == 0x18, "The native additional data block is 24 bytes.");
 
 struct __OCFURL {
     uintptr_t isa;
@@ -58,7 +58,7 @@ struct __OCFURL {
     OCFRange ranges[];
 };
 
-_Static_assert(__builtin_offsetof(struct __OCFURL, ranges) == 0x38, "Component ranges start at 0x38.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFURL, ranges) == 0x38, "Component ranges start at 0x38.");
 
 // SDK CFURL.h interfaces (external natively).
 OF_EXPORT OCFTypeID OCFURLGetTypeID(void);

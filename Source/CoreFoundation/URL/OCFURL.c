@@ -100,7 +100,7 @@ static OCFStringRef createFileReferencePath(
 );
 
 // The NSURL class object the Swift-parsing paths message (the class reference at 0x2227ce3e0).
-extern char urlClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
+extern char urlClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
 
 // The CFStringInlineBuffer interface of the SDK's CFString.h, which the native code inlines: 64 buffered
 // characters, the string, its direct character and C-string pointers (ASCII), the buffered range and the
@@ -117,7 +117,7 @@ typedef struct {
     OCFIndex bufferedRangeEnd;
 } StringInlineBuffer;
 
-_Static_assert(sizeof(StringInlineBuffer) == 0xb8, "The SDK inline buffer is 184 bytes.");
+OF_ABI_ASSERT(sizeof(StringInlineBuffer) == 0xb8, "The SDK inline buffer is 184 bytes.");
 
 static inline void initInlineBuffer(OCFStringRef string, StringInlineBuffer *buf, OCFRange range) {
     buf->theString = string;
@@ -199,7 +199,7 @@ typedef struct {
     OCFMutableStringRef string;
 } AppendBuffer;
 
-_Static_assert(sizeof(AppendBuffer) == 0x810, "The native append buffer is 0x810 bytes.");
+OF_ABI_ASSERT(sizeof(AppendBuffer) == 0x810, "The native append buffer is 0x810 bytes.");
 
 static inline void appendBufferInit(AppendBuffer *buffer, OCFAllocatorRef allocator) {
     memset(buffer->characters, 0, 0x200);
@@ -3336,7 +3336,7 @@ void *__OCFURLResourceInfoPtr(OCFURLRef url) {
     if (url == NULL) {
         return NULL;
     }
-    if (((uintptr_t)url >> 63) != 0 || __CF_IS_OBJC(29, url) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)url, 63)) != 0 || __CF_IS_OBJC(29, url) != 0) {
         url = ((OCFURLRef (*)(id, SEL))objc_msgSend)((id)url, sel_getUid("_cfurl"));
     }
     uintptr_t offset;
@@ -3390,7 +3390,7 @@ typedef struct {
     OCFTypeRef replacementString;
 } SwiftURLHeader;
 
-_Static_assert(sizeof(SwiftURLHeader) == 0x28, "The copied Swift header is 40 bytes.");
+OF_ABI_ASSERT(sizeof(SwiftURLHeader) == 0x28, "The copied Swift header is 40 bytes.");
 
 // Native _CFURLCreateWithFileSystemPath, 0x1c0247da0. Non-external. allowFileIDPath is false from the public
 // entry points.

@@ -53,7 +53,7 @@ struct __OCFArray {
     ArrayDeque *store;
 };
 
-_Static_assert(sizeof(struct __OCFArray) == 48, "The native CFArray header is 48 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFArray) == 48, "The native CFArray header is 48 bytes.");
 
 OF_EXPORT const OCFArrayCallBacks kOCFTypeArrayCallBacks;
 

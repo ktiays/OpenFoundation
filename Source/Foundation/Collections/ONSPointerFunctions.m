@@ -50,11 +50,13 @@ extern void objc_release(id object);
 extern id objc_autorelease(id object);
 extern id objc_loadWeakRetained(id *location);
 
-extern char pointerFunctionsStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char pointerFunctionsErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char pointerFunctionsExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char pointerFunctionsMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char pointerFunctionsKeyedUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char pointerFunctionsStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char pointerFunctionsErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char pointerFunctionsExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char pointerFunctionsMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSMutableArray));
+extern char pointerFunctionsKeyedUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(ONSKeyedUnarchiver));
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol PointerFunctionsMessages
@@ -1088,7 +1090,7 @@ BOOL _NSPointerFunctionCoding_isValidOptions(NSUInteger options) {
 // Native __NSPointerFunctionCoding_bufferForCount, 0x1c0598178. Hidden (was a private external). NULL when
 // count pointers overflow, the allocation fails, or the buffer address plus count wraps.
 void **_NSPointerFunctionCoding_bufferForCount(NSUInteger count) {
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         return NULL;
     }
     void **buffer = malloc_type_malloc(8 * count, 0x665F25F);
@@ -1101,7 +1103,7 @@ void **_NSPointerFunctionCoding_bufferForCount(NSUInteger count) {
 
 // Native allocateStorageWithSentinel, 0x1c05981c8. Non-external. Every slot starts as the sentinel 1.
 static void **allocateStorageWithSentinel(NSUInteger count) {
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         return NULL;
     }
     void **storage = malloc_type_malloc(8 * count, 0x80040B8603338);
@@ -1199,7 +1201,7 @@ static void *continueReadARCWeakAt(void *item) {
 
 // Native allocateStorage, 0x1c059834c. Non-external.
 static void **allocateStorage(NSUInteger count) {
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         return NULL;
     }
     return malloc_type_calloc(count, 8, 0x80040B8603338);

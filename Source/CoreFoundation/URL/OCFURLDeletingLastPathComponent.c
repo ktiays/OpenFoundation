@@ -41,15 +41,14 @@ static inline OCFRange swiftPathRange(OCFURLRef url) {
         }
         return (OCFRange){0, length};
     }
-    const uint8_t *bytes = (const uint8_t *)url;
     if ((flags & 3) == 1) {
         OCFRange range;
-        __builtin_memcpy(&range.location, bytes + 0x68, 8);
-        __builtin_memcpy(&range.length, bytes + 0x70, 8);
+        __builtin_memcpy(&range.location, &url->ranges[3].location, sizeof(range.location));
+        __builtin_memcpy(&range.length, &url->ranges[3].length, sizeof(range.length));
         return range;
     }
     uint32_t word;
-    __builtin_memcpy(&word, bytes + 0x44, 4);
+    __builtin_memcpy(&word, (const uint8_t *)url->ranges + 12, 4);
     return (OCFRange){word & 0xffff, word >> 16};
 }
 

@@ -319,7 +319,7 @@ compute:;
 const OCFTimeInterval kOCFAbsoluteTimeIntervalSince1970 = 978307200.0;
 
 // The tagged NSDate class (__NSTaggedDate, an Objective-C class of this image, ONS spelling).
-extern char taggedDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSTaggedDate));
+extern char taggedDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSTaggedDate));
 
 // libobjc interfaces (re-exported libobjc.A.dylib); supplied. objc_debug_taggedpointer_mask is read through
 // the GOT slot 0x222409418, bound by use as in Number/OCFNumber.c (confidence: medium).
@@ -444,7 +444,7 @@ uint64_t __CFTSRToDispatchTime(uint64_t tsr) {
 extern id objc_alloc(Class cls);
 
 // The class CFDateCreate allocates (NSDate, an Objective-C class of this image).
-extern char bridgedDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
+extern char bridgedDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
 
 // Native __CFDateClass, 0x2227a8330 (__DATA_CONST,__const). Hidden (was private external); version 0, name
 // "CFDate", the debug description only.

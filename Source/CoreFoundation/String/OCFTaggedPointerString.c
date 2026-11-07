@@ -51,7 +51,7 @@ static bool isEqualToTaggedPointer(OCFTypeRef string, OCFTypeRef other) {
     } while (index != 7);
     uint32_t tag = (uint32_t)(index & 7);
     if (tag == 7) {
-        tag = (uint32_t)(((index | otherDecoded) >> 55) & 0xFF) + 8;
+        tag = (uint32_t)((OF_WORD_SHIFT((index | otherDecoded), 55)) & 0xFF) + 8;
     }
     if (tag == 22) {
         return isEqualToString(string, other);

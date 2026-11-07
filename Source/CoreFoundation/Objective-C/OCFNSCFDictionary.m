@@ -23,8 +23,8 @@
 
 // The __NSFastEnumerationEnumerator class symbol, loaded natively through its class reference
 // (off_2227CE440).
-extern char
-    fastEnumerationEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char fastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(__ONSFastEnumerationEnumerator));
 
 // The three raises, defined after the class in native address order.
 static __attribute__((noreturn)) void

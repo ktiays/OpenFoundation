@@ -46,7 +46,7 @@ static inline void initializeRegexCache(void) {
     if (expression == nil) {
         expression = [[ONSRegularExpression alloc] initWithPattern:pattern options:compileOptions error:NULL];
         if (expression == nil) {
-            return (ONSRange){0x7FFFFFFFFFFFFFFF, 0};
+            return (ONSRange){LONG_MAX, 0};
         }
         [regexCache setObject:expression forKey:key];
     }

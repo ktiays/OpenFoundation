@@ -106,8 +106,9 @@ extern int sandbox_container_path_for_audit_token(audit_token_t token, char *buf
 // (as in Preferences/OCFXPreferences.m).
 extern xpc_connection_t createMachServiceConnection(
     const char *name, dispatch_queue_t targetQueue, uint64_t flags
-) __asm("_xpc_connection_create_mach_service");
-extern pid_t connectionProcessIdentifier(xpc_connection_t connection) __asm("_xpc_connection_get_pid");
+) __asm(OF_SYMBOL("xpc_connection_create_mach_service"));
+extern pid_t
+connectionProcessIdentifier(xpc_connection_t connection) __asm(OF_SYMBOL("xpc_connection_get_pid"));
 extern void xpc_connection_get_audit_token(xpc_connection_t connection, audit_token_t *token);
 extern xpc_object_t xpc_copy_entitlement_for_token(const char *entitlement, audit_token_t *token);
 extern void
@@ -120,7 +121,7 @@ extern int proc_pidpath(int pid, void *buffer, uint32_t buffersize);
 // CFPDCloudSource, a class of this image the unit references by class symbol and that is not restored on this
 // branch; declared, not defined. The CFPDSource classes are Preferences/OCFPDSource.h's and
 // _CFPrefsClientContext is defined below.
-extern char cloudSourceClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPDCloudSource));
+extern char cloudSourceClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPDCloudSource));
 
 // Selectors this unit sends to the daemon-side sources and tombstones, declared for the message sends only;
 // no protocol object is emitted.
@@ -1037,7 +1038,7 @@ static void client_context_finalizer(void *contextObject) {
 // constant strings "AppleLocale" 0x2227b40a0 and "AppleLanguages" 0x2227b15c0; read with
 // Local/Scratch/cf-core/macho.py). The record layout (isa, count, objects) is the one
 // String/OCFStringLocalizedFormatting.m spells; the names are local descriptive spellings.
-extern char constantArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantArray));
+extern char constantArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantArray));
 static const OCFConstantString mirroredKeyLocale = ConstantASCIIString("AppleLocale");
 static const OCFConstantString mirroredKeyLanguages = ConstantASCIIString("AppleLanguages");
 static const void *const mirroredKeyObjects[2] = {&mirroredKeyLocale, &mirroredKeyLanguages};

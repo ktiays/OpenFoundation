@@ -20,7 +20,7 @@
 // Reading: Local/Evidence/cf-core/iphone-simulator-foundation-link-delta1.json, FB-bundle-paths-plist.
 // Uniqued shared-cache GOT bindings (medium): NSData 0x22227fab8 and NSDictionary 0x22227fad0.
 
-extern char mappedDataBaseClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
+extern char mappedDataBaseClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
 
 // Native __NSCreateBPlistMappedDataFromURL, 0x1c051a710. External.
 OF_EXPORT OCFDataRef __ONSCreateBPlistMappedDataFromURL(
@@ -51,7 +51,7 @@ OF_EXPORT OCFDataRef __ONSCreateBPlistMappedDataFromURL(
     if (self != nil) {
         ptr = bytes;
         size = length;
-        mappingIndex = INT64_MAX;
+        mappingIndex = LONG_MAX;
         bplistTrailer = trailer;
         bplistOffset = offset;
         bplistMarker = marker;
@@ -76,7 +76,7 @@ OF_EXPORT OCFDataRef __ONSCreateBPlistMappedDataFromURL(
     ONSUInteger length = 0;
     BOOL mapped = NO;
     if (![dataClass _readBytesFromPath:[url path]
-                             maxLength:INT64_MAX
+                             maxLength:LONG_MAX
                                  bytes:&bytes
                                 length:&length
                                 didMap:&mapped

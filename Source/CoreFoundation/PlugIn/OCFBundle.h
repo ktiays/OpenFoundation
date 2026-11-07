@@ -39,7 +39,7 @@ typedef struct {
     OCFMutableArrayRef _factories; // +16: the factories registered by the plug-in.
 } _CFPlugInData;
 
-_Static_assert(sizeof(_CFPlugInData) == 24, "The plug-in data spans bundle offsets 64 to 88.");
+OF_ABI_ASSERT(sizeof(_CFPlugInData) == 24, "The plug-in data spans bundle offsets 64 to 88.");
 
 // The CFBundle instance, iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC: _CFBundleCreate
 // (0x1c016b748) asks _CFRuntimeCreateInstance for 200 bytes after the 16-byte header (216 in all). Offsets
@@ -84,7 +84,7 @@ struct __OCFBundle {
                                                  // _CFBundleLoadLimitedInfoDictionary names it).
 };
 
-_Static_assert(sizeof(struct __OCFBundle) == 216, "A CFBundle instance is 216 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFBundle) == 216, "A CFBundle instance is 216 bytes.");
 
 // The bundle class record (type 31), iOS Simulator 24A434, 0x22279cee8. Original private-external name is
 // preserved (hidden).

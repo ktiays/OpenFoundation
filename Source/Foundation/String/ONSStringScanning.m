@@ -6,6 +6,7 @@
 #import "Foundation/String/ONSStringScanning.h"
 #import "Foundation/String/ONSUnrestoredInterfaces.h"
 
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Runtime/OCFRuntime.h"
 #include "CoreFoundation/Locale/OCFLocaleKeys.h"
 
@@ -34,6 +35,7 @@
 
 // Fetches count characters of the buffer's string at location into the buffer.
 static inline void scanBufferFetch(StringScanBuffer *buffer, ONSUInteger location, ONSUInteger count) {
+    OF_PORT_RETURN(scanBufferFetch, buffer->string, buffer->characters, location, count);
     ((void (*)(id, SEL, unsigned short *, ONSUInteger, ONSUInteger))objc_msgSend)(
         buffer->string, sel_getUid("getCharacters:range:"), buffer->characters, location, count
     );

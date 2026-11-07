@@ -9,6 +9,7 @@
 
 #include "CoreFoundation/Base/OCFHashBytes.h"
 #include "CoreFoundation/Objective-C/OCFNSObject.h"
+#include "CoreFoundation/OFPortHooks.h"
 #include <objc/runtime.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -25,10 +26,10 @@ extern BOOL objc_opt_isKindOfClass(id object, Class cls);
 extern bool dyld_program_sdk_at_least(uint64_t version);
 
 // Native __NSConcreteUUID (metadata accessor 0x1c0c46aec): the Swift class of UUID/UUID.swift.
-extern char uuidClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSUUID));
-extern char concreteUUIDClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSConcreteUUID));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
+extern char uuidClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSUUID));
+extern char concreteUUIDClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSConcreteUUID));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
 
 @protocol UUIDMessages
 - (BOOL)allowsKeyedCoding;
@@ -44,7 +45,10 @@ extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionar
 // Native +[NSUUID _compatibilityBehavior], 0x1c06b1228. Non-external. YES for programs built with an SDK
 // before the version 0x7E10901FFFFFFFF passes (dyld_program_sdk_at_least).
 + (BOOL)_compatibilityBehavior {
-    return dyld_program_sdk_at_least(0x7E10901FFFFFFFFULL) ^ 1;
+    return OF_PORT_ANSWER(
+               programSDKAtLeastPacked, dyld_program_sdk_at_least(0x7E10901FFFFFFFFULL), 0x7E10901FFFFFFFFULL
+           ) ^
+           1;
 }
 
 // Native +[NSUUID allocWithZone:], 0x1c06b1248. External class, non-external method.
@@ -171,7 +175,11 @@ extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionar
     if (bytes != NULL && length == 16) {
         return [self initWithUUIDBytes:bytes];
     }
-    if (!dyld_program_sdk_at_least(UINT64_C(0x7e10901ffffffff))) {
+    if (!OF_PORT_ANSWER(
+            programSDKAtLeastPacked,
+            dyld_program_sdk_at_least(UINT64_C(0x7e10901ffffffff)),
+            UINT64_C(0x7e10901ffffffff)
+        )) {
         return [self init];
     }
     id key = (id)ONSLocalizedDescriptionKey;

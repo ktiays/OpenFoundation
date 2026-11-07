@@ -19,25 +19,26 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char numericDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSNumericAttributeDescriptor));
+extern char numericDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                               OF_NAME_STRING(_ONSNumericAttributeDescriptor));
 extern char assumedFallbackInflectionDescriptorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAssumedFallbackInflectionAttributeDescriptor)
-);
-extern char numberFormattingDescriptorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(_ONSNumberFormattingAttributeDescriptor)
+    OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSAssumedFallbackInflectionAttributeDescriptor)
 );
 extern char
-    morphologyDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSMorphologyAttributeDescriptor));
-extern char
-    inflectionDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSInflectionAttributeDescriptor));
-extern char markdownStringDescriptorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(_ONSMarkdownStringAttributeDescriptor)
-);
-extern char stringDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSStringAttributeDescriptor));
-extern char uRLDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSURLAttributeDescriptor));
+    numberFormattingDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                OF_NAME_STRING(_ONSNumberFormattingAttributeDescriptor));
+extern char morphologyDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                  OF_NAME_STRING(_ONSMorphologyAttributeDescriptor));
+extern char inflectionDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                  OF_NAME_STRING(_ONSInflectionAttributeDescriptor));
+extern char markdownStringDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(_ONSMarkdownStringAttributeDescriptor));
+extern char stringDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                              OF_NAME_STRING(_ONSStringAttributeDescriptor));
+extern char uRLDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSURLAttributeDescriptor));
 
 // CoreFoundation's NSURL class (GOT slot 0x22227FB88, bound by its selector; confidence: medium).
-extern char attributeURLClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
+extern char attributeURLClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
 
 @protocol AttributeDescriptorMessages
 + (id)URLWithString:(id)string;

@@ -4,6 +4,7 @@
 //
 
 #include "CoreFoundation/Base/OCFUtilities.h"
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Base/OCFPlatform.h"
 #include <OpenCoreFoundation/Date/OCFDate.h>
 #include "CoreFoundation/Runtime/OCFRuntime.h"
@@ -223,7 +224,7 @@ void *__CFLookupCFNetworkFunction(const char *name) {
 // iOS Device 24A446: unread.
 // The byte at the commpage address 0xFFFFFC034 (_COMM_PAGE_ACTIVE_CPUS), zero-extended (LDRB).
 int32_t __CFActiveProcessorCount(void) {
-    return *(volatile const uint8_t *)(uintptr_t)0xFFFFFC034;
+    return OF_PORT_ANSWER(commpageActiveCPUs, *(volatile const uint8_t *)(uintptr_t)0xFFFFFC034, );
 }
 
 // libsystem interfaces the native image calls whose prototypes the iOS Simulator SDK does not install
@@ -290,7 +291,7 @@ static bool _CFCanChangeEUIDs(void) {
     return canChangeEUIDs;
 }
 
-_Static_assert(sizeof(struct kinfo_proc) == 648, "The native sysctl buffer is 648 bytes.");
+OF_ABI_ASSERT(sizeof(struct kinfo_proc) == 648, "The native sysctl buffer is 648 bytes.");
 
 // Native __CFGetUGIDs, iOS Simulator 24A434, 0x1c0256d44, with ____CFGetUGIDs_block_invoke (0x1c0256e48, the
 // global block literal 0x2227a6cc8) and ____CFGetUGIDs_block_invoke_2 (0x1c0256eb8, the dispatch_once block
@@ -697,7 +698,8 @@ static void __CFLogvEx2Predicate(
             if (buffer != NULL) {
                 Boolean converted = OCFStringGetCString(string, buffer, size + 1, 0x8000100);
                 size_t length = strlen(buffer);
-                if ((uint32_t)level <= 7 && converted && length - 0x1000001 >= UINT64_C(0xffffffffff000000)) {
+                if ((uint32_t)level <= 7 && converted &&
+                    (size_t)(length - 0x1000001) >= (size_t)0 - 0x1000000) {
                     if (logit != NULL) {
                         logit(level, buffer, length, 1);
                     } else if (useLegacy) {

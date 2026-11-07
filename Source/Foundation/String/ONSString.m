@@ -60,7 +60,7 @@ extern bool dyld_program_sdk_at_least(OCFBuildVersion version);
 static const OCFBuildVersion kTaggedStringDefaultVersion = {0xFFFFFFFF, 0x07DF0901};
 
 // NSNotFound.
-#define kNotFound ((ONSUInteger)0x7FFFFFFFFFFFFFFF)
+#define kNotFound ((ONSUInteger)LONG_MAX)
 
 Class __NSCFStringClass = Nil;
 Class __NSMutableStringClass = Nil;
@@ -97,7 +97,7 @@ typedef struct {
     unsigned short current;
 } StringCharacterBuffer;
 
-_Static_assert(sizeof(StringCharacterBuffer) == 0x70, "The character buffer spans 0x6a bytes plus padding.");
+OF_ABI_ASSERT(sizeof(StringCharacterBuffer) == 0x70, "The character buffer spans 0x6a bytes plus padding.");
 
 static inline void
 stringCharacterBufferFill(StringCharacterBuffer *characters, ONSUInteger location, ONSUInteger count) {
@@ -1547,8 +1547,8 @@ writeStringToURLOrPath(id string, id urlOrPath, unsigned int options, ONSUIntege
             if (type > 6) {
                 enclosingLength = 0;
                 substring = nil;
-                enclosingLocation = 0x7FFFFFFFFFFFFFFF;
-                substringRange = (ONSRange){0x7FFFFFFFFFFFFFFF, 0};
+                enclosingLocation = LONG_MAX;
+                substringRange = (ONSRange){LONG_MAX, 0};
                 goto callBlock;
             }
             if ((typeMask & 0x64) != 0) {
@@ -1642,8 +1642,8 @@ writeStringToURLOrPath(id string, id urlOrPath, unsigned int options, ONSUIntege
                         enclosingLength = 0;
                         substring = nil;
                         pending = 0;
-                        enclosingLocation = 0x7FFFFFFFFFFFFFFF;
-                        substringRange = (ONSRange){0x7FFFFFFFFFFFFFFF, 0};
+                        enclosingLocation = LONG_MAX;
+                        substringRange = (ONSRange){LONG_MAX, 0};
                         goto callBlock;
                     }
                     pending = collected - 1;
@@ -1788,7 +1788,7 @@ id _ONSEncodingToNewDataForExtendedAttribute(ONSUInteger encoding) {
     ONSUInteger neededLength = 0;
     ONSUInteger length = [self length];
     if (![self getBytes:NULL
-                       maxLength:0x7FFFFFFFFFFFFFFE
+                       maxLength:(LONG_MAX - 1)
                     filledLength:&neededLength
                         encoding:encoding
             allowLossyConversion:NO
@@ -2098,7 +2098,7 @@ defaultEncoding:
     void *bytes = NULL;
     BOOL didMap = NO;
     if ([(id)dataClassSymbol _readBytesFromPath:path
-                                      maxLength:0x7FFFFFFFFFFFFFFF
+                                      maxLength:LONG_MAX
                                           bytes:&bytes
                                          length:&length
                                          didMap:&didMap

@@ -23,10 +23,9 @@
 // both naming modes; a separate variable initialized with the class address would add a level of indirection
 // the native constant strings do not have, and a linker -alias option would move the arrangement out of the
 // source.
-__asm__(".globl _" OF_NAME_STRING(__OCFConstantStringClassReference));
-__asm__(".set _" OF_NAME_STRING(__OCFConstantStringClassReference) ", _OBJC_CLASS_$_" OF_NAME_STRING(
-    __ONSCFConstantString
-));
+__asm__(".globl " OF_SYMBOL(OF_NAME_STRING(__OCFConstantStringClassReference)));
+__asm__(".set " OF_SYMBOL(OF_NAME_STRING(__OCFConstantStringClassReference)) ", " OF_SYMBOL("OBJC_CLASS_$_")
+            OF_NAME_STRING(__ONSCFConstantString));
 
 @implementation __ONSCFConstantString
 

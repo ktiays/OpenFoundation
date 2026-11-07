@@ -569,7 +569,7 @@ static bool _decodeObject(ONSKeyedUnarchiver *coder, const void *key, id *result
         return;
     }
     OCFIndex count = OCFDictionaryGetCount(_tmpRefObjMap);
-    size_t bytes = (uint64_t)count << 3;
+    size_t bytes = (uint64_t)count * sizeof(void *);
     const void **keys;
     const void **values;
     if (bytes <= 512) {
@@ -3021,7 +3021,7 @@ static bool _compatDecodeValueOfObjCType(ONSKeyedUnarchiver *coder, int type, vo
 // Native -[NSKeyedUnarchiver versionForClassName:], 0x1c0563298. Non-external.
 - (NSInteger)versionForClassName:(id)name {
     Class cls = ONSClassFromString(name);
-    return cls != Nil ? [(id)cls version] : INT64_MAX;
+    return cls != Nil ? [(id)cls version] : LONG_MAX;
 }
 
 @end

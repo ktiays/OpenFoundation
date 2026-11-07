@@ -17,12 +17,13 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char
-    sourcePositionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedStringMarkdownSourcePosition));
-extern char sourcePositionArchiveKeysClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantArray));
-extern char sourcePositionStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char sourcePositionErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char sourcePositionExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char sourcePositionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                            OF_NAME_STRING(ONSAttributedStringMarkdownSourcePosition));
+extern char sourcePositionArchiveKeysClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(ONSConstantArray));
+extern char sourcePositionStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char sourcePositionErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char sourcePositionExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 @protocol MarkdownSourcePositionCoder
 - (BOOL)allowsKeyedCoding;

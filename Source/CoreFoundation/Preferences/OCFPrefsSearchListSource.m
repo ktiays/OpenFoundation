@@ -132,8 +132,8 @@ OCFURLRef _CFPrefsCopyCloudConfigurationURLFromBundle(OCFBundleRef bundle, OCFSt
     return result;
 }
 
-extern char searchListStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char searchListExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char searchListStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char searchListExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 @interface OCFPrefsSearchListSource ()
 - (xpc_object_t)createMultiMessageWithContainedMessages:(xpc_object_t)messages __attribute__((objc_direct));

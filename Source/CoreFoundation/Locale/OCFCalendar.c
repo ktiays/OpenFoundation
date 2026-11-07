@@ -27,7 +27,7 @@
 // Local/Evidence/cf-core/iphone-simulator-corpus-delta.json (the two agree).
 
 // The class both functions message: the class reference 0x2227ce338, NSLocale (not NSCalendar), as natively.
-extern char calendarResetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
+extern char calendarResetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
 
 // Native __CFLastLocalMidnightDay, 0x22e6d38d8, and __CFMidnightTimer, 0x22e6d38e0 (__DATA,__bss).
 // Non-external.

@@ -18,14 +18,14 @@
 static dispatch_once_t propertyListClassesOnce;
 static id propertyListClassesForErrorAndException;
 extern Class objc_opt_class(id object);
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char numberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char dataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char dateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
-extern char urlClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char numberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char dataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char dateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
+extern char urlClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
 
 @protocol PropertyListClassMessages
 - (id)initWithObjects:(id)first, ...;

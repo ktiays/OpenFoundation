@@ -22,7 +22,7 @@ typedef struct {
     NSUInteger peelVertex;
 } SKGraphEdge;
 
-_Static_assert(sizeof(SKGraphEdge) == 32, "The __NSSKGraph edge record is 32 bytes.");
+OF_ABI_ASSERT(sizeof(SKGraphEdge) == 32, "The __NSSKGraph edge record is 32 bytes.");
 
 // The 24-byte vertex record of __NSSKGraph's _vertices array (malloc_type_calloc of _numV records): the
 // number of live incident edges, the capacity of the incident-edge list, and the list itself (edge indices,
@@ -35,7 +35,7 @@ typedef struct {
     NSUInteger *edges;
 } SKGraphVertex;
 
-_Static_assert(sizeof(SKGraphVertex) == 24, "The __NSSKGraph vertex record is 24 bytes.");
+OF_ABI_ASSERT(sizeof(SKGraphVertex) == 24, "The __NSSKGraph vertex record is 24 bytes.");
 
 #ifdef __OBJC__
 #import <objc/NSObject.h>

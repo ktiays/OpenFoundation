@@ -4,6 +4,7 @@
 //
 
 #import "Foundation/Collections/ONSMutableIndexSet.h"
+#include "CoreFoundation/OFPortHooks.h"
 #import "Foundation/Collections/ONSUnrestoredInterfaces.h"
 #include "CoreFoundation/Objective-C/OCFNSObject.h"
 #include "CoreFoundation/Runtime/OCFRuntime.h"
@@ -60,17 +61,19 @@
 extern uintptr_t objc_debug_taggedpointer_obfuscator;
 extern const uint8_t objc_debug_tag60_permutations[];
 
-extern char indexSetClassObject[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSIndexSet));
-extern char mutableIndexSetClassObject[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableIndexSet));
-extern char constantIndexSetClassObject[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSConstantIndexSet));
-extern char placeholderIndexSetClassObject[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSPlaceholderIndexSet));
-extern char indexSetStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char indexSetMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char indexSetErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char indexSetExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char indexSetDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char indexSetDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char indexSetMutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
+extern char indexSetClassObject[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSIndexSet));
+extern char mutableIndexSetClassObject[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableIndexSet));
+extern char constantIndexSetClassObject[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(_ONSConstantIndexSet));
+extern char placeholderIndexSetClassObject[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(_ONSPlaceholderIndexSet));
+extern char indexSetStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char indexSetMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char indexSetErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char indexSetExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char indexSetDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char indexSetDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char indexSetMutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
 
 // The messages the methods send to objects of other classes (strings, coders, data, errors, exceptions),
 // declared for the sends only; no protocol object is emitted.
@@ -109,7 +112,7 @@ extern char indexSetMutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONS
 // natively: the BL from -indexGreaterThanIndex: and its siblings passes the index in X1).
 
 // NSNotFound (NSIntegerMax), the "no index" answer of the unit's lookups.
-static const NSUInteger kIndexNotFound = 0x7FFFFFFFFFFFFFFF;
+static const NSUInteger kIndexNotFound = LONG_MAX;
 
 // NSEnumerationConcurrent and NSEnumerationReverse, and the private option bits the enumeration functions
 // test: the block takes a range (bit 62), the block is a passing test whose YES answer ends the enumeration
@@ -117,9 +120,9 @@ static const NSUInteger kIndexNotFound = 0x7FFFFFFFFFFFFFFF;
 // names.
 static const NSUInteger kEnumerationConcurrent = 1;
 static const NSUInteger kEnumerationReverse = 2;
-static const NSUInteger kEnumerateRanges = 0x4000000000000000;
-static const NSUInteger kEnumeratePassingTest = 0x2000000000000000;
-static const NSUInteger kEnumerateCheckRange = 0x0800000000000000;
+static const NSUInteger kEnumerateRanges = OF_WORD_BIT(NSUInteger, 62);
+static const NSUInteger kEnumeratePassingTest = OF_WORD_BIT(NSUInteger, 61);
+static const NSUInteger kEnumerateCheckRange = OF_WORD_BIT(NSUInteger, 59);
 
 // The malloc type IDs of the range storage and of -__getContainmentVector:inRange:'s index buffer.
 static const malloc_type_id_t kIndexSetRangeStorageTypeID = 0x1080040E45EEDC5;
@@ -1260,7 +1263,7 @@ bits:
             if (target > 63) {
                 return kIndexNotFound;
             }
-            NSUInteger shift = (NSUInteger)(target & ~(target >> 63));
+            NSUInteger shift = (NSUInteger)(target & ~(OF_WORD_SHIFT(target, 63)));
             masked = bitfield & (~(NSUInteger)0 << shift);
             found = masked != 0 ? (NSUInteger)__builtin_ctzll(masked) : 0;
         } else {
@@ -1279,7 +1282,7 @@ bits:
     }
 
 afterNext:
-    if (index > 0x7FFFFFFFFFFFFFFE) {
+    if (index > (LONG_MAX - 1)) {
         return kIndexNotFound;
     }
     index++;
@@ -1851,7 +1854,7 @@ static void __NSIndexSetParameterCheckIterate(
         if (!(options & kEnumerateCheckRange) || length == 0) {
             return;
         }
-        if (start > 0x7FFFFFFFFFFFFFFE || length >= kIndexNotFound) {
+        if (start > (LONG_MAX - 1) || length >= kIndexNotFound) {
             reason = [(id<IndexSetMessages>)(id)indexSetStringClass
                 stringWithFormat:(id)OF_STR(
                                      "%@: a range field {%ld, %ld} is NSNotFound or beyond bounds (%ld)"
@@ -1904,7 +1907,7 @@ __NSIndexSetEnumerate(ONSIndexSet *set, NSUInteger options, NSUInteger start, NS
     }
     NSUInteger processors = 1;
     if (options & kEnumerationConcurrent) {
-        processors = *(volatile const uint8_t *)(uintptr_t)0xFFFFFC034;
+        processors = OF_PORT_ANSWER(commpageActiveCPUs, *(volatile const uint8_t *)(uintptr_t)0xFFFFFC034, );
         if (processors < 2) {
             options &= ~(NSUInteger)1;
         }
@@ -1970,7 +1973,7 @@ __NSIndexSetEnumerate(ONSIndexSet *set, NSUInteger options, NSUInteger start, NS
     NSUInteger end = start + length;
     if (options & kEnumerationReverse) {
         NSUInteger rangeIndex = [set _indexOfRangeBeforeOrContainingIndex:end - 1];
-        if (rangeIndex > 0x7FFFFFFFFFFFFFFE) {
+        if (rangeIndex > (LONG_MAX - 1)) {
             goto done;
         }
         for (;;) {

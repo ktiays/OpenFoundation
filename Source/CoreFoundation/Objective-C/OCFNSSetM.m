@@ -51,17 +51,16 @@
 // The __NSSetM class symbol (loaded through the __SCR___NSSetM GOT slot) and the offsets of its ivars cow and
 // storage, defined by this unit's @implementation; __NSSetM_new reaches them through the symbols, as
 // natively.
-extern char setMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSetM));
-extern const int32_t setMCowOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSetM) ".cow");
-extern const int32_t setMStorageOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSetM) ".storage");
+extern char setMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSetM));
+extern const int32_t setMCowOffset __asm(OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSSetM) ".cow");
+extern const int32_t setMStorageOffset __asm(OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSSetM) ".storage");
 
 // The __NSFastEnumerationEnumerator class symbol (class reference off_2227CE440), sent +allocWithZone:.
-extern char setMFastEnumerationEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator)
-);
+extern char setMFastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(__ONSFastEnumerationEnumerator));
 
 // The NSObject class (libobjc's), the isa of the deleted-slot marker.
-extern char setMObjectClass[] __asm("_OBJC_CLASS_$_NSObject");
+extern char setMObjectClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_NSObject"));
 
 // Native __NSSetCapacities, 0x1c046c520 (__TEXT,__const, listed as ___NSSetCapacities_0), non-external: the
 // largest count of each size index.
@@ -263,7 +262,7 @@ mset_getObjectsCount(SetMStorage *storage, id *objects, NSUInteger count) {
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -395,7 +394,7 @@ mset_getObjectsCount(SetMStorage *storage, id *objects, NSUInteger count) {
         return;
     }
     uint32_t used = savedState & 0x3FFFFFF;
-    if (((uintptr_t)object >> 63) == 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)object, 63)) == 0) {
         objc_retain(object);
     }
     list[slot] = object;
@@ -412,7 +411,7 @@ mset_getObjectsCount(SetMStorage *storage, id *objects, NSUInteger count) {
 // and the size index installed (the count is kept).
 static void __rehashs(__ONSSetM *set, uint32_t sizeIndex) {
     uint32_t newSize = setSizeAtIndex(sizeIndex);
-    id *newList = (id *)malloc_type_calloc(1, (size_t)newSize << 3, 0x80040B8603338);
+    id *newList = (id *)malloc_type_calloc(1, (size_t)newSize * sizeof(id), 0x80040B8603338);
     uint32_t state = set->storage.state.word;
     id *oldList = set->storage.list;
     if ((state >> 26) != 0) {
@@ -543,7 +542,7 @@ static void __rehashs(__ONSSetM *set, uint32_t sizeIndex) {
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -616,7 +615,7 @@ static void __rehashs(__ONSSetM *set, uint32_t sizeIndex) {
         for (NSUInteger slot = 0; slot != slots; slot++) {
             id object = list[slot];
             if (object != nil && object != deletedMarker()) {
-                if (((uintptr_t)object >> 63) == 0) {
+                if ((OF_WORD_SHIFT((uintptr_t)object, 63)) == 0) {
                     [object release];
                 }
                 list[slot] = nil;
@@ -680,7 +679,7 @@ static void __rehashs(__ONSSetM *set, uint32_t sizeIndex) {
             } while (list[slot] == deletedMarker());
         }
     }
-    if (((uintptr_t)removed >> 63) == 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)removed, 63)) == 0) {
         [removed release];
     }
 }
@@ -709,11 +708,11 @@ id __NSSetM_new(const id *objects, NSUInteger count, BOOL noRetain) {
     }
     NSUInteger size = __NSSetSizes[sizeIndex];
     id set = __CFAllocateObject([(Class)setMClass self], 0);
-    __atomic_store_n((uint64_t *)((uint8_t *)set + setMCowOffset), 0, __ATOMIC_RELEASE);
+    __atomic_store_n((uintptr_t *)((uint8_t *)set + setMCowOffset), 0, __ATOMIC_RELEASE);
     uint8_t *storage = (uint8_t *)set + setMStorageOffset;
     *(id **)storage = NULL;
-    *(uint32_t *)(storage + 8) = 1;
-    uint32_t *state = (uint32_t *)((uint8_t *)set + setMStorageOffset + 12);
+    *(uint32_t *)(storage + offsetof(SetMStorage, mutations)) = 1;
+    uint32_t *state = (uint32_t *)((uint8_t *)set + setMStorageOffset + offsetof(SetMStorage, state));
     *state = (*state & 0x3FFFFFF) | ((uint32_t)sizeIndex << 26);
     if (count == 0) {
         return set;
@@ -756,7 +755,7 @@ id __NSSetM_new(const id *objects, NSUInteger count, BOOL noRetain) {
             if (!noRetain && (intptr_t)inserted >= 1) {
                 objc_retain(inserted);
             }
-            uint32_t *used = (uint32_t *)((uint8_t *)set + setMStorageOffset + 12);
+            uint32_t *used = (uint32_t *)((uint8_t *)set + setMStorageOffset + offsetof(SetMStorage, state));
             *used = (*used & 0xFC000000) | ((*used + 1) & 0x3FFFFFF);
         }
     }
@@ -816,7 +815,7 @@ static void __RELEASE_OBJECTS_IN_THE_SET__(id object, int kind) {
         for (NSUInteger slot = 1;; slot++) {
             id stored = *slots++;
             if (stored != nil && stored != deletedMarker()) {
-                if (((uintptr_t)stored >> 63) == 0) {
+                if ((OF_WORD_SHIFT((uintptr_t)stored, 63)) == 0) {
                     [stored release];
                 }
                 remaining -= 1;
@@ -895,7 +894,7 @@ static bool cow_copy_storage(id object) {
         storage->state.word = 0;
     } else {
         uint32_t size = setSizeAtIndex(state >> 26);
-        copy = (id *)malloc_type_malloc((size_t)size << 3, 0x80040B8603338);
+        copy = (id *)malloc_type_malloc((size_t)size * sizeof(id), 0x80040B8603338);
         if (copy == NULL) {
             result = false;
         } else if ((state >> 26) != 0) {
@@ -1111,7 +1110,7 @@ static int _compare_clumpiness(const void *first, const void *second) {
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",

@@ -77,23 +77,23 @@ enum {
 // start; the fields belong to that method's class, outside this family, and are unread).
 // MarkdownOffsetCache is a local descriptive name.
 
-extern char errorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char mutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char numberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char dataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char urlClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
-extern char presentationIntentClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPresentationIntent));
-extern char
-    parsingOptionsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedStringMarkdownParsingOptions));
-extern char
-    sourcePositionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedStringMarkdownSourcePosition));
-extern char creatorConcreteClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAttributedStringFromMarkdownCreatorConcrete)
-);
-extern char constantIntegerNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantIntegerNumber));
+extern char errorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char mutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char numberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char dataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char urlClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
+extern char presentationIntentClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPresentationIntent));
+extern char parsingOptionsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                            OF_NAME_STRING(ONSAttributedStringMarkdownParsingOptions));
+extern char sourcePositionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                            OF_NAME_STRING(ONSAttributedStringMarkdownSourcePosition));
+extern char creatorConcreteClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                             OF_NAME_STRING(_ONSAttributedStringFromMarkdownCreatorConcrete));
+extern char constantIntegerNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                   OF_NAME_STRING(ONSConstantIntegerNumber));
 
 // The messages the unit sends (to the creator, the parsing options, presentation intents, source positions,
 // strings, collections, URLs, data and errors), declared for the sends only; no protocol object is emitted.

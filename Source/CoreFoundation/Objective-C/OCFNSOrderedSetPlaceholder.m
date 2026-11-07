@@ -34,11 +34,12 @@
 extern id objc_retain(id object);
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The __NSPlaceholderOrderedSet class symbol (0x22e6ceb20), the isa of both placeholders, defined by this
 // unit's @implementation.
-extern char placeholderOrderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderOrderedSet));
+extern char placeholderOrderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                   OF_NAME_STRING(__ONSPlaceholderOrderedSet));
 
 // libsystem_trace's os_log pack interfaces (private SPI without SDK declarations); supplied, never
 // reimplemented.
@@ -163,7 +164,7 @@ id __NSOrderedSetMutablePlaceholder(void) {
     if (objects == NULL && count != 0) {
         RAISE_INIT_EXCEPTION("*** %s: pointer to objects array is NULL but length is %lu", count);
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_INIT_EXCEPTION("*** %s: count (%lu) of objects array is ridiculous", count);
     }
     if (count != 0) {
@@ -193,7 +194,7 @@ id __NSOrderedSetMutablePlaceholder(void) {
 // -doesNotRecognizeSelector: with the selector and then executes BRK #1; the mutable placeholder answers
 // __NSOrderedSetM_new(NULL, capacity, 0) (a tail call); any other receiver is a BRK #1.
 - (id)initWithCapacity:(NSUInteger)capacity {
-    if ((capacity >> 61) != 0) {
+    if ((OF_WORD_SHIFT(capacity, 61)) != 0) {
         size_t packSize = _os_log_pack_size(0x16);
         void *pack = alloca((packSize + 15) & ~(size_t)15);
         uint8_t *packBuffer =

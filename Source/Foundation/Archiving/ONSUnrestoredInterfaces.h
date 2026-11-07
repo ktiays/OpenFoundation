@@ -38,23 +38,26 @@
 // Reading: Source/Foundation/Archiving/Reading.md. iOS Device 24A446: unread.
 
 // Shared-cache class bindings (confidence: medium): 0x22227fb30 and 0x22227fb48, CoreFoundation.
-extern char archivingMutableOrderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableOrderedSet));
-extern char archivingOrderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSOrderedSet));
+extern char archivingMutableOrderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                        OF_NAME_STRING(ONSMutableOrderedSet));
+extern char archivingOrderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSOrderedSet));
 // Round-2 Foundation family FR (pointer collections).
 @class ONSHashTable;
 @class ONSPointerArray;
-extern char archivingHashTableClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSHashTable));
-extern char archivingPointerArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPointerArray));
-extern char archivingLocalizedStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSLocalizedString));
-extern char archivingAttributedStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedString));
-extern char archivingMutableAttributedStringClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableAttributedString)
-);
-extern char archivingIndexSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSIndexSet));
-extern char archivingMutableIndexSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableIndexSet));
+extern char archivingHashTableClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSHashTable));
+extern char archivingPointerArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPointerArray));
+extern char archivingLocalizedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(__ONSLocalizedString));
+extern char archivingAttributedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(ONSAttributedString));
+extern char archivingMutableAttributedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                              OF_NAME_STRING(ONSMutableAttributedString));
+extern char archivingIndexSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSIndexSet));
+extern char archivingMutableIndexSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSMutableIndexSet));
 // Foundation class at 0x22e6d8528. Its implementation is outside the FX capture.
 @class ONSCountedSet;
-extern char archivingCountedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCountedSet));
+extern char archivingCountedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCountedSet));
 
 #ifdef __OBJC__
 #import "Foundation/Archiving/ONSKeyedCoderOldStyleArray.h"

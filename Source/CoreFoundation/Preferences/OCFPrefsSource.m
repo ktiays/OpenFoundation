@@ -45,17 +45,17 @@
 // (0x1c023e650), _OUTLINED_FUNCTION_6_6 (0x1c023e674).
 
 extern void objc_release(id object);
-extern char sourceStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char sourceStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The classes the default-arguments block messages. NSMutableDictionary is an Objective-C class of this image
 // (__SCR_NSMutableDictionary GOT slot 0x2227ce378). The receivers of +processInfo and
 // +whitespaceAndNewlineCharacterSet are loaded from class references 0x22229c598 and 0x22229c238, which lie
 // outside the extracted image; the bindings NSProcessInfo and NSCharacterSet are inferred from the selectors
 // (confidence: medium).
-extern char mutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char processInfoClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSProcessInfo));
-extern char characterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
+extern char mutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableDictionary));
+extern char processInfoClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSProcessInfo));
+extern char characterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
 
 // libobjc's objc_opt_new (no SDK declaration); supplied. The block creates the dictionary with it, as
 // natively.

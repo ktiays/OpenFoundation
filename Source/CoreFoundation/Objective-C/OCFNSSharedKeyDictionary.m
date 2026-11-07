@@ -31,12 +31,14 @@
 
 // Class symbols sent to directly (class references off_2227CE2A0, off_2227CE2F8, off_2227CE378 and
 // off_2227CE3B8); NSException is dictionaryExceptionClass (Objective-C/OCFNSDictionary.h).
-extern char sharedKeyDictionaryArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char sharedKeyDictionaryDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char
-    sharedKeyDictionaryMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char sharedKeyDictionarySetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char sharedKeyDictionaryMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char sharedKeyDictionaryArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char sharedKeyDictionaryDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(ONSDictionary));
+extern char sharedKeyDictionaryMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                                  OF_NAME_STRING(ONSMutableDictionary));
+extern char sharedKeyDictionarySetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char sharedKeyDictionaryMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(ONSMutableArray));
 
 // Classes looked up by name in -initWithCoder:, so that the prefix tool maps them.
 @class ONSData;
@@ -123,7 +125,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
 - (id)objectForKey:(id)key {
     if (key != nil && _keyMap != nil) {
         NSUInteger index = _ifkIMP(_keyMap, @selector(indexForKey:), key);
-        if (index != 0x7FFFFFFFFFFFFFFF) {
+        if (index != LONG_MAX) {
             return _values[index];
         }
     }
@@ -137,7 +139,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
 // key-set values, from the last index down, each non-nil value with its key (-keyAtIndex:), until the count
 // is reached.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -146,7 +148,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -200,7 +202,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
         sideCount = [_sideDic count];
     }
     count = sideCount + count;
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         OCFStringRef reason = OCFStringCreateWithFormat(
             NULL,
             NULL,
@@ -256,7 +258,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -281,7 +283,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
             return 0;
         }
         __attribute__((cleanup(freeKeyStorage))) id *keys = NULL;
-        if ((total >> 60) != 0) {
+        if ((OF_WORD_SHIFT(total, 60)) != 0) {
             OCFStringRef reason = OCFStringCreateWithFormat(
                 NULL,
                 NULL,
@@ -424,12 +426,12 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
     if (_keyMap != nil) {
         index = _ifkIMP(_keyMap, @selector(indexForKey:), key);
     } else {
-        index = 0x7FFFFFFFFFFFFFFF;
+        index = LONG_MAX;
     }
     if (_doKVO == 1) {
         [(id)self willChangeValueForKey:key];
     }
-    if (index == 0x7FFFFFFFFFFFFFFF) {
+    if (index == LONG_MAX) {
         if (_sideDic == nil) {
             _sideDic = [(Class)sharedKeyDictionaryMutableDictionaryClass new];
         }
@@ -474,12 +476,12 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
     if (_keyMap != nil) {
         index = _ifkIMP(_keyMap, @selector(indexForKey:), key);
     } else {
-        index = 0x7FFFFFFFFFFFFFFF;
+        index = LONG_MAX;
     }
     if (_doKVO == 1) {
         [(id)self willChangeValueForKey:key];
     }
-    if (index == 0x7FFFFFFFFFFFFFFF) {
+    if (index == LONG_MAX) {
         if (_sideDic != nil) {
             [_sideDic removeObjectForKey:key];
         }
@@ -984,7 +986,7 @@ static inline void failDecoding(id object, id coder, OCFStringRef reason) {
     [values getObjects:valueBuffer range:(OCFRange){0, (OCFIndex)count}];
     for (int64_t index = 0; index != count; index++) {
         id key = keyBuffer[index];
-        if (_ifkIMP(_keyMap, @selector(indexForKey:), key) == 0x7FFFFFFFFFFFFFFF) {
+        if (_ifkIMP(_keyMap, @selector(indexForKey:), key) == LONG_MAX) {
             failDecoding(
                 self,
                 coder,

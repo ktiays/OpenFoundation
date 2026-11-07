@@ -35,7 +35,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char array0ExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char array0ExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The message this unit sends that the shared declarations do not carry; declared for the send only.
 @protocol Array0Messages

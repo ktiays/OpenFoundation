@@ -20,10 +20,11 @@
 
 extern void objc_release(id object);
 
-extern char checkingResultStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char checkingResultExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char checkingResultMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char checkingResultValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSValue));
+extern char checkingResultStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char checkingResultExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char checkingResultMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                        OF_NAME_STRING(ONSMutableArray));
+extern char checkingResultValueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSValue));
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol TextCheckingResultMessages
@@ -39,7 +40,7 @@ extern char checkingResultValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONS
 @end
 
 // NSNotFound, the filler of unused range words.
-static const NSUInteger kNotFound = 0x7FFFFFFFFFFFFFFF;
+static const NSUInteger kNotFound = LONG_MAX;
 
 static void raiseInvalidArgument(id format, id object, SEL selector) __attribute__((noreturn));
 

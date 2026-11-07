@@ -48,8 +48,9 @@ extern id objc_allocWithZone(Class cls);
 
 // The NSException and __NSSingleObjectEnumerator class symbols (off_2227CE300 and the enumerator's class
 // reference), sent to or allocated directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char singleObjectEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSingleObjectEnumerator));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char singleObjectEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(__ONSSingleObjectEnumerator));
 
 // The messages this unit sends that the shared declarations do not carry; declared for the sends only.
 @protocol SingleObjectArrayIMessages
@@ -159,7 +160,7 @@ extern char singleObjectEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,

@@ -71,11 +71,11 @@ typedef struct {
     bool skip;
 } XMLPlistParseContext;
 
-_Static_assert(sizeof(XMLPlistParseContext) == 88, "The native XML parser context is 88 bytes.");
-_Static_assert(offsetof(XMLPlistParseContext, mutabilityOption) == 40, "Mutability option at 40.");
-_Static_assert(offsetof(XMLPlistParseContext, allowNewTypes) == 64, "Allow-new-types byte at 64.");
-_Static_assert(offsetof(XMLPlistParseContext, keyPaths) == 72, "Key paths at 72.");
-_Static_assert(offsetof(XMLPlistParseContext, skip) == 80, "Skip byte at 80.");
+OF_ABI_ASSERT(sizeof(XMLPlistParseContext) == 88, "The native XML parser context is 88 bytes.");
+OF_ABI_ASSERT(offsetof(XMLPlistParseContext, mutabilityOption) == 40, "Mutability option at 40.");
+OF_ABI_ASSERT(offsetof(XMLPlistParseContext, allowNewTypes) == 64, "Allow-new-types byte at 64.");
+OF_ABI_ASSERT(offsetof(XMLPlistParseContext, keyPaths) == 72, "Key paths at 72.");
+OF_ABI_ASSERT(offsetof(XMLPlistParseContext, skip) == 80, "Skip byte at 80.");
 
 // The validation context __CFPropertyListIsValidAux and its two applier callbacks share, iOS Simulator
 // 24A434; confidence: verified: the result byte (0, cleared by the callbacks on failure), the format (8), the
@@ -90,8 +90,8 @@ typedef struct {
     OCFMutableBagRef bag;
 } PlistValidationContext;
 
-_Static_assert(sizeof(PlistValidationContext) == 40, "The native validation context is 40 bytes.");
-_Static_assert(offsetof(PlistValidationContext, error) == 24, "Error slot at 24.");
+OF_ABI_ASSERT(sizeof(PlistValidationContext) == 40, "The native validation context is 40 bytes.");
+OF_ABI_ASSERT(offsetof(PlistValidationContext, error) == 24, "Error slot at 24.");
 
 // Property-list functions of the units in this directory that other units call. Signatures read from the
 // native definitions and their call sites (iOS Simulator 24A434, UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC).

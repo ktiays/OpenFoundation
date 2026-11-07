@@ -43,8 +43,8 @@ typedef struct ProviderUText {
     int32_t privC;
 } ProviderUText;
 
-_Static_assert(__builtin_offsetof(ProviderUText, context) == 72, "UText context is at 72.");
-_Static_assert(__builtin_offsetof(ProviderUText, c) == 124, "UText c is at 124.");
+OF_ABI_ASSERT(__builtin_offsetof(ProviderUText, context) == 72, "UText context is at 72.");
+OF_ABI_ASSERT(__builtin_offsetof(ProviderUText, c) == 124, "UText c is at 124.");
 
 // Native CFStringOpenUText, 0x1c0232fd8. External (no SDK declaration). A UText over the string (NULL for a
 // NULL string), set up in ut or allocated by ICU.

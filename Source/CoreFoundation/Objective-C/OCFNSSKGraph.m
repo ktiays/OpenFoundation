@@ -19,29 +19,29 @@
 // unread. Reading: Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The terminator of a vertex's incident-edge list and the "not peeled" mark of an edge (0x7FFFFFFFFFFFFFFF).
-static const NSUInteger kGraphNotFound = 0x7FFFFFFFFFFFFFFF;
+static const NSUInteger kGraphNotFound = LONG_MAX;
 
 // The growth of a vertex's incident-edge list -addEdgeWithH1:withH2: inlines for each endpoint: an empty
-// vertex gets a new list of four entries (malloc_type_calloc(4, 8, 0x100004000313F17)) whose first entry is
-// NSNotFound (the capacity and the list stored as one pair); a list whose capacity minus one equals the
-// count is replaced by one of twice the capacity (the same type ID), the old entries copied (memcpy of the
-// old capacity's bytes) and the old list freed. Then the current edge index is stored at the count, the
-// count incremented, and NSNotFound stored after it. appendIncidentEdge is a local descriptive name.
-// CoreFoundation defect (kept): a vertex whose count is 0 but whose list exists (only after -isAcyclic has
-// peeled it) gets a new list and the old one is lost; -addEdgeWithH1:withH2: is not sent after -isAcyclic
+// vertex gets a new list of four entries (malloc_type_calloc(4, sizeof(NSUInteger), 0x100004000313F17)) whose
+// first entry is NSNotFound (the capacity and the list stored as one pair); a list whose capacity minus one
+// equals the count is replaced by one of twice the capacity (the same type ID), the old entries copied
+// (memcpy of the old capacity's bytes) and the old list freed. Then the current edge index is stored at the
+// count, the count incremented, and NSNotFound stored after it. appendIncidentEdge is a local descriptive
+// name. CoreFoundation defect (kept): a vertex whose count is 0 but whose list exists (only after -isAcyclic
+// has peeled it) gets a new list and the old one is lost; -addEdgeWithH1:withH2: is not sent after -isAcyclic
 // by the image's only client, NSSharedKeySet (confidence: verified for the code path, medium for the
 // reachability).
 static inline void appendIncidentEdge(SKGraphVertex *vertex, NSUInteger edgeIndex) {
     NSUInteger *list;
     if (vertex->degree == 0) {
-        list = (NSUInteger *)malloc_type_calloc(4, 8, 0x100004000313F17);
+        list = (NSUInteger *)malloc_type_calloc(4, sizeof(NSUInteger), 0x100004000313F17);
         vertex->capacity = 4;
         vertex->edges = list;
         list[0] = kGraphNotFound;
     } else if (vertex->capacity - 1 == vertex->degree) {
         NSUInteger capacity = vertex->capacity << 1;
-        list = (NSUInteger *)malloc_type_calloc(capacity, 8, 0x100004000313F17);
-        memcpy(list, vertex->edges, vertex->capacity << 3);
+        list = (NSUInteger *)malloc_type_calloc(capacity, sizeof(NSUInteger), 0x100004000313F17);
+        memcpy(list, vertex->edges, vertex->capacity * sizeof(NSUInteger));
         free(vertex->edges);
         vertex->capacity = capacity;
         vertex->edges = list;

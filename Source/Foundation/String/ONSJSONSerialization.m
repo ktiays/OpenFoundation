@@ -39,14 +39,14 @@
 // Native JSON crash-reason slot, 0x22e6fc8d0, zero-fill and non-external.
 const char *volatile _NSJSONCrashMessage = NULL;
 
-extern char jsonDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char jsonDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char jsonLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
+extern char jsonDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char jsonDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char jsonLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
 
-extern char jsonDecimalNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumber));
-extern char jsonNullClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNull));
-extern char
-    jsonRoundTrippingNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSJSONRoundTrippingNumber));
+extern char jsonDecimalNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDecimalNumber));
+extern char jsonNullClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNull));
+extern char jsonRoundTrippingNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(_ONSJSONRoundTrippingNumber));
 
 @protocol LocaleMethods
 + (id)systemLocale;

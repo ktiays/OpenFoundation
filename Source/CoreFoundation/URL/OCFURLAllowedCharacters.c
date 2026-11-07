@@ -24,7 +24,7 @@ extern bool _os_feature_enabled_impl(const char *domain, const char *feature);
 
 // The class reference 0x22229c238 is outside the extracted image. The selector and neighboring
 // class reference order bind it to NSCharacterSet (confidence: medium), as in OCFCharacterSet.c.
-extern char swiftCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
+extern char swiftCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
 
 // Native sURLAllowedCharacters, 0x1c0456e32. Non-external, 128 halfwords.
 static const uint16_t sURLAllowedCharacters[128] = {

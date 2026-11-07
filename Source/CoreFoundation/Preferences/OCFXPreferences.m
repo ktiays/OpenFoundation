@@ -55,7 +55,7 @@
 // Folds the compiler-outlined pieces _OUTLINED_FUNCTION_18_4 (0x1c02f24a8), _OUTLINED_FUNCTION_29_2
 // (0x1c02f255c).
 
-extern char userDefaultsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSUserDefaults));
+extern char userDefaultsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSUserDefaults));
 
 // libxpc SPI used by -[_CFXPreferences init] (0x1c02eaa9c).
 extern xpc_object_t xpc_copy_entitlement_for_self(const char *entitlement);
@@ -191,7 +191,7 @@ extern int sandbox_check(pid_t pid, const char *operation, int type, ...);
 // Notification/OCFNotificationCenter.c).
 extern xpc_connection_t createMachServiceConnection(
     const char *name, dispatch_queue_t targetQueue, uint64_t flags
-) __asm("_xpc_connection_create_mach_service");
+) __asm(OF_SYMBOL("xpc_connection_create_mach_service"));
 
 // libxpc's user-session and error-string interfaces (not in the SDK); supplied. Signatures from the native
 // register use: the session UID query takes no argument the caller sets (confidence medium), the foreground

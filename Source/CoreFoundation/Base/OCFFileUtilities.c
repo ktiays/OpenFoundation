@@ -3,6 +3,7 @@
 //  Copyright (c) 2026 ktiays. All rights reserved.
 //
 
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Base/OCFFileUtilities.h"
 
 #include "CoreFoundation/Date/OCFDate.h"
@@ -287,7 +288,11 @@ OCFMutableArrayRef _CFCreateContentsOfDirectory(
             isDirectory = stat(entryPath, &status) == 0 && (status.st_mode & S_IFMT) == S_IFDIR;
         }
         OCFURLRef url = OCFURLCreateFromFileSystemRepresentationRelativeToBase(
-            alloc, (const UInt8 *)name, entry->d_namlen, isDirectory, dirURL
+            alloc,
+            (const UInt8 *)name,
+            OF_PORT_ANSWER(direntNameLength, entry->d_namlen, entry),
+            isDirectory,
+            dirURL
         );
         OCFArrayAppendValue(files, url);
         OCFRelease(url);
@@ -775,7 +780,7 @@ void _CFIterateDirectory(
     OCFAllocatorRef allocator = kOCFAllocatorSystemDefault;
     struct dirent *entry;
     while ((entry = readdir(directory)) != NULL) {
-        uint16_t nameLength = entry->d_namlen;
+        uint16_t nameLength = OF_PORT_ANSWER(direntNameLength, entry->d_namlen, entry);
         if (nameLength == 0 || entry->d_ino == 0) {
             continue;
         }

@@ -19,9 +19,9 @@ OF_EXTERN id _ONSDecimalString(const ONSDecimal *number, id locale);
 // UUID 49FCDA5F-A93E-3259-857C-FC75AC2C7B03. The selected module supplies the metadata.
 // The value witness table records a size and stride of 16, aligned to eight bytes.
 #if OF_SYSTEM_NAMES
-extern const unsigned char decimalLocaleMetadataSymbol[] __asm("_$s10Foundation6LocaleVN");
+extern const unsigned char decimalLocaleMetadataSymbol[] __asm(OF_SYMBOL("$s10Foundation6LocaleVN"));
 #else
-extern const unsigned char decimalLocaleMetadataSymbol[] __asm("_$s14OpenFoundation6LocaleVN");
+extern const unsigned char decimalLocaleMetadataSymbol[] __asm(OF_SYMBOL("$s14OpenFoundation6LocaleVN"));
 #endif
 
 static inline const void *decimalLocaleTypeMetadata(void) {

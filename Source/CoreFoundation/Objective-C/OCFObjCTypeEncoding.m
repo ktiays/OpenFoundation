@@ -16,7 +16,7 @@
 // UUID D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC. Confidence: verified for the parser;
 // iOS Device divergence: unread. Reading: Local/Evidence/cf-core/iphone-simulator-corpus-delta13.json.
 
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 static const char *__NSGetSizeAndAlignment(
     const char *type,

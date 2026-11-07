@@ -72,7 +72,7 @@ typedef struct {
     void *spare3;
 } ProviderUTextFuncs;
 
-_Static_assert(sizeof(ProviderUTextFuncs) == 0x70, "The UText function table is 0x70 bytes.");
+OF_ABI_ASSERT(sizeof(ProviderUTextFuncs) == 0x70, "The UText function table is 0x70 bytes.");
 
 // libicucore (supplied).
 extern ProviderUText *utext_setup(ProviderUText *ut, int32_t extraSpace, int32_t *status);

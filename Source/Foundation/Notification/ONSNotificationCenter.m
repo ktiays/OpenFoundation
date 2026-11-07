@@ -40,9 +40,10 @@ extern struct mach_header __dso_handle;
 extern void os_unfair_lock_lock_with_options(os_unfair_lock_t lock, uint32_t options);
 extern int proc_pidinfo(int pid, int flavor, uint64_t argument, void *buffer, int bufferSize);
 
-extern char notificationClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotification));
-extern char notificationCenterClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotificationCenter));
-extern char observerClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSObserver));
+extern char notificationClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNotification));
+extern char notificationCenterClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSNotificationCenter));
+extern char observerClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSObserver));
 
 // Native __nsDependentNotifications, 0x2227d5ae8: four addresses followed by NULL.
 static const DependentNotification *const _nsDependentNotifications[] = {

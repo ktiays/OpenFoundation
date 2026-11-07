@@ -29,8 +29,8 @@ static const OCFConstantString invalidValueErrorKey = {
 };
 id const ONSInvalidValueErrorKey = (id)&invalidValueErrorKey;
 
-extern char nullClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNull));
-extern char constantArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantArray));
+extern char nullClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNull));
+extern char constantArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantArray));
 @protocol MorphologyNullMessages
 + (id)null;
 @end

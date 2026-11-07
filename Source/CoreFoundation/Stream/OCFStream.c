@@ -37,7 +37,7 @@ extern BOOL objc_opt_respondsToSelector(id object, SEL selector);
 // The delegate class of this image that bridged streams receive from CFReadStreamSetClient and
 // CFWriteStreamSetClient (native _CFStreamDelegate, class 0x22e6cd8b0, was a private external; its methods
 // 0x1c01febc4-0x1c01fed00 are not restored on this branch).
-extern char streamDelegateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_OCFStreamDelegate));
+extern char streamDelegateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_OCFStreamDelegate));
 
 // The unit's static functions, defined below in native order.
 static void initializeCFNetworkSupport(void);
@@ -72,12 +72,12 @@ static os_unfair_lock sSourceLock;
 // signal (the source is retained under the stream's lock, the event joins whatToSignal, the source is
 // signalled and released and the run loops woken) and the detachment of the client's source.
 static inline bool isObjCWriteStream(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0 || __CF_IS_OBJC(39, cf) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0 || __CF_IS_OBJC(39, cf) != 0;
 }
 
 // The same test for the read stream type (38).
 static inline bool isObjCReadStream(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0 || __CF_IS_OBJC(38, cf) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0 || __CF_IS_OBJC(38, cf) != 0;
 }
 
 static OCFStreamError *streamErrorStorage(StreamObject *stream) {

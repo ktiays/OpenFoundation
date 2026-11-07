@@ -14,7 +14,7 @@
 // Reading: Local/Evidence/cf-core/iphone-simulator-foundation-link-delta1.json.
 
 extern Class objc_opt_class(id object);
-extern char cfErrorBaseClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
+extern char cfErrorBaseClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
 
 @implementation ONSCFError
 

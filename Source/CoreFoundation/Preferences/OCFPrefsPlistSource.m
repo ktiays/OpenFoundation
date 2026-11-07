@@ -60,11 +60,11 @@
 // 0x2227ce2f8); the receiver of +stringWithFormat: is loaded from class reference 0x22229c638, outside the
 // extracted image; the binding NSString is inferred from the selector (confidence: medium). NSException is
 // this image's (class reference 0x2227ce300).
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char managedSourceClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(OCFPrefsManagedSource));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char managedSourceClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(OCFPrefsManagedSource));
 extern id objc_msgSendSuper2(struct objc_super *super, SEL selector, ...);
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // libsystem_trace's os_variant_has_internal_diagnostics, libxpc's entitlement queries, libsystem_platform's
 // os_unfair_lock_lock_with_options (os/lock_private.h), libsystem_containermanager's group-container lookup

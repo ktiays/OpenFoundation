@@ -32,8 +32,9 @@
 
 // The NSTimeZone class reference (off_2227CE3D8, and the self class reference ___SCR_NSTimeZone) and the
 // placeholder's class (__NSPlaceholderTimeZone, restored in Objective-C/OCFNSPlaceholderTimeZone.m).
-extern char timeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTimeZone));
-extern char placeholderTimeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderTimeZone));
+extern char timeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTimeZone));
+extern char placeholderTimeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                 OF_NAME_STRING(__ONSPlaceholderTimeZone));
 
 // Class methods this unit sends through the NSTimeZone, NSLocale and NSDate class references that their
 // classes' interfaces do not declare (NSTimeZone's private class methods are implemented outside this

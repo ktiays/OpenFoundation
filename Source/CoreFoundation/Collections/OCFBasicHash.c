@@ -746,7 +746,7 @@ Boolean CFBasicHashAddValue(BasicHashRef ht, uintptr_t stackKey, uintptr_t stack
         return true;
     }
     ht->mutations++;
-    if (bucket.count <= 0x7FFFFFFFFFFFFFFE && (ht->flags & kFlagCountsOffsetMask) != 0) {
+    if (bucket.count <= (LONG_MAX - 1) && (ht->flags & kFlagCountsOffsetMask) != 0) {
         __CFBasicHashIncSlotCount(ht, bucket.index);
         return true;
     }
@@ -944,7 +944,7 @@ OCFIndex CFBasicHashRemoveValue(BasicHashRef ht, uintptr_t stackKey) {
     } else {
         ht->mutations++;
         uint16_t flags = ht->flags;
-        if (bucket.count <= 0x7FFFFFFFFFFFFFFE && (flags & kFlagCountsOffsetMask) != 0) {
+        if (bucket.count <= (LONG_MAX - 1) && (flags & kFlagCountsOffsetMask) != 0) {
             void *counts = *slotAt(ht, flags & kFlagCountsOffsetMask);
             switch ((flags >> 5) & 3) {
                 case 0:

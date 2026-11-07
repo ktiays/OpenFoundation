@@ -18,8 +18,8 @@
 // Confidence: verified from the captured IDA assembly. iOS Device divergence: iOS Device 24A446 is unread.
 // Reading: Local/Evidence/cf-core/iphone-simulator-foundation-link-delta1.json.
 
-extern char assertionHandlerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAssertionHandler));
-extern char assertionThreadClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSThread));
+extern char assertionHandlerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSAssertionHandler));
+extern char assertionThreadClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSThread));
 
 @protocol AssertionDictionaryMessages
 + (id)dictionary;

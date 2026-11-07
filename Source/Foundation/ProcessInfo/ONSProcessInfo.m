@@ -30,16 +30,17 @@
 // reference (___SCR_NSProcessInfo), _NSSwiftProcessInfo, NSString (Foundation's, the GOT slot 0x22289f3d8)
 // and NSMutableArray (CoreFoundation's; the uniqued GOT slot 0x22227fb18 lies outside the image and is bound
 // by the selectors sent and the slots' alphabetical order; confidence: medium).
-extern char processInfoClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSProcessInfo));
-extern char swiftProcessInfoClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSSwiftProcessInfo));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char processInfoClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSProcessInfo));
+extern char swiftProcessInfoClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSSwiftProcessInfo));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 // CoreFoundation's NSDictionary and NSMutableDictionary (uniqued GOT slots 0x22227fad0 and 0x22227fb28, bound
 // by their selectors; confidence: medium) and Foundation's NSNotificationCenter.
-extern char processInfoDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char processInfoMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char
-    processInfoNotificationCenterClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNotificationCenter));
+extern char processInfoDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char processInfoMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSMutableDictionary));
+extern char processInfoNotificationCenterClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(ONSNotificationCenter));
 
 // Selectors this unit sends to objects of classes outside it (NSString, NSMutableArray and
 // _NSSwiftProcessInfo), declared for the message sends only; no protocol object is emitted.

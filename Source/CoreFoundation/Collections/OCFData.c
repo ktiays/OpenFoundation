@@ -58,7 +58,7 @@ struct __OCFData {
     uint8_t *bytes;
 };
 
-_Static_assert(sizeof(struct __OCFData) == 48, "The native CFData object is 48 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFData) == 48, "The native CFData object is 48 bytes.");
 
 enum {
     kDataVarietyMask = 0x3,
@@ -106,7 +106,7 @@ const OCFRuntimeClass __CFDataClass = {
 };
 
 static bool isTagged(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0;
 }
 
 // The native dispatch test of every entry point: tagged pointers and Objective-C objects receive a message.

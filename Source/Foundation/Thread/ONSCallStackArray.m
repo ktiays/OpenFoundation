@@ -22,7 +22,7 @@
 extern id objc_opt_new(id cls);
 extern id objc_retain(id object);
 extern id objc_autorelease(id object);
-extern char callStackArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSCallStackArray));
+extern char callStackArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSCallStackArray));
 
 @implementation _ONSCallStackArray
 

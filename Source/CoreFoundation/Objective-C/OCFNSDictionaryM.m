@@ -38,22 +38,23 @@
 
 // Class symbols sent to or allocated directly (class references off_2227CE390, off_2227CE3B8, off_2227CE440
 // and ___SCR___NSFrozenDictionaryM).
-extern char mutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char
-    fastEnumerationEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator));
-extern char frozenDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFrozenDictionaryM));
+extern char mutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char fastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char frozenDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSFrozenDictionaryM));
 
 // The storage and cow ivar offsets of __NSFrozenDictionaryM (_OBJC_IVAR_$___NSFrozenDictionaryM.storage,
 // 0x22e6cc4d8, and .cow, 0x22e6cc4dc), read by cow_cleanup and cow_copy_instance for that class; the frozen
 // class is defined by Objective-C/OCFNSFrozenDictionaryM.m.
 extern const int32_t
-    frozenDictionaryStorageOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSFrozenDictionaryM) ".storage");
-extern const int32_t
-    frozenDictionaryCowOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSFrozenDictionaryM) ".cow");
+    frozenDictionaryStorageOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                            OF_NAME_STRING(__ONSFrozenDictionaryM) ".storage");
+extern const int32_t frozenDictionaryCowOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                         OF_NAME_STRING(__ONSFrozenDictionaryM) ".cow");
 
 // NSObject, the isa of the deleted-slot marker (0x22e6b6088, libobjc's class, outside the extracted image).
-extern char rootObjectClass[] __asm("_OBJC_CLASS_$_NSObject");
+extern char rootObjectClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_NSObject"));
 
 // Selectors this unit sends that the shared declarations do not carry; declared for the message sends only.
 @protocol DictionaryMMessages
@@ -351,7 +352,7 @@ id mdict_keysOfEntriesWithOptionsPassingTest(
 // order, the key before the object.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
     dictionaryTSANRead(self, __builtin_return_address(0));
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -360,7 +361,7 @@ id mdict_keysOfEntriesWithOptionsPassingTest(
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -659,7 +660,7 @@ static void mdict_removeObjectForKey(__ONSDictionaryM *self, id key) {
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -866,7 +867,7 @@ static void mdict_removeObjectForKey(__ONSDictionaryM *self, id key) {
     id changedKeys = nil;
     if ((oldWord >> 57) & 1) {
         NSUInteger used = (oldWord >> 32) & 0x1FFFFFF;
-        id *temporary = alloca(((uint32_t)(temporaryBufferCount(used) << 3) + 15) & 0x1FFFFFF0);
+        id *temporary = alloca(((uint32_t)(temporaryBufferCount(used) * sizeof(id)) + 15) & 0x1FFFFFF0);
         size_t outCount = 0;
         id *heap = NULL;
         if (used >= 0x101) {
@@ -1137,7 +1138,7 @@ void cow_cleanup(id object, int kind) {
 - (double)_clumpingFactor {
     uint64_t word = storage.bits.word;
     NSUInteger used = (word >> 32) & 0x1FFFFFF;
-    id *temporary = alloca(((uint32_t)(temporaryBufferCount(used) << 3) + 15) & 0x1FFFFFF0);
+    id *temporary = alloca(((uint32_t)(temporaryBufferCount(used) * sizeof(id)) + 15) & 0x1FFFFFF0);
     NSUInteger size = sizeAtIndex(word >> 58);
     size_t outCount = 0;
     id *heap = NULL;
@@ -1232,7 +1233,7 @@ static bool cow_copy_storage(id object) {
             id key = source[slot];
             if (key != nil) {
                 buffer[slot] = key;
-                if (key != deletedMarker() && ((uintptr_t)key >> 63) == 0) {
+                if (key != deletedMarker() && (OF_WORD_SHIFT((uintptr_t)key, 63)) == 0) {
                     [key retain];
                 }
             }
@@ -1240,7 +1241,7 @@ static bool cow_copy_storage(id object) {
         for (NSUInteger slot = size; slot != 2 * (NSUInteger)size; slot++) {
             id value = source[slot];
             if (value != nil) {
-                if (((uintptr_t)value >> 63) == 0) {
+                if ((OF_WORD_SHIFT((uintptr_t)value, 63)) == 0) {
                     [value retain];
                 }
                 buffer[slot] = value;
@@ -1282,7 +1283,7 @@ static void mdict_rehashd(__ONSDictionaryM *self, uint32_t index) {
                 continue;
             }
             NSUInteger slot = [key hash] % size;
-            NSUInteger found = 0x7FFFFFFFFFFFFFFF;
+            NSUInteger found = LONG_MAX;
             for (NSUInteger remaining = probes; remaining != 0; remaining--) {
                 if (buffer[slot] == nil) {
                     found = slot;
@@ -1291,7 +1292,7 @@ static void mdict_rehashd(__ONSDictionaryM *self, uint32_t index) {
                 NSUInteger next = slot + 1;
                 slot = next - (size > next ? 0 : size);
             }
-            if (found == 0x7FFFFFFFFFFFFFFF) {
+            if (found == LONG_MAX) {
                 __NSMUTABLEDICTIONARY_CONCURRENT_MODIFICATION_DETECTED__((id)self);
             }
             buffer[found] = key;

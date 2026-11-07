@@ -48,18 +48,19 @@ typedef struct {
     JSONStringCacheEntry cache[256];
 } JSONReaderState;
 
-_Static_assert(sizeof(JSONReaderState) == 0x2038, "Native JSON reader state size.");
-_Static_assert(offsetof(JSONReaderState, cache) == 56, "Native JSON reader cache offset.");
-_Static_assert(sizeof(JSONStringCacheEntry) == 32, "Native JSON reader cache entry stride.");
+OF_ABI_ASSERT(sizeof(JSONReaderState) == 0x2038, "Native JSON reader state size.");
+OF_ABI_ASSERT(offsetof(JSONReaderState, cache) == 56, "Native JSON reader cache offset.");
+OF_ABI_ASSERT(sizeof(JSONStringCacheEntry) == 32, "Native JSON reader cache entry stride.");
 
 extern bool dyld_program_sdk_at_least(OCFBuildVersion version);
-extern char jsonStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char jsonMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char jsonNullClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNull));
-extern char jsonDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char jsonMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char jsonArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char jsonMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char jsonStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char jsonMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char jsonNullClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNull));
+extern char jsonDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char jsonMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                   OF_NAME_STRING(ONSMutableDictionary));
+extern char jsonArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char jsonMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 
 @protocol JSONNumberMessages
 - (id)initWithUnsignedLongLong:(unsigned long long)value;

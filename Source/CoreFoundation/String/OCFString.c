@@ -570,7 +570,7 @@ OCFIndex OCFStringGetMaximumSizeForEncoding(OCFIndex length, OCFStringEncoding e
         return ((uint64_t)length >> 61) != 0 ? -1 : (OCFIndex)((uint64_t)length << 2);
     }
     if (variant == 0) {
-        return length <= 0x2AAAAAAAAAAAAAAA ? length * 3 : -1;
+        return length <= (LONG_MAX / 3) ? length * 3 : -1;
     }
     switch (encoding & 0xFFF) {
         case 0:
@@ -582,7 +582,7 @@ OCFIndex OCFStringGetMaximumSizeForEncoding(OCFIndex length, OCFStringEncoding e
         case 0x100:
             return ((uint64_t)length >> 62) != 0 ? -1 : (OCFIndex)((uint64_t)length << 1);
         case 0xBFF:
-            return length <= 0x1555555555555555 ? length * 6 : -1;
+            return length <= (LONG_MAX / 6) ? length * 6 : -1;
         default:
             break;
     }
@@ -1387,7 +1387,9 @@ createInstance:;
     stringSetInfoBits(string, kStringInfoLengthByte, (uint64_t)(lengthByte ? 1 : 0) << 2);
     if (!lengthByte) {
         OCFIndex storedLength = (OCFIndex)((uint64_t)contentLength >> (storedEncoding == 0x100 ? 1 : 0));
-        uintptr_t offset = (stringInfo(string) & kStringInfoContentsMask) == 0 ? 0x10 : 0x18;
+        uintptr_t offset = (stringInfo(string) & kStringInfoContentsMask) == 0
+                               ? offsetof(struct __OCFString, variants.inline1.length)
+                               : offsetof(struct __OCFString, variants.notInlineImmutable1.length);
         *(OCFIndex *)((uintptr_t)string + offset) = storedLength;
     }
     if (inlineContents) {
@@ -1932,7 +1934,7 @@ static inline unsigned stringTaggedPointerTag(OCFTypeRef cf) {
         ++index;
     }
     if (index == 7) {
-        return (uint8_t)((index | value) >> 55) + 8;
+        return (uint8_t)(OF_WORD_SHIFT((index | value), 55)) + 8;
     }
     return (unsigned)index;
 }
@@ -2472,7 +2474,7 @@ OCFComparisonResult OCFStringCompareWithOptionsAndLocale(
                         difference = (OCFIndex)first - (OCFIndex)second;
                     }
                 }
-                return difference == 0 ? kOCFCompareEqualTo : ((difference >> 63) | 1);
+                return difference == 0 ? kOCFCompareEqualTo : ((OF_WORD_SHIFT(difference, 63)) | 1);
             }
         }
         // The memcmp path (also reached with a negative limit after the byte loop, whose first pointer is
@@ -5608,7 +5610,7 @@ OCFStringEncoding OCFStringGetSmallestEncoding(OCFStringRef theString) {
     } else {
         OCFIndex length = stringLength(theString);
         OCFIndex converted = __OCFStringEncodeByteStream(
-            theString, 0, length, false, stringEightBitEncoding(), 0, NULL, INT64_MAX, NULL
+            theString, 0, length, false, stringEightBitEncoding(), 0, NULL, LONG_MAX, NULL
         );
         encoding = __OCFDefaultEightBitStringEncoding;
         if (converted != length) {
@@ -5634,7 +5636,7 @@ OCFStringEncoding OCFStringGetSmallestEncoding(OCFStringRef theString) {
                 }
             }
             if (__OCFStringEncodeByteStream(
-                    theString, 0, length, false, systemEncoding, 0, NULL, INT64_MAX, NULL
+                    theString, 0, length, false, systemEncoding, 0, NULL, LONG_MAX, NULL
                 ) != length) {
                 return 0x100;
             }
@@ -6003,7 +6005,7 @@ OCFIndex OCFStringFindAndReplace(
             );
             ranges = grown;
             if (wasLocal) {
-                memmove(grown, rangeBuffer, 0x3E0);
+                memmove(grown, rangeBuffer, sizeof(rangeBuffer));
             }
         }
         ranges[foundCount] = foundRange;
@@ -7496,7 +7498,7 @@ uint32_t _objc_getTaggedPointerTag(const void *ptr) {
         ++index;
     } while (index != 7);
     if ((index & 7) == 7) {
-        return (uint32_t)(((index | decoded) >> 55) & 0xFF) + 8;
+        return (uint32_t)((OF_WORD_SHIFT((index | decoded), 55)) & 0xFF) + 8;
     }
     return (uint32_t)(index & 7);
 }
@@ -7865,7 +7867,7 @@ void __CFStringChangeSizeMultiple(
                         if (count == movesCapacity) {
                             DeferredBlockMove *previous = moves;
                             movesCapacity = count * 2 + 8;
-                            OCFIndex bytes = movesCapacity * 3 * 8;
+                            OCFIndex bytes = movesCapacity * (OCFIndex)sizeof(DeferredBlockMove);
                             if (dynamic) {
                                 moves = __OCFSafelyReallocateWithAllocatorTyped(
                                     allocator, previous, bytes, 0x1000040504FFAC1, 0, NULL
@@ -7873,7 +7875,7 @@ void __CFStringChangeSizeMultiple(
                             } else {
                                 DeferredBlockMove *grown =
                                     OCFAllocatorAllocateTyped(allocator, bytes, 0x1000040504FFAC1, 0);
-                                memmove(grown, previous, (size_t)(count * 3 * 8));
+                                memmove(grown, previous, (size_t)count * sizeof(DeferredBlockMove));
                                 dynamic = true;
                                 moves = grown;
                             }

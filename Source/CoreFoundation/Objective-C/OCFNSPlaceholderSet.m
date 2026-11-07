@@ -26,14 +26,14 @@
 
 // The __NSPlaceholderSet class symbol (0x22e6cc8c0), the isa of both placeholders, defined by this unit's
 // @implementation.
-extern char placeholderSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderSet));
+extern char placeholderSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSPlaceholderSet));
 
 // The __NSSetI, __NSSetM and __NSFrozenSetM class symbols, loaded natively through their GOT slots
 // (___SCR___NSSetI, ___SCR___NSSetM, ___SCR___NSFrozenSetM) and compared with the class of the argument of
 // -initWithSet:copyItems: (all three restored in Objective-C/OCFNSSetI.m and Objective-C/OCFNSSetM.m).
-extern char placeholderSetIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSetI));
-extern char placeholderSetMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSetM));
-extern char placeholderFrozenSetMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFrozenSetM));
+extern char placeholderSetIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSetI));
+extern char placeholderSetMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSetM));
+extern char placeholderFrozenSetMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSFrozenSetM));
 
 // The 16-byte record of a static placeholder object: the isa and a zero word. PlaceholderSetObject is a local
 // descriptive type name.
@@ -144,7 +144,7 @@ id __NSSetMutablePlaceholder(void) {
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -203,7 +203,7 @@ id __NSSetMutablePlaceholder(void) {
 // answers __NSSetM_new(NULL, capacity, 0) (a tail call); the immutable one sends itself
 // -doesNotRecognizeSelector: with the selector and then executes BRK #1; any other receiver is a BRK #1.
 - (id)initWithCapacity:(NSUInteger)capacity {
-    if ((capacity >> 61) != 0) {
+    if ((OF_WORD_SHIFT(capacity, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: capacity (%lu) is ridiculous",

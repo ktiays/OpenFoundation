@@ -32,7 +32,7 @@ typedef struct {
     RunArrayItem list[];
 } RunArrayGuts;
 
-_Static_assert(sizeof(RunArrayGuts) == 48, "The native run array guts header is 48 bytes.");
+OF_ABI_ASSERT(sizeof(RunArrayGuts) == 48, "The native run array guts header is 48 bytes.");
 
 typedef struct __OCFRunArray *OCFRunArrayRef;
 

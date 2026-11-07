@@ -18,8 +18,8 @@
 extern id objc_retain(id object);
 extern void objc_release(id object);
 
-extern char autoLocaleExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char autoLocaleLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
+extern char autoLocaleExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char autoLocaleLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol AutoLocaleMessages

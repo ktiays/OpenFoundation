@@ -43,7 +43,7 @@ __CFAttributedStringCreateAttributesDictionary(OCFAllocatorRef alloc, OCFDiction
 // Objective-C test (a tagged pointer, or __CF_IS_OBJC for type 62), the info word (acquire loads) and the
 // immutable bit (set with a compare-and-swap loop), and __CFGetAllocator.
 static bool isObjCAttributedString(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0 || __CF_IS_OBJC(kAttributedStringTypeID, cf) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0 || __CF_IS_OBJC(kAttributedStringTypeID, cf) != 0;
 }
 
 static uint64_t infoOf(OCFTypeRef cf) {

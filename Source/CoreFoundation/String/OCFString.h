@@ -63,7 +63,7 @@ typedef struct {
     OCFIndex length;
 } OCFConstantString;
 
-_Static_assert(sizeof(OCFConstantString) == 32, "A compiled constant string is 32 bytes.");
+OF_ABI_ASSERT(sizeof(OCFConstantString) == 32, "A compiled constant string is 32 bytes.");
 
 // The constant-string class object (an Objective-C class; the isa of every constant string).
 OF_EXPORT char __OCFConstantStringClassReference[];
@@ -138,7 +138,7 @@ typedef struct {
     OCFIndex bufferedRangeEnd;
 } OCFStringInlineBuffer;
 
-_Static_assert(sizeof(OCFStringInlineBuffer) == 0xb8, "The inline buffer is 184 bytes.");
+OF_ABI_ASSERT(sizeof(OCFStringInlineBuffer) == 0xb8, "The inline buffer is 184 bytes.");
 
 // The variable-width character buffer of the byte-stream decoder: characters at 0, isASCII at 8,
 // shouldFreeChars at 9, the allocator at 0x10, the character count at 0x18 and a 1,008-byte local buffer at
@@ -157,8 +157,8 @@ typedef struct {
     uint8_t localBuffer[1008];
 } VarWidthCharBuffer;
 
-_Static_assert(offsetof(VarWidthCharBuffer, allocator) == 0x10, "The allocator is at 0x10.");
-_Static_assert(sizeof(VarWidthCharBuffer) == 0x410, "The variable-width buffer is 1,040 bytes.");
+OF_ABI_ASSERT(offsetof(VarWidthCharBuffer, allocator) == 0x10, "The allocator is at 0x10.");
+OF_ABI_ASSERT(sizeof(VarWidthCharBuffer) == 0x410, "The variable-width buffer is 1,040 bytes.");
 
 // The CFString object. Info bits 0-6: 0x1 mutable, 0x4 length byte, 0x8 null byte, 0x10 Unicode (UTF-16
 // contents; clear: eight-bit contents in __CFDefaultEightBitStringEncoding), 0x60 the contents kind (0
@@ -216,9 +216,22 @@ struct __OCFString {
     } variants;
 };
 
-_Static_assert(
+OF_ABI_ASSERT(
     offsetof(struct __OCFString, variants.notInlineMutable.contentsAllocator) == 0x30,
     "The mutable contents allocator is at 0x30."
+);
+OF_ABI_ASSERT(offsetof(struct __OCFString, variants.inline1.length) == 0x10, "The inline length is at 0x10.");
+OF_ABI_ASSERT(
+    offsetof(struct __OCFString, variants.notInlineImmutable1.length) == 0x18,
+    "The external length is at 0x18."
+);
+OF_ABI_ASSERT(
+    offsetof(struct __OCFString, variants.notInlineImmutable1.contentsDeallocator) == 0x20,
+    "The contents deallocator is at 0x20."
+);
+OF_ABI_ASSERT(
+    offsetof(struct __OCFString, variants.notInlineImmutable2.contentsDeallocator) == 0x18,
+    "With a length byte, the contents deallocator is at 0x18."
 );
 
 // Every native accessor reads the info word with LDAR; each helper performs one such load.
@@ -287,7 +300,9 @@ static inline OCFIndex stringLength(OCFStringRef string) {
 
 // The stored contents deallocator of a 0x60 string: 0x18 with a length byte, else 0x20.
 static inline OCFAllocatorRef *stringContentsDeallocatorSlot(OCFStringRef string) {
-    uintptr_t offset = stringHasLengthByte(string) ? 0x18 : 0x20;
+    uintptr_t offset = stringHasLengthByte(string)
+                           ? offsetof(struct __OCFString, variants.notInlineImmutable2.contentsDeallocator)
+                           : offsetof(struct __OCFString, variants.notInlineImmutable1.contentsDeallocator);
     return (OCFAllocatorRef *)((uintptr_t)string + offset);
 }
 

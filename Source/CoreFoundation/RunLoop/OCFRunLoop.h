@@ -116,13 +116,11 @@ struct __OCFRunLoop {
     os_unfair_lock timerTSRLock;
 };
 
-_Static_assert(sizeof(struct __OCFRunLoop) == 2720, "The native CFRunLoop object is 2,720 bytes.");
-_Static_assert(offsetof(struct __OCFRunLoop, ignoreWakeUps) == 339, "The ignore-wake-ups flags are at 339.");
-_Static_assert(offsetof(struct __OCFRunLoop, pthread) == 2632, "The thread is at 2632.");
-_Static_assert(
-    offsetof(struct __OCFRunLoop, fromThreadDestructor) == 2712, "The destructor flag is at 2712."
-);
-_Static_assert(offsetof(struct __OCFRunLoop, timerTSRLock) == 2716, "The timer lock is at 2716.");
+OF_ABI_ASSERT(sizeof(struct __OCFRunLoop) == 2720, "The native CFRunLoop object is 2,720 bytes.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoop, ignoreWakeUps) == 339, "The ignore-wake-ups flags are at 339.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoop, pthread) == 2632, "The thread is at 2632.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoop, fromThreadDestructor) == 2712, "The destructor flag is at 2712.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoop, timerTSRLock) == 2716, "The timer lock is at 2716.");
 
 // CFRunLoopMode (type 44, 200 bytes).
 typedef struct RunLoopMode {
@@ -151,9 +149,9 @@ typedef struct RunLoopMode {
     uint64_t timerHardDeadline;
 } RunLoopMode;
 
-_Static_assert(sizeof(RunLoopMode) == 200, "The native CFRunLoopMode object is 200 bytes.");
-_Static_assert(offsetof(RunLoopMode, observerMask) == 144, "The observer mask is at 144.");
-_Static_assert(offsetof(RunLoopMode, timerPort) == 172, "The timer port is at 172.");
+OF_ABI_ASSERT(sizeof(RunLoopMode) == 200, "The native CFRunLoopMode object is 200 bytes.");
+OF_ABI_ASSERT(offsetof(RunLoopMode, observerMask) == 144, "The observer mask is at 144.");
+OF_ABI_ASSERT(offsetof(RunLoopMode, timerPort) == 172, "The timer port is at 172.");
 
 // CFRunLoopSource (type 46, 184 bytes). Info bit 3 marks a valid source. The context is a version 0 or a
 // version 1 context; the perform callback of version 0 is at 176, of version 1 at 168.
@@ -170,7 +168,7 @@ struct __OCFRunLoopSource {
     } context;
 };
 
-_Static_assert(sizeof(struct __OCFRunLoopSource) == 184, "The native CFRunLoopSource object is 184 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFRunLoopSource) == 184, "The native CFRunLoopSource object is 184 bytes.");
 
 // CFRunLoopObserver (type 45). Info bit 0 marks a firing observer, bit 1 a repeating one, bit 2 one that may
 // fire while it is firing, bit 3 a valid one. Only the offsets read by this unit are named; the object's size
@@ -222,8 +220,8 @@ struct __OCFRunLoopTimer {
 };
 
 _Static_assert(offsetof(struct __OCFRunLoopTimer, lock) == 24, "The timer lock is at 24.");
-_Static_assert(offsetof(struct __OCFRunLoopTimer, fireTSR) == 128, "The fire time is at 128.");
-_Static_assert(offsetof(struct __OCFRunLoopTimer, context) == 152, "The timer context is at 152.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoopTimer, fireTSR) == 128, "The fire time is at 128.");
+OF_ABI_ASSERT(offsetof(struct __OCFRunLoopTimer, context) == 152, "The timer context is at 152.");
 
 OF_EXPORT const OCFRunLoopMode kOCFRunLoopDefaultMode;
 OF_EXPORT const OCFRunLoopMode kOCFRunLoopCommonModes;

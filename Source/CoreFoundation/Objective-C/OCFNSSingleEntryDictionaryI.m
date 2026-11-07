@@ -19,9 +19,8 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The __NSSingleObjectEnumerator class symbol, sent +alloc (objc_alloc) directly.
-extern char singleEntrySingleObjectEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSingleObjectEnumerator)
-);
+extern char singleEntrySingleObjectEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                               OF_NAME_STRING(__ONSSingleObjectEnumerator));
 
 // Selectors this unit sends that no included header declares, for the message sends only.
 @protocol SingleEntryDictionaryIMessages
@@ -96,7 +95,7 @@ extern char singleEntrySingleObjectEnumeratorClass[] __asm(
 // count), a zero count returns, otherwise the object is stored; then the same for the keys array and the key.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
     if (objects != NULL) {
-        if ((count >> 61) != 0) {
+        if ((OF_WORD_SHIFT(count, 61)) != 0) {
             DICTIONARY_RAISE_WITH_LOG_PACK(
                 ONSInvalidArgumentException,
                 0x16,
@@ -111,7 +110,7 @@ extern char singleEntrySingleObjectEnumeratorClass[] __asm(
         objects[0] = self->_obj;
     }
     if (keys != NULL) {
-        if ((count >> 61) != 0) {
+        if ((OF_WORD_SHIFT(count, 61)) != 0) {
             DICTIONARY_RAISE_WITH_LOG_PACK(
                 ONSInvalidArgumentException,
                 0x16,
@@ -165,7 +164,7 @@ extern char singleEntrySingleObjectEnumeratorClass[] __asm(
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

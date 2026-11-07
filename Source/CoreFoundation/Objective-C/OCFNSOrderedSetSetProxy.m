@@ -16,7 +16,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The NSSet class symbol (class reference off_2227CE3B8), sent +allocWithZone: by -copyWithZone:.
-extern char setProxySetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
+extern char setProxySetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
 
 // The messages the proxy sends to the ordered set; declared for the sends only.
 @protocol OrderedSetSetProxyMessages

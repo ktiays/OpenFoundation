@@ -58,7 +58,7 @@ struct __OCFFileDescriptor {
     OCFFileDescriptorContext context;
 };
 
-_Static_assert(
+OF_ABI_ASSERT(
     sizeof(struct __OCFFileDescriptor) == 0x70, "The native CFFileDescriptor object is 0x70 bytes."
 );
 

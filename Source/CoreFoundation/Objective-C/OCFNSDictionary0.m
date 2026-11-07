@@ -21,8 +21,8 @@
 // written yet).
 
 // The class symbols the singleton's isa and -keyEnumerator reference.
-extern char dictionary0Class[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSDictionary0));
-extern char enumerator0Class[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSEnumerator0));
+extern char dictionary0Class[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSDictionary0));
+extern char enumerator0Class[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSEnumerator0));
 
 // Native __NSDictionary0__struct, 0x2227cc280. External.
 const OCFRuntimeBase __ONSDictionary0__struct = {(uintptr_t)dictionary0Class, 0};

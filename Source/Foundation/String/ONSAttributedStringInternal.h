@@ -24,41 +24,46 @@
 
 // Class-symbol aliases avoid importing the coordinator's placeholder interfaces. Native class metadata is
 // declared in the owners' headers; other families' declarations are collected in ONSUnrestoredInterfaces.h.
-extern char attributedStringBaseClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedString));
+extern char attributedStringBaseClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSAttributedString));
+extern char attributedStringMutableBaseClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(ONSMutableAttributedString));
+extern char attributedStringConcreteClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSConcreteAttributedString));
 extern char
-    attributedStringMutableBaseClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableAttributedString));
+    attributedStringMutableConcreteClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(ONSConcreteMutableAttributedString));
+extern char attributedStringStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char attributedStringMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(ONSMutableString));
+extern char attributedStringExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char attributedStringDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char attributedStringMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSMutableArray));
+extern char attributedStringDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char attributedStringMutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(ONSMutableData));
+extern char attributedStringSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char attributedStringKeyedUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char attributedStringErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
 extern char
-    attributedStringConcreteClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConcreteAttributedString));
-extern char attributedStringMutableConcreteClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(ONSConcreteMutableAttributedString)
-);
-extern char attributedStringStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char attributedStringMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char attributedStringExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char attributedStringDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char attributedStringMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char attributedStringDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char attributedStringMutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
-extern char attributedStringSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char attributedStringKeyedUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
-extern char attributedStringErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char attributedStringProxyClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableStringProxyForMutableAttributedString)
-);
-extern char
-    attributedStringConstantIntegerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantIntegerNumber));
+    attributedStringProxyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                           OF_NAME_STRING(ONSMutableStringProxyForMutableAttributedString));
+extern char attributedStringConstantIntegerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(ONSConstantIntegerNumber));
 
-extern char attributedStringNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char attributedStringArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char
-    attributedStringMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char attributedStringURLClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
-extern char attributedStringMutableSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
+extern char attributedStringNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char attributedStringArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char attributedStringMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                               OF_NAME_STRING(ONSMutableDictionary));
+extern char attributedStringURLClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
+extern char attributedStringMutableSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
 // Round-2 Foundation families FA (attributed storage), FI (morphology) and FG (inflection rules).
-extern char
-    attributedStringPresentationIntentClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPresentationIntent));
-extern char attributedStringMorphologyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMorphology));
-extern char attributedStringInflectionRuleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSInflectionRule));
+extern char attributedStringPresentationIntentClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                                OF_NAME_STRING(ONSPresentationIntent));
+extern char attributedStringMorphologyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMorphology));
+extern char attributedStringInflectionRuleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                            OF_NAME_STRING(ONSInflectionRule));
 
 // Native __NSReadMutableAttributedStringWithCoder, 0x1c04c4280, non-external; shared with concrete classes
 // in the native unit. Hidden here to preserve that boundary when the coordinator restores those classes.

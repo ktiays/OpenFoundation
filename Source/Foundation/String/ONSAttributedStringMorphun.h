@@ -102,4 +102,5 @@ OF_EXTERN MorphunLexiconFunctions morphunLexiconFunctions;
 // Native once predicate 0x22e76c840.
 OF_EXTERN dispatch_once_t morphunLoadOnceToken;
 // Native ___NSLexiconLoadMorphunIfNeeded_block_invoke, 0x1c0582224, non-external.
-OF_EXTERN void morphunLoadInvoke(void *block) __asm("____NSLexiconLoadMorphunIfNeeded_block_invoke");
+OF_EXTERN void
+morphunLoadInvoke(void *block) __asm(OF_SYMBOL("___NSLexiconLoadMorphunIfNeeded_block_invoke"));

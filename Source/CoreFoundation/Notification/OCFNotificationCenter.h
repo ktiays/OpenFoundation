@@ -64,7 +64,7 @@ typedef struct {
     uint64_t reserved40;
 } NotificationConfiguration;
 
-_Static_assert(sizeof(NotificationConfiguration) == 48, "The native configuration is 48 bytes.");
+OF_ABI_ASSERT(sizeof(NotificationConfiguration) == 48, "The native configuration is 48 bytes.");
 
 // Native _kCFXNotificationConfigurationStandardLocalConfiguration, 0x1c0375170 (__TEXT,__const). External.
 OF_EXPORT const NotificationConfiguration _kOCFXNotificationConfigurationStandardLocalConfiguration;
@@ -87,7 +87,7 @@ typedef struct {
     uint8_t reserved[7];
 } DependentSubnotification;
 
-_Static_assert(sizeof(DependentSubnotification) == 16, "The native sub-notification is 16 bytes.");
+OF_ABI_ASSERT(sizeof(DependentSubnotification) == 16, "The native sub-notification is 16 bytes.");
 
 // A dependent notification (56 bytes): the address of the notification name it stands for (its set key), the
 // once token of its first registration, an optional initializer, the callback each sub-notification invokes,
@@ -103,7 +103,7 @@ typedef struct DependentNotification {
     const DependentSubnotification *subnotifications;
 } DependentNotification;
 
-_Static_assert(sizeof(DependentNotification) == 56, "The native dependent notification is 56 bytes.");
+OF_ABI_ASSERT(sizeof(DependentNotification) == 56, "The native dependent notification is 56 bytes.");
 
 // CoreFoundation's own dependent notifications, defined beside their callbacks (Locale/OCFCalendar.c,
 // Locale/OCFLocale.c, Date/OCFDate.c and Date/OCFTimeZone.c) and listed by __cfDependentNotifications.

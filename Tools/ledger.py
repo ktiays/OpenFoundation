@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
-from common import ROOT, SOURCE_SUFFIXES, output
+from common import ROOT, SOURCE_SUFFIXES, apple_labels, output
 
 UUIDS = {"OpenCoreFoundation": "D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC",
          "OpenFoundation": "49FCDA5F-A93E-3259-857C-FC75AC2C7B03"}
@@ -312,7 +312,7 @@ def attach_labeled_exports(rows, texts, exported, restored):
             for path, (lines, _) in texts.items():
                 if not path.startswith("Source/" + ("CoreFoundation" if product == "OpenCoreFoundation" else "Foundation")):
                     continue
-                text = "\n".join(lines)
+                text = apple_labels("\n".join(lines))
                 match = pattern.search(text)
                 if not match:
                     continue

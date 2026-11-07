@@ -153,9 +153,15 @@ compiles.
   Port code lives in `Port/`.
 - **Apple builds stay byte-identical.** A port change leaves the Release binary
   of every admitted Apple pair identical to main's (`cmp`).
-- The port infrastructure (hook header, `Port/hooks.tsv`, the platform
-  dependency table and its check) is not built yet. No port TARGET is admitted
-  until it is and until every cut on that TARGET is classified.
+- The hook header (`Source/CoreFoundation/OFPortHooks.h`) and `Port/hooks.tsv`
+  exist; the platform dependency table and its check are not built yet. No port
+  TARGET is admitted until they are and until every cut on that TARGET is
+  classified.
+- The experimental wasm32 port lives on `main` in `Port/`, built by its own
+  CMake project and never by Make or Xcode (owner decision, 2026-11-07). It is
+  not admitted. Its status and compatibility are in `Port/README.md`; land a
+  port change only after the Release binaries of both naming modes compare
+  identical (`cmp`) with and without it.
 
 ## Naming and Coexistence
 

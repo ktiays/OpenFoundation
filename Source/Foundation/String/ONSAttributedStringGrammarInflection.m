@@ -16,9 +16,10 @@
 // Confidence: verified except shared-cache GOT bindings (medium). iOS Device divergence: iOS Device 24A446
 // remains unread. Reading: Local/Scratch/cf-core-r2-fg/Reading.md. The native retains/releases use MRC.
 
-extern char grammarDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char grammarDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char grammarClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAttributedStringGrammarInflection));
+extern char grammarDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char grammarDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char grammarClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                     OF_NAME_STRING(_ONSAttributedStringGrammarInflection));
 
 @implementation _ONSAttributedStringGrammarInflection
 

@@ -27,7 +27,7 @@ extern id objc_retain(id value);
 
 // The class the entry points message (NSTimeZone, an Objective-C class of this image, not restored on this
 // branch; Date/OCFTimeZone.h declares it for the naming switch).
-extern char timeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTimeZone));
+extern char timeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTimeZone));
 
 // Native CFTimeZoneGetTypeID, 0x1c02acf24. External. The builtin type ID 48 (MOV W0, #0x30).
 OCFTypeID OCFTimeZoneGetTypeID(void) {

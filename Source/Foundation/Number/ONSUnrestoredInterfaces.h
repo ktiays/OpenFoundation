@@ -56,19 +56,20 @@
 // Native ivar offset variables, 0x22e6d4df8 (typeInfo, offset 16, ^v) and 0x22e6d4dfc
 // (_specialFlags, offset 8, Q), external. ONSConcreteValue supplies these in ONSValue.m. Using its offset
 // variables preserves the native non-fragile ivar access.
-extern int32_t
-    concreteValueTypeInfoOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConcreteValue) ".typeInfo");
-extern int32_t
-    concreteValueSpecialFlagsOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConcreteValue) "._specialFlags");
+extern int32_t concreteValueTypeInfoOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                     OF_NAME_STRING(ONSConcreteValue) ".typeInfo");
+extern int32_t concreteValueSpecialFlagsOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                         OF_NAME_STRING(ONSConcreteValue) "._specialFlags");
 
 // NSXPCCoder, 0x22e6e1df8, external, unread coder dependency of FD-decimal-number-formatting.
 // class_ro_t 0x222870678 names NSCoder as the superclass. No layout or methods are declared.
 
-extern char jsonXPCCoderClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSXPCCoder));
+extern char jsonXPCCoderClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSXPCCoder));
 
 // FA owns _NSStringProxyForContext and all of its methods. Only the formatter's sends are declared.
 @class _ONSStringProxyForContext;
-extern char numberFormatterProxyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSStringProxyForContext));
+extern char numberFormatterProxyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                  OF_NAME_STRING(_ONSStringProxyForContext));
 
 @protocol NumberFormattingContextProxy
 - (void)setString:(id)string;

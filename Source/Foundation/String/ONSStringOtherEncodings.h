@@ -49,9 +49,9 @@ typedef struct {
     uint8_t localBuffer[1008];
 } StringConversionBuffer;
 
-_Static_assert(offsetof(StringConversionBuffer, ascii) == 8, "The eight-bit characters are at 8.");
-_Static_assert(offsetof(StringConversionBuffer, numChars) == 0x18, "The character count is at 0x18.");
-_Static_assert(sizeof(StringConversionBuffer) == 0x410, "The conversion buffer is 1,040 bytes.");
+OF_ABI_ASSERT(offsetof(StringConversionBuffer, ascii) == 8, "The eight-bit characters are at 8.");
+OF_ABI_ASSERT(offsetof(StringConversionBuffer, numChars) == 0x18, "The character count is at 0x18.");
+OF_ABI_ASSERT(sizeof(StringConversionBuffer) == 0x410, "The conversion buffer is 1,040 bytes.");
 
 // Native __NSConvertToASCIIorUnicode2, 0x1c05dad38, external: decodes length bytes in the NSStringEncoding
 // into buffer (eight-bit unless alwaysUnicode, or UTF-16), allocating from zone beyond the local buffer;

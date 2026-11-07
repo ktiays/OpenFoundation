@@ -12,7 +12,7 @@
 #include <string.h>
 
 extern id objc_opt_self(id object);
-extern char searchPathFileManagerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSFileManager));
+extern char searchPathFileManagerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSFileManager));
 
 // Foundation, iOS Simulator 24A434, arm64, UUID 49FCDA5F-A93E-3259-857C-FC75AC2C7B03;
 // confidence: verified. iOS Device 24A446: comparison pending.

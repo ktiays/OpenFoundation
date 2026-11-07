@@ -32,7 +32,7 @@ id ONSStringFromSelector(SEL selector) {
     uintptr_t selectorBits;
     memcpy(&selectorBits, &selector, sizeof(selectorBits));
     OCFBuildVersion sdk = {UINT32_MAX, 0x07E90000};
-    if ((selectorBits >> 63) != 0 && !dyld_program_sdk_at_least(sdk)) {
+    if ((OF_WORD_SHIFT(selectorBits, 63)) != 0 && !dyld_program_sdk_at_least(sdk)) {
         static dispatch_once_t warnOnce;
         // Native ___NSStringFromSelector_block_invoke, 0x1c057e800. Non-external.
         // Clang does not recognize the restored constant object as a fixed format string.

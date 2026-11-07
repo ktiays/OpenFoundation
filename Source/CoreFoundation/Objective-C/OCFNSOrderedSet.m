@@ -76,18 +76,20 @@ extern void objc_autoreleasePoolPop(void *context);
 // class, referenced by its assembler name for the comparisons +allocWithZone: and
 // +newOrderedSetWithObjects:count: make without messaging. NSMutableOrderedSet and the enumerator and view
 // classes are restored in their own units (Objective-C/OCFNSMutableOrderedSet.m and siblings).
-extern char orderedSetExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char orderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSOrderedSet));
-extern char mutableOrderedSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableOrderedSet));
-extern char orderedSetFastEnumerationEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator)
-);
-extern char orderedSetReverseEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetReverseEnumerator)
-);
-extern char orderedSetReversedClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetReversed));
-extern char orderedSetArrayProxyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetArrayProxy));
-extern char orderedSetSetProxyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetSetProxy));
+extern char orderedSetExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char orderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSOrderedSet));
+extern char mutableOrderedSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableOrderedSet));
+extern char
+    orderedSetFastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char orderedSetReverseEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(__ONSOrderedSetReverseEnumerator));
+extern char orderedSetReversedClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                OF_NAME_STRING(__ONSOrderedSetReversed));
+extern char orderedSetArrayProxyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                  OF_NAME_STRING(__ONSOrderedSetArrayProxy));
+extern char orderedSetSetProxyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                OF_NAME_STRING(__ONSOrderedSetSetProxy));
 
 // The messages the methods send to objects of other classes (index sets, sets, enumerators, exceptions),
 // declared for the sends only; no protocol object is emitted.
@@ -212,7 +214,7 @@ static id __createOrderedSet(id orderedSet, id object);
 - (id)allObjects {
     orderedSetTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(count);
     }
     size_t capacity = 0;
@@ -269,7 +271,7 @@ static id __createOrderedSet(id orderedSet, id object);
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_ORDERED_SET_EXCEPTION(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -421,7 +423,7 @@ static id __createOrderedSet(id orderedSet, id object);
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_ORDERED_SET_EXCEPTION(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -454,7 +456,7 @@ static id __createOrderedSet(id orderedSet, id object);
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_ORDERED_SET_EXCEPTION(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -968,7 +970,7 @@ static id __createOrderedSet(id orderedSet, id object);
         );
     }
     NSUInteger indexCount = [indexes count];
-    if ((indexCount >> 60) != 0) {
+    if ((OF_WORD_SHIFT(indexCount, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(indexCount);
     }
     size_t capacity = 0;
@@ -1127,7 +1129,7 @@ static id __createOrderedSet(id orderedSet, id object);
     if (length == 1) {
         return [ONSArray arrayWithObject:[self objectAtIndex:location]];
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(length);
     }
     id *objects = (id *)alloca((length < 0x101 ? length : 1) * sizeof(id));
@@ -1146,7 +1148,7 @@ static id __createOrderedSet(id orderedSet, id object);
     OCFIndex *stackIndexes = (OCFIndex *)alloca((length <= 0x1000 ? length : 1) * sizeof(OCFIndex));
     OCFIndex *indexBuffer = stackIndexes;
     if (length > 0x1000) {
-        indexBuffer = (OCFIndex *)malloc_type_malloc(length << 3, 0x100004000313F17ULL);
+        indexBuffer = (OCFIndex *)malloc_type_malloc(length * sizeof(OCFIndex), 0x100004000313F17ULL);
     }
     OCFSortIndexes(
         indexBuffer, (OCFIndex)length, options, ^OCFComparisonResult(OCFIndex first, OCFIndex second) {
@@ -1230,7 +1232,7 @@ static id __createOrderedSet(id orderedSet, id object);
 - (id)descriptionWithLocale:(id)locale indent:(NSUInteger)level {
     NSUInteger indentLevel = level < 100 ? level : 100;
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -1405,7 +1407,7 @@ static id __createOrderedSet(id orderedSet, id object);
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_ORDERED_SET_EXCEPTION(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -1456,7 +1458,7 @@ static id __createOrderedSet(id orderedSet, id object);
             "-[NSOrderedSet initWithArray:range:copyItems:]", location, length, count
         );
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(length);
     }
     NSUInteger slots = length > 1 ? length : 1;
@@ -1524,7 +1526,7 @@ static id __createOrderedSet(id orderedSet, id object);
             next = va_arg(counter, id);
         } while (next != nil);
         va_end(counter);
-        if ((count >> 60) != 0) {
+        if ((OF_WORD_SHIFT(count, 60)) != 0) {
             raiseOrderedSetBufferTooLarge(count);
         }
     }
@@ -1567,7 +1569,7 @@ static id __createOrderedSet(id orderedSet, id object);
             "-[NSOrderedSet initWithOrderedSet:range:copyItems:]", location, length, count
         );
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(length);
     }
     NSUInteger slots = length > 1 ? length : 1;
@@ -1628,7 +1630,7 @@ static id __createOrderedSet(id orderedSet, id object);
         );
     }
     NSUInteger count = [set count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseOrderedSetBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -1702,7 +1704,7 @@ static id __createOrderedSet(id orderedSet, id object) {
             next = va_arg(counter, id);
         } while (next != nil);
         va_end(counter);
-        if ((count >> 60) != 0) {
+        if ((OF_WORD_SHIFT(count, 60)) != 0) {
             raiseOrderedSetBufferTooLarge(count);
         }
     }

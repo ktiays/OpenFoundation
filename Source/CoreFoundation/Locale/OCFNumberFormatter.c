@@ -118,8 +118,8 @@ struct __OCFNumberFormatter {
     Boolean usesCharacterDirection;
 };
 
-_Static_assert(sizeof(struct __OCFNumberFormatter) == 0x58, "The native number formatter is 88 bytes.");
-_Static_assert(offsetof(struct __OCFNumberFormatter, isLenient) == 0x50, "Lenient flag at 0x50.");
+OF_ABI_ASSERT(sizeof(struct __OCFNumberFormatter) == 0x58, "The native number formatter is 88 bytes.");
+OF_ABI_ASSERT(offsetof(struct __OCFNumberFormatter, isLenient) == 0x50, "Lenient flag at 0x50.");
 
 // kCFNumberSInt128Type, the literal 17 at the native comparison (the restored OCFNumberType ends at 16).
 #define kNumberSInt128Type ((OCFNumberType)17)

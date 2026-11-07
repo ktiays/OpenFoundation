@@ -42,7 +42,7 @@ struct __CFPFactory {
     OCFMutableArrayRef _types;  // +56: the type UUIDs (retained by kCFTypeArrayCallBacks).
 };
 
-_Static_assert(sizeof(struct __CFPFactory) == 64, "A CFPFactory instance is 64 bytes.");
+OF_ABI_ASSERT(sizeof(struct __CFPFactory) == 64, "A CFPFactory instance is 64 bytes.");
 
 // The plug-in instance class record (type 33, the builtin class table's entry at 0x2227a40c8 + 33 * 8),
 // iOS Simulator 24A434, 0x2227a3a00. Original private-external name is preserved (hidden).

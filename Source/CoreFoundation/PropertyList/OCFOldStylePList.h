@@ -35,11 +35,11 @@ typedef struct {
     OCFMutableSetRef stringSet;
 } OldStylePlistParseContext;
 
-_Static_assert(sizeof(OldStylePlistParseContext) == 56, "The native parse context is 56 bytes.");
-_Static_assert(__builtin_offsetof(OldStylePlistParseContext, error) == 24, "Error at 24.");
-_Static_assert(__builtin_offsetof(OldStylePlistParseContext, allocator) == 32, "Allocator at 32.");
-_Static_assert(__builtin_offsetof(OldStylePlistParseContext, mutabilityOption) == 40, "Option at 40.");
-_Static_assert(__builtin_offsetof(OldStylePlistParseContext, stringSet) == 48, "String set at 48.");
+OF_ABI_ASSERT(sizeof(OldStylePlistParseContext) == 56, "The native parse context is 56 bytes.");
+OF_ABI_ASSERT(__builtin_offsetof(OldStylePlistParseContext, error) == 24, "Error at 24.");
+OF_ABI_ASSERT(__builtin_offsetof(OldStylePlistParseContext, allocator) == 32, "Allocator at 32.");
+OF_ABI_ASSERT(__builtin_offsetof(OldStylePlistParseContext, mutabilityOption) == 40, "Option at 40.");
+OF_ABI_ASSERT(__builtin_offsetof(OldStylePlistParseContext, stringSet) == 48, "String set at 48.");
 
 // Original non-external names are preserved; no process-shared symbol is exported.
 OF_EXTERN bool advanceToNonSpace(OldStylePlistParseContext *context);

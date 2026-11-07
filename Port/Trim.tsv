@@ -1,0 +1,20 @@
+# The restored sources the wasm32 port leaves out (owner decision, 2026-11-07: trim what the consumers do not
+# need; give a trimmed part a simple implementation in Port/ when it turns out to be needed).
+#
+# pattern: a CMake regular expression matched against the source path relative to the repository root.
+# reason: why the port leaves it out, and what replaces it, if anything.
+pattern	reason
+\.swift$	Swift has no Objective-C interoperation off Darwin; the units the port needs are rewritten in C or Objective-C under Port/Foundation
+^Source/CoreFoundation/Preferences/	The cfprefsd client and its XPC sources; Port/CoreFoundation/OCFPortDefinitions.c keeps preferences in the process
+^Source/CoreFoundation/Pasteboard/	No consumer uses the pasteboard
+^Source/Foundation/XPC/	XPC transport classes; no XPC in a browser
+^Source/Foundation/PortCoding/	Distributed Objects port coders
+^Source/Foundation/Progress/	NSProgress publishing over XPC
+^Source/Foundation/String/ONSMorphology	Morphology and grammatical agreement
+^Source/Foundation/String/ONSAttributedString(Markdown|FromMarkdown|GrammarInflection|Inflection|Morphun|TermOfAddress)	Markdown parsing (libcmark is unbound) and inflection
+^Source/Foundation/String/(ONSInflectionRule|ONSGrammaticalExternalRepresentation|ONSPresentationIntent)\.m$	Inflection rules and presentation intents
+^Source/Foundation/Decimal/	NSDecimal arithmetic is implemented in Swift; not reached by the consumers yet
+^Source/Foundation/Number/ONSDecimalNumber\.m$	NSDecimalNumber depends on the Swift NSDecimal arithmetic
+^Source/CoreFoundation/Objective-C/OCFForwarding\.c$	The arm64 forwarding and invoking trampolines (naked assembly); Port/CoreFoundation/OCFForwardingPort.m forwards through objc4's wasm forward handler and keeps the type-string callbacks
+^Source/Foundation/Scanner/ONSDecimalNumberScanning\.m$	NSScanner's decimal scanning parses with the Swift NSDecimal parser (Decimal is trimmed)
+^Source/(Core)?Foundation/Bootstrap\.c$	The empty bootstrap units assert the arm64 64-bit pointers, which wasm32 does not have

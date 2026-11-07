@@ -21,8 +21,8 @@
 // The NSString class (Foundation's, the GOT slot 0x22289f3d8) and the NSDictionary class (CoreFoundation's;
 // the uniqued GOT slot 0x22227fad0 lies outside the image and is bound by the selector sent and the slots'
 // alphabetical order; confidence: medium).
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
 
 // Selectors this unit sends to NSString and NSDictionary, declared for the message sends only; no protocol
 // object is emitted.

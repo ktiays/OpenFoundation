@@ -61,9 +61,9 @@ struct __OCFBurstTrie {
     uint8_t mappedByFile;
 };
 
-_Static_assert(sizeof(BurstTrieLevel) == 0x808, "A burst-trie level is 0x808 bytes.");
-_Static_assert(__builtin_offsetof(BurstTrieListNode, string) == 0x12, "List node keys start at 0x12.");
-_Static_assert(__builtin_offsetof(struct __OCFBurstTrie, mappedByFile) == 0x828, "Mapped byte at 0x828.");
+OF_ABI_ASSERT(sizeof(BurstTrieLevel) == 0x808, "A burst-trie level is 0x808 bytes.");
+OF_ABI_ASSERT(__builtin_offsetof(BurstTrieListNode, string) == 0x12, "List node keys start at 0x12.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFBurstTrie, mappedByFile) == 0x828, "Mapped byte at 0x828.");
 _Static_assert(sizeof(struct __OCFBurstTrie) <= 0x830, "The trie is a 0x830-byte allocation.");
 
 // The traversal cursor of in-memory tries, on traverseCFBurstTrieWithCursor's stack: the current slot
@@ -91,7 +91,7 @@ typedef struct __attribute__((packed)) {
     uint8_t keyBuffer[4108];
 } BurstTrieMappedTraversalCursor;
 
-_Static_assert(__builtin_offsetof(BurstTrieMappedTraversalCursor, keyBuffer) == 0x24, "Mapped key at 0x24.");
+OF_ABI_ASSERT(__builtin_offsetof(BurstTrieMappedTraversalCursor, keyBuffer) == 0x24, "Mapped key at 0x24.");
 
 // The file-mapped trie, as the mapped group reads it through the map base (offsets from the base, all
 // little-endian 32-bit words unless stated):
@@ -132,7 +132,7 @@ struct __attribute__((packed)) __OCFBurstTrieCursor {
     OCFBurstTrieRef trie;
 };
 
-_Static_assert(sizeof(struct __OCFBurstTrieCursor) == 0x21, "The mapped cursor is 33 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFBurstTrieCursor) == 0x21, "The mapped cursor is 33 bytes.");
 _Static_assert(__builtin_offsetof(struct __OCFBurstTrieCursor, kind) == 0x11, "The cursor kind is at 0x11.");
 _Static_assert(__builtin_offsetof(struct __OCFBurstTrieCursor, trie) == 0x19, "The cursor trie is at 0x19.");
 

@@ -15,7 +15,7 @@
 extern id objc_retain(id object);
 extern void objc_release(id object);
 
-extern char progressProxyStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
+extern char progressProxyStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol ProgressPublisherProxyMessages

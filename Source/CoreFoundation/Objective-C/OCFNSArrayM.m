@@ -68,7 +68,7 @@ _os_log_pack_fill(void *pack, size_t size, int savedErrno, const void *dso, cons
 extern struct mach_header __dso_handle;
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The messages this unit sends that the shared declarations do not carry; declared for the sends only.
 @protocol ArrayMMessages
@@ -180,7 +180,7 @@ static inline void arrayTSANWrite(const void *object, void *returnAddress) {
                 (unsigned long)(count)                                                                       \
             );                                                                                               \
         }                                                                                                    \
-        if (((count) >> 61) != 0) {                                                                          \
+        if (OF_WORD_SHIFT((count), 61) != 0) {                                                               \
             RAISE_LOGGED_EXCEPTION(                                                                          \
                 ONSInvalidArgumentException,                                                                 \
                 0x16,                                                                                        \
@@ -273,7 +273,7 @@ dequeMove(id *list, NSInteger capacity, NSInteger source, NSInteger destination,
             NSInteger to = dequePosition(destination, capacity);
             NSInteger room = capacity - (to > from ? to : from);
             NSInteger moved = count < room ? count : room;
-            memmove(list + to, list + from, (size_t)moved << 3);
+            memmove(list + to, list + from, (size_t)moved * sizeof(id));
             source += moved;
             destination += moved;
             count -= moved;
@@ -286,7 +286,7 @@ dequeMove(id *list, NSInteger capacity, NSInteger source, NSInteger destination,
             NSInteger to = dequePosition(lastDestination, capacity);
             NSInteger nearest = from < to ? from : to;
             NSInteger moved = count < nearest + 1 ? count : nearest + 1;
-            memmove(list + to + 1 - moved, list + from + 1 - moved, (size_t)moved << 3);
+            memmove(list + to + 1 - moved, list + from + 1 - moved, (size_t)moved * sizeof(id));
             lastSource -= moved;
             lastDestination -= moved;
             count -= moved;
@@ -323,11 +323,11 @@ dequeCopyOut(id *destination, const ArrayMStorage *storage, NSUInteger location,
             NSUInteger room = (NSUInteger)(end - source);
             NSUInteger first = room < count ? room : count;
             if ((uint32_t)first != 0) {
-                memmove(destination, source, (size_t)(uint32_t)first << 3);
+                memmove(destination, source, (size_t)(uint32_t)first * sizeof(id));
             }
             uint32_t rest = (uint32_t)(count - first);
             if (rest != 0) {
-                memmove(destination + (uint32_t)first, list, (size_t)rest << 3);
+                memmove(destination + (uint32_t)first, list, (size_t)rest * sizeof(id));
             }
             goto copyFour;
         }
@@ -599,8 +599,8 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
     if (capacity < newCount) {
         uint32_t grown = grownCapacity(count, newCount);
         id *oldList = storage.list;
-        size_t size = malloc_good_size((size_t)grown << 3);
-        if ((size >> 32) != 0) {
+        size_t size = malloc_good_size((size_t)grown * sizeof(id));
+        if (((uint64_t)size >> 32) != 0) {
             crashWithMessage("size unreasonably big");
         }
         id *list = (id *)malloc_type_malloc(size, 0x80040B8603338ULL);
@@ -619,10 +619,10 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
                 dequeCopyOut(list + index + 1, &storage, index, tail);
             }
         }
-        bzero(list + newCount, size - ((size_t)newCount << 3));
+        bzero(list + newCount, size - ((size_t)newCount * sizeof(id)));
         storage.list = list;
         storage.offset = 0;
-        storage.capacity = (uint32_t)size >> 3;
+        storage.capacity = (uint32_t)size / (uint32_t)sizeof(id);
         storage.used = newCount;
         free(oldList);
         return;
@@ -876,8 +876,8 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
     if (capacity < newCount) {
         uint32_t grown = grownCapacity(used, newCount);
         id *oldList = storage.list;
-        size_t size = malloc_good_size((size_t)grown << 3);
-        if ((size >> 32) != 0) {
+        size_t size = malloc_good_size((size_t)grown * sizeof(id));
+        if (((uint64_t)size >> 32) != 0) {
             crashWithMessage("size unreasonably big");
         }
         id *list = (id *)malloc_type_malloc(size, 0x80040B8603338ULL);
@@ -885,21 +885,21 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
             crashWithMessage("failure to grow array");
         }
         if (oldList == NULL) {
-            memmove(list, objects, (size_t)inserted << 3);
+            memmove(list, objects, (size_t)inserted * sizeof(id));
         } else {
             if (position != 0) {
                 dequeCopyOut(list, &storage, 0, position);
             }
-            memmove(list + position, objects, (size_t)inserted << 3);
+            memmove(list + position, objects, (size_t)inserted * sizeof(id));
             uint32_t tail = used - position;
             if (tail != 0) {
                 dequeCopyOut(list + position + inserted, &storage, position, tail);
             }
         }
-        bzero(list + newCount, size - ((size_t)newCount << 3));
+        bzero(list + newCount, size - ((size_t)newCount * sizeof(id)));
         storage.list = list;
         storage.offset = 0;
-        storage.capacity = (uint32_t)size >> 3;
+        storage.capacity = (uint32_t)size / (uint32_t)sizeof(id);
         storage.used = newCount;
         free(oldList);
         return;
@@ -1044,9 +1044,9 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
     uint32_t used = storage.used;
     uint32_t newCount = used - (uint32_t)length;
     if (newCount != 0 && (double)newCount * kShrinkFactor < (double)capacity) {
-        size_t requested = (size_t)newCount << 3;
+        size_t requested = (size_t)newCount * sizeof(id);
         size_t size = malloc_good_size(requested);
-        if ((size >> 32) != 0) {
+        if (((uint64_t)size >> 32) != 0) {
             crashWithMessage("size unreasonably big");
         }
         id *list = (id *)malloc_type_malloc(size, 0x80040B8603338ULL);
@@ -1062,7 +1062,7 @@ static id __NSArrayM_copy(__ONSArrayM *array) {
             id *oldList = storage.list;
             storage.list = list;
             storage.offset = 0;
-            storage.capacity = (uint32_t)size >> 3;
+            storage.capacity = (uint32_t)size / (uint32_t)sizeof(id);
             storage.used = newCount;
             free(oldList);
             return;
@@ -1195,8 +1195,8 @@ static inline void setObjectAtIndex(__ONSArrayM *array, id object, NSUInteger in
     }
     uint32_t grown = grownCapacity(count, newCount);
     id *oldList = storage->list;
-    size_t size = malloc_good_size((size_t)grown << 3);
-    if ((size >> 32) != 0) {
+    size_t size = malloc_good_size((size_t)grown * sizeof(id));
+    if (((uint64_t)size >> 32) != 0) {
         crashWithMessage("size unreasonably big");
     }
     id *list = (id *)malloc_type_malloc(size, 0x80040B8603338ULL);
@@ -1211,10 +1211,10 @@ static inline void setObjectAtIndex(__ONSArrayM *array, id object, NSUInteger in
         }
         list[index] = object;
     }
-    bzero(list + newCount, size - ((size_t)newCount << 3));
+    bzero(list + newCount, size - ((size_t)newCount * sizeof(id)));
     storage->list = list;
     storage->offset = 0;
-    storage->capacity = (uint32_t)size >> 3;
+    storage->capacity = (uint32_t)size / (uint32_t)sizeof(id);
     storage->used = newCount;
     free(oldList);
 }
@@ -1251,12 +1251,12 @@ id __NSArrayM_new(const id *objects, NSUInteger count, BOOL noRetain) {
     id *list;
     uint32_t capacity;
     if (count != 0) {
-        if ((count >> 61) != 0) {
+        if ((OF_WORD_SHIFT(count, 61)) != 0) {
             [object release];
             return nil;
         }
-        size_t size = malloc_good_size(count << 3);
-        if ((size >> 32) != 0) {
+        size_t size = malloc_good_size(count * sizeof(id));
+        if (((uint64_t)size >> 32) != 0) {
             crashWithMessage("size unreasonably big");
         }
         if (objects != NULL) {
@@ -1265,7 +1265,7 @@ id __NSArrayM_new(const id *objects, NSUInteger count, BOOL noRetain) {
                 [object release];
                 return nil;
             }
-            memmove(list, objects, count << 3);
+            memmove(list, objects, count * sizeof(id));
             if (!(noRetain & 1)) {
                 id *item = list;
                 NSUInteger remaining = count;
@@ -1277,7 +1277,7 @@ id __NSArrayM_new(const id *objects, NSUInteger count, BOOL noRetain) {
                     remaining--;
                 } while (remaining != 0);
             }
-            bzero(list + count, size - (count << 3));
+            bzero(list + count, size - (count * sizeof(id)));
         } else {
             list = (id *)malloc_type_calloc(1, size, 0x80040B8603338ULL);
             if (list == NULL) {
@@ -1286,7 +1286,7 @@ id __NSArrayM_new(const id *objects, NSUInteger count, BOOL noRetain) {
             }
             count = 0;
         }
-        capacity = (uint32_t)size >> 3;
+        capacity = (uint32_t)size / (uint32_t)sizeof(id);
     } else {
         list = NULL;
         capacity = 0;
@@ -1672,7 +1672,7 @@ static bool cow_copy_storage(id object) {
     bool result = true;
     if (list != NULL) {
         uint32_t capacity = storage->capacity;
-        copy = (id *)malloc_type_malloc((size_t)capacity << 3, 0x80040B8603338);
+        copy = (id *)malloc_type_malloc((size_t)capacity * sizeof(id), 0x80040B8603338);
         if (copy == NULL) {
             result = false;
         } else {
@@ -1682,7 +1682,7 @@ static bool cow_copy_storage(id object) {
             uint32_t first = room < count ? room : count;
             if (first != 0) {
                 id *items = copy + offset;
-                memcpy(items, list + offset, (size_t)first << 3);
+                memcpy(items, list + offset, (size_t)first * sizeof(id));
                 NSUInteger remaining = first;
                 do {
                     id item = *items++;
@@ -1693,7 +1693,7 @@ static bool cow_copy_storage(id object) {
             }
             if (count > room) {
                 uint32_t rest = count - first;
-                memcpy(copy, list, (size_t)rest << 3);
+                memcpy(copy, list, (size_t)rest * sizeof(id));
                 NSUInteger total = rest > 1 ? rest : 1;
                 for (NSUInteger index = 0; index != total; index++) {
                     id item = copy[index];

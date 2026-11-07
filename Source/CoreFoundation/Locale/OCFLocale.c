@@ -36,7 +36,7 @@
 extern id objc_retain(id value);
 
 // The class the CFLocale entry points message (NSLocale, an Objective-C class of this image).
-extern char localeClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
+extern char localeClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
 
 // Native __kCFLocaleCollatorID, 0x2227a3b08 (__DATA_CONST,__const, before __CFLocaleClass at 0x2227a3b10).
 // Hidden (was a private external). Evidence: Local/Evidence/cf-core/iphone-simulator-corpus-delta6.json

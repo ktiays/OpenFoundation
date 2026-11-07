@@ -45,7 +45,7 @@
 // _DARWIN_UNLIMITED_SELECT; they are bound here by symbol name.
 extern int selectUnlimited(
     int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds, struct timeval *timeout
-) __asm("_select$DARWIN_EXTSN");
+) __asm(OF_SYMBOL("select$DARWIN_EXTSN"));
 
 // The file stream create callback's context (40 bytes on the caller's stack, zeroed): the URL, the file
 // descriptor (-1), and three words that are zero here and unread. Local descriptive spellings.
@@ -56,7 +56,7 @@ typedef struct {
     void *unread1[3];
 } FileStreamContext;
 
-_Static_assert(sizeof(FileStreamContext) == 40, "The file stream context is 40 bytes.");
+OF_ABI_ASSERT(sizeof(FileStreamContext) == 40, "The file stream context is 40 bytes.");
 
 // The file stream's info (40 bytes, typed allocation 0x10600401BE82CDF): the URL (retained), the descriptor,
 // the run loops and modes scheduled before the open (pairs in a CFArray) or, once opened, the
@@ -76,7 +76,7 @@ typedef struct {
     off_t offset;
 } FileStreamInfo;
 
-_Static_assert(sizeof(FileStreamInfo) == 40, "The file stream info is 40 bytes.");
+OF_ABI_ASSERT(sizeof(FileStreamInfo) == 40, "The file stream info is 40 bytes.");
 
 // The read data stream's create context (24 bytes on the caller's stack, zeroed): the data copy, then two
 // words that are zero here and read only by readDataCreate (not restored; unread). Local descriptive
@@ -771,7 +771,7 @@ typedef struct {
     Boolean scheduled;
 } ReadDataStreamContext;
 
-_Static_assert(sizeof(ReadDataStreamContext) == 24, "The read data stream info is 24 bytes.");
+OF_ABI_ASSERT(sizeof(ReadDataStreamContext) == 24, "The read data stream info is 24 bytes.");
 
 // Native readDataCreate, 0x1c017cf0c (Local/Evidence/cf-core/iphone-simulator-corpus-delta8.json, as are the
 // seven callbacks after it). Non-external natively; hidden here because Stream/OCFConcreteStreams.h declares

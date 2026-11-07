@@ -18,7 +18,7 @@
 // Source/Foundation/Collections/FoundationSetsAttributedReading.md.
 
 // NSTermOfAddress (declared in the header) is referenced by its class symbol.
-extern char termOfAddressClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTermOfAddress));
+extern char termOfAddressClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTermOfAddress));
 
 // The messages the function sends to the terms of address, declared for the sends only; no protocol object
 // is emitted.

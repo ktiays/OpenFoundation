@@ -29,10 +29,11 @@
 // iOS Device divergence: iOS Device 24A446 remains unread. Reading: Foundation/Number/Reading.md, round 2.
 // Inferred organization follows the contiguous NSNumberFormatter native methods. Manual reference counting.
 
-extern char numberFormatterClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumberFormatter));
-extern char numberFormatterStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char numberFormatterLockClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSRecursiveLock));
-extern char numberFormatterDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
+extern char numberFormatterClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumberFormatter));
+extern char numberFormatterStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char numberFormatterLockClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSRecursiveLock));
+extern char numberFormatterDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(ONSMutableDictionary));
 
 // Native __NSNumberFormatterDefaultBehavior, 0x22e6fcbc0. Non-external, zero-initialized.
 static _Atomic(NSUInteger) defaultFormatterBehavior;

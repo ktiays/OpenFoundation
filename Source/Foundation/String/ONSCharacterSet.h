@@ -32,19 +32,21 @@
 // Native _foundation_swift_characterSet_enabled.onceToken, 0x22e7761f8 (__DATA,__common, was a private
 // external): the dispatch_once predicate.
 extern __attribute__((visibility("hidden"))) dispatch_once_t
-    foundationSwiftCharacterSetOnceToken __asm("__foundation_swift_characterSet_enabled.onceToken");
+    foundationSwiftCharacterSetOnceToken __asm(OF_SYMBOL("_foundation_swift_characterSet_enabled.onceToken"));
 
 // Native _foundation_swift_characterSet_enabled.featureEnabled, 0x22e776200 (__DATA,__common, was a private
 // external): the flag the block stores; the callers load it as a byte and compare it with 1.
-extern __attribute__((visibility("hidden"))) uint8_t
-    foundationSwiftCharacterSetFeatureEnabled __asm("__foundation_swift_characterSet_enabled.featureEnabled");
+extern __attribute__((visibility("hidden"))) uint8_t foundationSwiftCharacterSetFeatureEnabled __asm(
+    OF_SYMBOL("_foundation_swift_characterSet_enabled.featureEnabled")
+);
 
 // Native ___block_literal_global (IDA ___block_literal_global_10), 0x22281c8d8 (__DATA_CONST,__const,
 // non-external): the global block the expansions pass to dispatch_once, {_NSConcreteGlobalBlock, 0x50000000,
 // 0, invoke 0x1c0fdc9cc, descriptor 0x22281c8b8 {0x50000000, 32, "v8@?0", no layout}} (read with
 // Local/Scratch/cf-core-fc/fmacho.py). Defined by String/ONSCharacterSet.m under this hidden name; declared
 // as a byte array so that the header needs no block layout.
-OF_EXTERN const uint8_t foundationSwiftCharacterSetEnabledBlock[] __asm("___block_literal_global_10");
+OF_EXTERN const
+    uint8_t foundationSwiftCharacterSetEnabledBlock[] __asm(OF_SYMBOL("__block_literal_global_10"));
 
 // The expansion every caller inlines: the once check (dispatch_once with the shared block when the predicate
 // is not yet -1) and the byte comparison with 1. foundationSwiftCharacterSetEnabled is a local descriptive

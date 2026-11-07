@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "CoreFoundation/OFPortHooks.h"
+
 // The DTrace provider "CFRunLoop" of the iOS Simulator image (24A434, UUID
 // D2C8AA56-482C-35EA-B4D3-54C2B5F58ADC): its __TEXT,__dof_CFRunLoop section (2,404 bytes) declares fourteen
 // probes with their functions, probe names, native argument types and offsets, and attributes 1_1_0 (private,
@@ -16,16 +18,19 @@
 #define OCF_RUNLOOP_PROBE_STABILITY "___dtrace_stability$CFRunLoop$v1$1_1_0_1_1_0_1_1_0_1_1_0_1_1_0"
 #define OCF_RUNLOOP_PROBE_TYPEDEFS "___dtrace_typedefs$CFRunLoop$v2"
 
+// A port has no DTrace: probe sites compile to nothing and is-enabled sites answer 0, the native NOP and
+// MOV X0, #0 (OFPortHooks.h).
 #define OCF_RUNLOOP_PROBE(call)                                                                              \
     do {                                                                                                     \
-        __asm__ volatile(".reference " OCF_RUNLOOP_PROBE_TYPEDEFS);                                          \
-        call;                                                                                                \
-        __asm__ volatile(".reference " OCF_RUNLOOP_PROBE_STABILITY);                                         \
+        OF_PORT_NATIVE(                                                                                      \
+            __asm__ volatile(".reference " OCF_RUNLOOP_PROBE_TYPEDEFS); call;                                \
+            __asm__ volatile(".reference " OCF_RUNLOOP_PROBE_STABILITY);                                     \
+        );                                                                                                   \
     } while (0)
 
 #define OCF_RUNLOOP_PROBE_ENABLED(call)                                                                      \
     ({                                                                                                       \
-        int enabled = call;                                                                                  \
+        int enabled = OF_PORT_ANSWER(probeEnabled, call, );                                                  \
         __asm__ volatile("");                                                                                \
         enabled;                                                                                             \
     })

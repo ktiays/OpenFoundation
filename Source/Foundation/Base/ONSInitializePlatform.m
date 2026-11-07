@@ -4,6 +4,7 @@
 //
 
 #import "Foundation/Base/ONSInitializePlatform.h"
+#include "CoreFoundation/OFPortHooks.h"
 
 #import "Foundation/Archiving/ONSArchivingPrivate.h"
 #import "Foundation/ProcessInfo/ONSProcessInfo.h"
@@ -28,8 +29,8 @@ extern id _SwiftCreateBridgedString(const char *bytes, NSUInteger length, uint32
 typedef bool (*CFLogFormatter)(id object, char *buffer, size_t capacity, uint8_t *privateFlag);
 extern void _os_log_set_nscf_formatter(CFLogFormatter formatter);
 
-extern char startupThreadClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSThread));
-extern char startupProcessInfoClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSProcessInfo));
+extern char startupThreadClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSThread));
+extern char startupProcessInfoClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSProcessInfo));
 
 static uint8_t initializePlatformInited;
 uint8_t ONSDebugEnabled;
@@ -111,7 +112,7 @@ void _NSInitializePlatform(void) {
     [(id)startupThreadClass currentThread];
     _NSSetupDispatchDataBridge();
     [[(id)startupProcessInfoClass processInfo] arguments];
-    if (*(const volatile uint8_t *)UINT64_C(0xfffffc342) != 0) {
+    if (OF_PORT_ANSWER(commpageKdebugEnabled, *(const volatile uint8_t *)UINT64_C(0xfffffc342), ) != 0) {
         kdebug_trace(0x1e030005, 0, 0, 0, 0);
         void *extension = dlopen(
             "/System/Cryptexes/Supplemental/Frameworks/ERFoundationExtension.dylib", RTLD_LAZY | RTLD_LOCAL

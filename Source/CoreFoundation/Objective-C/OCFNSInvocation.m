@@ -64,8 +64,8 @@ static const OCFBuildVersion kForwardingAtomVersion = {0xffffffff, 0x07e30901};
 
 // The class symbols the native code loads through its class references (NSInvocation 0x2227ce328, NSData
 // 0x2227ce2c8).
-extern char invocationClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSInvocation));
-extern char dataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
+extern char invocationClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSInvocation));
+extern char dataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
 
 // Selectors ___forwarding___ sends to the receiver, the signature and NSData, declared for @selector only; no
 // protocol object is emitted.
@@ -110,8 +110,8 @@ extern id objc_opt_new(Class cls);
 extern Class objc_opt_class(id object);
 extern id objc_retain(id object);
 extern void objc_release(id object);
-extern char invocationExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char invocationMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char invocationExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char invocationMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 
 static void __NSICreateBackingForArgumentIfNeeded(
     ONSInvocation *invocation, const ForwardingArgumentRecord *record, OCFIndex index, bool copyContents

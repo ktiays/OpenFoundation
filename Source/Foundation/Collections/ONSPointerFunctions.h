@@ -83,14 +83,14 @@ struct ONSSlice {
     ONSSliceInternalProperties *internalProps;
 };
 
-_Static_assert(
+OF_ABI_ASSERT(
     sizeof(ONSSliceExternalAcquisitionProperties) == 24, "The acquisition properties are 24 bytes."
 );
-_Static_assert(
+OF_ABI_ASSERT(
     sizeof(ONSSliceExternalPersonalityProperties) == 40, "The personality properties are 40 bytes."
 );
-_Static_assert(sizeof(ONSSliceInternalProperties) == 64, "The internal properties are 64 bytes.");
-_Static_assert(sizeof(ONSSlice) == 32, "The slice is 32 bytes.");
+OF_ABI_ASSERT(sizeof(ONSSliceInternalProperties) == 64, "The internal properties are 64 bytes.");
+OF_ABI_ASSERT(sizeof(ONSSlice) == 32, "The slice is 32 bytes.");
 
 // NSFastEnumerationState's 64-byte ABI as the pointer collections' enumeration methods use it. A local
 // spelling, not an exported type.

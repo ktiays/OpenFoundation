@@ -67,25 +67,27 @@ extern void objc_release(id object);
 extern Class objc_opt_self(id object);
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The __NSOrderedSetM class symbol (loaded through the __SCR___NSOrderedSetM GOT slot) and the offsets of its
 // ivars cow and storage, defined by this unit's @implementation; __NSOrderedSetM_new reaches them through
 // the symbols, as natively.
-extern char orderedSetMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetM));
-extern const int32_t orderedSetMCowOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetM) ".cow");
-extern const int32_t
-    orderedSetMStorageOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetM) ".storage");
+extern char orderedSetMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSOrderedSetM));
+extern const int32_t orderedSetMCowOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                    OF_NAME_STRING(__ONSOrderedSetM) ".cow");
+extern const int32_t orderedSetMStorageOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                        OF_NAME_STRING(__ONSOrderedSetM) ".storage");
 
 // The __NSFrozenOrderedSetM class symbol (___SCR___NSFrozenOrderedSetM) and the offsets of its ivars cow and
 // storage (_OBJC_IVAR_$___NSFrozenOrderedSetM.cow, .storage), read by -copy, -copyWithZone:,
 // __RELEASE_OBJECTS_IN_THE_ORDEREDSET__ and cow_copy_instance, defined by this unit's second
 // @implementation.
-extern char frozenOrderedSetMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFrozenOrderedSetM));
+extern char frozenOrderedSetMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSFrozenOrderedSetM));
+extern const int32_t frozenOrderedSetMCowOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                          OF_NAME_STRING(__ONSFrozenOrderedSetM) ".cow");
 extern const int32_t
-    frozenOrderedSetMCowOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSFrozenOrderedSetM) ".cow");
-extern const int32_t
-    frozenOrderedSetMStorageOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSFrozenOrderedSetM) ".storage");
+    frozenOrderedSetMStorageOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                             OF_NAME_STRING(__ONSFrozenOrderedSetM) ".storage");
 
 // The messages this unit sends that the shared declarations do not carry; declared for the sends only.
 @protocol OrderedSetMMessages
@@ -457,7 +459,7 @@ static inline void replaceOrderedSetObject(__ONSOrderedSetM *orderedSet, NSUInte
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -555,7 +557,7 @@ id __NSOrderedSetM_new(const id *objects, NSUInteger count, BOOL noRetain) {
     void **storage = (void **)((uint8_t *)set + orderedSetMStorageOffset);
     storage[0] = hash;
     storage[1] = array;
-    __atomic_store_n((uint64_t *)((uint8_t *)set + orderedSetMCowOffset), 0, __ATOMIC_RELEASE);
+    __atomic_store_n((uintptr_t *)((uint8_t *)set + orderedSetMCowOffset), 0, __ATOMIC_RELEASE);
     return set;
 }
 
@@ -760,7 +762,7 @@ static void __RELEASE_OBJECTS_IN_THE_ORDEREDSET__(id object, int kind) {
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,

@@ -26,8 +26,8 @@
 
 // The NSLocale class reference (off_2227CE338) and the placeholder's class (_NSPlaceholderLocale, a class of
 // this image not restored on this branch).
-extern char localeClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
-extern char placeholderLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSPlaceholderLocale));
+extern char localeClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
+extern char placeholderLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSPlaceholderLocale));
 
 // Selectors this unit sends to the NSLocale class and to its objects that the class does not implement here,
 // declared for the message sends only; no protocol object is emitted. The language directions and the

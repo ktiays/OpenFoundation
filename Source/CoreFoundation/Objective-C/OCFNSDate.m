@@ -47,12 +47,12 @@ extern void os_unfair_lock_lock_with_options(os_unfair_lock_t lock, uint32_t opt
 // Classes of this image the unit references through class references, not restored on this branch:
 // NSConstantDate (the constant dates' isa), __NSPlaceholderDate (the placeholder's isa), NSCalendar,
 // NSTimeZone and NSDateComponents; and the restored NSDate.
-extern char constantDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantDate));
-extern char placeholderDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderDate));
-extern char calendarClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCalendar));
-extern char timeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTimeZone));
-extern char dateComponentsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDateComponents));
-extern char dateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
+extern char constantDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConstantDate));
+extern char placeholderDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSPlaceholderDate));
+extern char calendarClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCalendar));
+extern char timeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTimeZone));
+extern char dateComponentsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDateComponents));
+extern char dateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
 
 // Selectors this unit sends to objects of classes outside it (NSCalendar, NSTimeZone, NSDateComponents and
 // NSString), declared for the message sends only; no protocol object is emitted.
@@ -97,7 +97,7 @@ _Static_assert(sizeof(ConstantDate) == 16, "A constant date is 16 bytes.");
 const struct {
     const void *isa;
     uintptr_t unused;
-} immutablePlaceholderDateObject __asm("_" OF_NAME_STRING(__immutablePlaceholderDate)) = {
+} immutablePlaceholderDateObject __asm(OF_SYMBOL("") OF_NAME_STRING(__immutablePlaceholderDate)) = {
     placeholderDateClass, 0
 };
 

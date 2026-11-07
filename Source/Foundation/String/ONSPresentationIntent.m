@@ -16,16 +16,18 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char presentationIntentClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPresentationIntent));
-extern char presentationIntentArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char presentationIntentMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char presentationIntentNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char presentationIntentSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char presentationIntentStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char presentationIntentMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char presentationIntentExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char
-    presentationIntentConstantIntegerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConstantIntegerNumber));
+extern char presentationIntentClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPresentationIntent));
+extern char presentationIntentArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char presentationIntentMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                            OF_NAME_STRING(ONSMutableArray));
+extern char presentationIntentNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char presentationIntentSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char presentationIntentStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char presentationIntentMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(ONSMutableString));
+extern char presentationIntentExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char presentationIntentConstantIntegerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                               OF_NAME_STRING(ONSConstantIntegerNumber));
 
 // The Objective-C integer literals at 0x22288bbe0, 0x22288bbf8 and 0x22288bc10.
 static const struct {

@@ -39,7 +39,7 @@ typedef struct {
     ONSRange ranges[];
 } IndexSetRangeStorage;
 
-_Static_assert(sizeof(IndexSetRangeStorage) == 64, "The index set range storage header is 64 bytes.");
+OF_ABI_ASSERT(sizeof(IndexSetRangeStorage) == 64, "The index set range storage header is 64 bytes.");
 
 #ifdef __OBJC__
 #import <objc/NSObject.h>
@@ -135,10 +135,11 @@ __attribute__((visibility("hidden")))
 @interface _ONSConstantIndexSet : ONSIndexSet
 @end
 
-_Static_assert(sizeof(((ONSIndexSet *)0)->_indexSetFlags) == 8, "NSIndexSet's _indexSetFlags is 8 bytes.");
-_Static_assert(sizeof(((ONSIndexSet *)0)->_internal) == 16, "NSIndexSet's _internal is 16 bytes.");
+OF_ABI_ASSERT(sizeof(((ONSIndexSet *)0)->_indexSetFlags) == 8, "NSIndexSet's _indexSetFlags is 8 bytes.");
+OF_ABI_ASSERT(sizeof(((ONSIndexSet *)0)->_internal) == 16, "NSIndexSet's _internal is 16 bytes.");
 
 #endif
 
 // Native data _NSTaggedIndexSetAllowed, 0x22e6fcb5a, non-external. The writer remains unread.
-extern __attribute__((visibility("hidden"))) bool indexSetTaggedAllowed __asm("__NSTaggedIndexSetAllowed");
+extern __attribute__((visibility("hidden"))) bool
+    indexSetTaggedAllowed __asm(OF_SYMBOL("_NSTaggedIndexSetAllowed"));

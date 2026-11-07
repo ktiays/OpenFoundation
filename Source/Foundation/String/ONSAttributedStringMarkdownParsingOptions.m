@@ -10,8 +10,8 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char
-    parsingOptionsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedStringMarkdownParsingOptions));
+extern char parsingOptionsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                            OF_NAME_STRING(ONSAttributedStringMarkdownParsingOptions));
 
 // The copy, equality and destruction paths use the libobjc ownership entry points under MRC.
 @implementation ONSAttributedStringMarkdownParsingOptions

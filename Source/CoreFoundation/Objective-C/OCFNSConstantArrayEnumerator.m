@@ -20,10 +20,10 @@
 // The offset variables of NSConstantArray's ivars (_OBJC_IVAR_$_NSConstantArray._count, 0x22e6cbf6c, and
 // ._objects, 0x22e6cbf68; read with LDRSW), defined by Objective-C/OCFNSConstantArray.m; the ivars are not
 // public in that unit's interface, so they are read through their offsets as the native code does.
-extern const int32_t
-    constantArrayCountOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConstantArray) "._count");
-extern const int32_t
-    constantArrayObjectsOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConstantArray) "._objects");
+extern const int32_t constantArrayCountOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                        OF_NAME_STRING(ONSConstantArray) "._count");
+extern const int32_t constantArrayObjectsOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                          OF_NAME_STRING(ONSConstantArray) "._objects");
 
 // The constant array's count and objects. constantArrayCount and constantArrayObjects are local descriptive
 // names.

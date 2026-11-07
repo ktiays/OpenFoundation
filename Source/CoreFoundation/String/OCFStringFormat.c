@@ -3,6 +3,7 @@
 //  Copyright (c) 2026 ktiays. All rights reserved.
 //
 
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/String/OCFStringFormat.h"
 #include "CoreFoundation/Base/OCFPlatform.h"
 #include "CoreFoundation/Base/OCFUtilities.h"
@@ -275,7 +276,8 @@ OCFStringRef _OCFStringCreateStringWithValidatedFormatAuxWithDesc(
     OCFErrorRef *errorPtr
 ) {
     OCFMutableStringRef outputString = OCFStringCreateMutable(kOCFAllocatorSystemDefault, 0);
-    uint64_t *capacityWord = (uint64_t *)((char *)outputString + 0x28);
+    uint64_t *capacityWord =
+        (uint64_t *)((char *)outputString + offsetof(struct __OCFString, variants.notInlineMutable.bits));
     *capacityWord = (*capacityWord & 0xf) | 0x780;
     OCFStringRef result;
     if (__CFStringAppendFormatCore(
@@ -738,14 +740,16 @@ bool __CFStringAppendFormatCore(
                             case 'q':
                             case 't':
                             case 'z':
-                                spec->size = 4;
+                                spec->size = OF_PORT_ANSWER(formatIntegerSize, 4, character);
                                 goto nextCharacter;
                             case 'l':
                                 if (position < (int32_t)formatLength &&
                                     (cformat != NULL ? cformat[position] : uformat[position]) == 'l') {
                                     ++position;
                                 }
-                                spec->size = 4;
+                                spec->size = OF_PORT_ANSWER(
+                                    formatLongSize, 4, (const uint8_t *)cformat, uformat, position
+                                );
                                 goto nextCharacter;
                             case 'n':
                                 key = NULL;
@@ -1249,18 +1253,22 @@ bool __CFStringAppendFormatCore(
                                 case 'q':
                                 case 't':
                                 case 'z':
-                                    valueSize = 4;
+                                    valueSize = OF_PORT_ANSWER(formatIntegerSize, 4, c);
                                     goto nextValueCharacter;
                                 case 'l':
                                     if (cursor >= (int32_t)valueTypeLength) {
-                                        valueSize = 4;
+                                        valueSize = OF_PORT_ANSWER(
+                                            formatLongSize, 4, (const uint8_t *)cValueType, uValueType, cursor
+                                        );
                                         goto nextValueCharacter;
                                     }
                                     if ((cValueType != NULL ? (uint8_t)cValueType[cursor]
                                                             : uValueType[cursor]) == 'l') {
                                         ++cursor;
                                     }
-                                    valueSize = 4;
+                                    valueSize = OF_PORT_ANSWER(
+                                        formatLongSize, 4, (const uint8_t *)cValueType, uValueType, cursor
+                                    );
                                     goto checkValueEnd;
                                 case 'n':
                                     valueSize = 4;
@@ -1394,7 +1402,7 @@ bool __CFStringAppendFormatCore(
                 case 0: {
                     bool skips = dyld_program_sdk_at_least((OCFBuildVersion){0xffffffff, 0x7e60901});
                     if (index < lastUsed && skips) {
-                        argumentCursor += 8;
+                        argumentCursor += OF_PORT_ANSWER(formatArgumentSlotSize, 8, );
                     }
                     break;
                 }
@@ -1402,34 +1410,40 @@ bool __CFStringAppendFormatCore(
                 case 0x29:
                     switch ((uint16_t)value->size) {
                         case 1:
-                            value->value.int64Value = *(int8_t *)argumentCursor;
+                            value->value.int64Value =
+                                OF_PORT_ANSWER(formatReadInt8, *(int8_t *)argumentCursor, &argumentCursor);
                             break;
                         case 2:
-                            value->value.int64Value = *(int16_t *)argumentCursor;
+                            value->value.int64Value =
+                                OF_PORT_ANSWER(formatReadInt16, *(int16_t *)argumentCursor, &argumentCursor);
                             break;
                         case 4:
-                            value->value.int64Value = *(int64_t *)argumentCursor;
+                            value->value.int64Value =
+                                OF_PORT_ANSWER(formatReadInt64, *(int64_t *)argumentCursor, &argumentCursor);
                             break;
                         default:
-                            value->value.int64Value = *(int32_t *)argumentCursor;
+                            value->value.int64Value =
+                                OF_PORT_ANSWER(formatReadInt32, *(int32_t *)argumentCursor, &argumentCursor);
                             break;
                     }
-                    argumentCursor += 8;
+                    OF_PORT_NATIVE(argumentCursor += 8);
                     break;
                 case 0x22:
-                    value->value.int64Value = *(int64_t *)argumentCursor;
-                    argumentCursor += 8;
+                    value->value.int64Value =
+                        OF_PORT_ANSWER(formatReadDoubleBits, *(int64_t *)argumentCursor, &argumentCursor);
+                    OF_PORT_NATIVE(argumentCursor += 8);
                     break;
                 case 0x23:
                 case 0x25:
                 case 0x26:
                 case 0x27:
                 case 0x28:
-                    value->value.int64Value = *(int64_t *)argumentCursor;
-                    argumentCursor += 8;
+                    value->value.int64Value =
+                        OF_PORT_ANSWER(formatReadPointer, *(int64_t *)argumentCursor, &argumentCursor);
+                    OF_PORT_NATIVE(argumentCursor += 8);
                     break;
                 case 0x2a:
-                    argumentCursor += 8;
+                    argumentCursor += OF_PORT_ANSWER(formatArgumentSlotSize, 8, );
                     value->value.pointerValue = &dummyCount;
                     break;
                 default:
@@ -2150,7 +2164,8 @@ OCFStringRef _OCFStringCreateWithFormatAndArgumentsReturningMetadata(
     va_list arguments
 ) {
     OCFMutableStringRef outputString = OCFStringCreateMutable(kOCFAllocatorSystemDefault, 0);
-    uint64_t *capacityWord = (uint64_t *)((char *)outputString + 0x28);
+    uint64_t *capacityWord =
+        (uint64_t *)((char *)outputString + offsetof(struct __OCFString, variants.notInlineMutable.bits));
     *capacityWord = (*capacityWord & 0xf) | 0x780;
     OCFErrorRef error = NULL;
     OCFStringRef result;
@@ -2589,14 +2604,15 @@ int32_t __OCFStringFindFormatSpecifiersInString(
                     case 'q':
                     case 't':
                     case 'z':
-                        spec->size = 4;
+                        spec->size = OF_PORT_ANSWER(formatIntegerSize, 4, character);
                         goto nextCharacter;
                     case 'l':
                         if (position < (int32_t)formatLength &&
                             (cformat != NULL ? cformat[position] : uformat[position]) == 'l') {
                             ++position;
                         }
-                        spec->size = 4;
+                        spec->size =
+                            OF_PORT_ANSWER(formatLongSize, 4, (const uint8_t *)cformat, uformat, position);
                         goto nextCharacter;
                     case 'n':
                         spec->size = 4;

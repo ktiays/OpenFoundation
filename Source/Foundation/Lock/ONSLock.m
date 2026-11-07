@@ -18,7 +18,7 @@
 
 extern void objc_release(id object);
 
-_Static_assert(offsetof(LockCondition, condition) == 64, "The condition follows the native mutex.");
+OF_ABI_ASSERT(offsetof(LockCondition, condition) == 64, "The condition follows the native mutex.");
 
 static dispatch_once_t _MergedGlobals_96;
 static pthread_mutexattr_t stru_22E76C678;

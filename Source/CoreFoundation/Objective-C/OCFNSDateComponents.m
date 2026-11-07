@@ -24,7 +24,7 @@
 // The super sends pass the selector addresses 0x2387a9f83 (dealloc) and 0x2387aa04d (description).
 
 // The NSDateComponents class reference (off_2227CE2E0, and the self class reference ___SCR_NSDateComponents).
-extern char dateComponentsClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDateComponents));
+extern char dateComponentsClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDateComponents));
 
 // libobjc's __CFAllocateObject is CoreFoundation's (Objective-C/OCFNSObject.h); object_getIndexedIvars is
 // objc/runtime.h's.
@@ -258,20 +258,20 @@ static inline OCFDateComponentsRef dateComponentsOf(id object) {
 // is neither kCFUndefined nor 0.
 - (BOOL)isLeapMonth {
     NSInteger value = OCFDateComponentsGetValue(dateComponentsOf(self), 0x40000000);
-    return value != 0x7fffffffffffffff && value != 0;
+    return value != LONG_MAX && value != 0;
 }
 
 // Native -[NSDateComponents isRepeatedDay], 0x1c0281f7c. Non-external. The repeated-day value (unit
 // 0xffffffff80000000) is neither kCFUndefined nor 0.
 - (BOOL)isRepeatedDay {
     NSInteger value = OCFDateComponentsGetValue(dateComponentsOf(self), (OCFCalendarUnit)(int64_t)INT32_MIN);
-    return value != 0x7fffffffffffffff && value != 0;
+    return value != LONG_MAX && value != 0;
 }
 
 // Native -[NSDateComponents isLeapMonthSet], 0x1c0281fac. Non-external. The leap-month value is not
 // kCFUndefined.
 - (BOOL)isLeapMonthSet {
-    return OCFDateComponentsGetValue(dateComponentsOf(self), 0x40000000) != 0x7fffffffffffffff;
+    return OCFDateComponentsGetValue(dateComponentsOf(self), 0x40000000) != LONG_MAX;
 }
 
 // Native -[NSDateComponents isRepeatedDaySet], 0x1c0281fd8. Non-external. The repeated-day value is not

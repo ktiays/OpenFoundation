@@ -3,6 +3,7 @@
 //  Copyright (c) 2026 ktiays. All rights reserved.
 //
 
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Locale/OCFDateFormatter.h"
 
 #include "CoreFoundation/Base/OCFPlatform.h"
@@ -177,11 +178,11 @@ struct __OCFDateFormatter {
     OCFDictionaryRef customMinDaysInFirstWeek;
 };
 
-_Static_assert(sizeof(struct __OCFDateFormatter) == 0x210, "The native date formatter is 528 bytes.");
-_Static_assert(offsetof(struct __OCFDateFormatter, symbols) == 0x88, "Symbol arrays at 0x88.");
-_Static_assert(offsetof(struct __OCFDateFormatter, formattingContext) == 0x138, "Context at 0x138.");
-_Static_assert(offsetof(struct __OCFDateFormatter, customSymbols) == 0x140, "Preference symbols at 0x140.");
-_Static_assert(offsetof(struct __OCFDateFormatter, customFirstWeekday) == 0x200, "First weekday at 0x200.");
+OF_ABI_ASSERT(sizeof(struct __OCFDateFormatter) == 0x210, "The native date formatter is 528 bytes.");
+OF_ABI_ASSERT(offsetof(struct __OCFDateFormatter, symbols) == 0x88, "Symbol arrays at 0x88.");
+OF_ABI_ASSERT(offsetof(struct __OCFDateFormatter, formattingContext) == 0x138, "Context at 0x138.");
+OF_ABI_ASSERT(offsetof(struct __OCFDateFormatter, customSymbols) == 0x140, "Preference symbols at 0x140.");
+OF_ABI_ASSERT(offsetof(struct __OCFDateFormatter, customFirstWeekday) == 0x200, "First weekday at 0x200.");
 
 // Native __CFDateFormatterDeallocate, 0x1c018f718. Non-external; the class's finalizer. The ICU formatter is
 // closed, then every retained field is released in the native order: the locale, the formats, the flags but
@@ -487,8 +488,11 @@ useTemplatePatternGenerator(OCFLocaleRef locale, void (^__attribute__((noescape)
         templatePatternGeneratorLocaleName = strdup(localeName);
         if (templatePatternGeneratorPressureSource == NULL) {
             dispatch_queue_t queue = dispatch_get_global_queue(qos_class_main(), 2);
-            templatePatternGeneratorPressureSource =
-                dispatch_source_create(DISPATCH_SOURCE_TYPE_MEMORYPRESSURE, 0, 6, queue);
+            templatePatternGeneratorPressureSource = OF_PORT_ANSWER(
+                memoryPressureSource,
+                dispatch_source_create(DISPATCH_SOURCE_TYPE_MEMORYPRESSURE, 0, 6, queue),
+                queue
+            );
             void (^resetBlock)(void) = (void (^)(void))(void *)useTemplatePatternGeneratorResetBlock;
             dispatch_source_set_event_handler(templatePatternGeneratorPressureSource, ^{
               os_unfair_lock_lock(&templatePatternGeneratorLock);
@@ -1790,7 +1794,7 @@ typedef struct {
     const GlobalBlockDescriptor *descriptor;
 } GlobalBlockLiteral;
 
-_Static_assert(sizeof(GlobalBlockLiteral) == 32, "A global block literal is 32 bytes.");
+OF_ABI_ASSERT(sizeof(GlobalBlockLiteral) == 32, "A global block literal is 32 bytes.");
 
 // Native ___block_descriptor_32_e5_v8?0l, 0x22279ce68 (__DATA_CONST,__const, was a private external; read
 // with Local/Scratch/cf-core/macho.py): the descriptor both literals share, {0x50000000, 32, "v8@?0"
@@ -1813,7 +1817,7 @@ static void useTemplatePatternGeneratorResetInvoke(void *block) {
 // Locale/OCFDateFormatter.h declares as useTemplatePatternGeneratorResetBlock (an assembler label, so that
 // the header's byte-array declaration names this record).
 __attribute__((visibility("hidden"))) const GlobalBlockLiteral useTemplatePatternGeneratorResetLiteral __asm(
-    "_useTemplatePatternGeneratorResetBlock"
+    OF_SYMBOL("useTemplatePatternGeneratorResetBlock")
 ) = {_NSConcreteGlobalBlock, 0x50000000, 0, useTemplatePatternGeneratorResetInvoke, &globalBlockDescriptor};
 
 // Native _____CFDateFormatterCreateForcedString_block_invoke, 0x1c0193d20. Non-external. The dispatch_once
@@ -1830,7 +1834,7 @@ static void forcedStringHourCharactersOnceInvoke(void *block) {
 // invoke is forcedStringHourCharactersOnceInvoke, defined under the hidden symbol that
 // Locale/OCFDateFormatter.h declares as forcedStringHourCharactersOnceBlock.
 __attribute__((visibility("hidden"))) const GlobalBlockLiteral forcedStringHourCharactersOnceLiteral __asm(
-    "_forcedStringHourCharactersOnceBlock"
+    OF_SYMBOL("forcedStringHourCharactersOnceBlock")
 ) = {_NSConcreteGlobalBlock, 0x50000000, 0, forcedStringHourCharactersOnceInvoke, &globalBlockDescriptor};
 
 // Native __substituteFormatStringFromPrefsDF, 0x1c0193f84. Non-external.

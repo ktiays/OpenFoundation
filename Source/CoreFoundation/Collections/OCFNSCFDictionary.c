@@ -40,7 +40,8 @@ static bool __FoundationPresent(void) {
 
 // The __NSPlaceholderDictionary class symbol, the isa of the two placeholder instances (defined by
 // Objective-C/OCFNSPlaceholderDictionary.m).
-extern char placeholderDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderDictionary));
+extern char placeholderDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                   OF_NAME_STRING(__ONSPlaceholderDictionary));
 
 // Native ___immutablePlaceholderDictionary (0x2227ab930) and ___mutablePlaceholderDictionary (0x2227ab940),
 // __DATA_CONST,__const, non-external: 16 bytes each, the isa __NSPlaceholderDictionary and a zero word (read

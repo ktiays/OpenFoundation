@@ -23,8 +23,8 @@
 // medium). Its methods are defined by Objective-C/OCFNSSetI.m.
 @interface __ONSSetI : ONSSet {
     @public
-    NSUInteger _used : 58;
-    NSUInteger _szidx : 6;
+    OF_UINT64_BITFIELD(NSUInteger) _used : 58;
+    OF_UINT64_BITFIELD(NSUInteger) _szidx : 6;
     id _list[0];
 }
 @end

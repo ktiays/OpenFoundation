@@ -18,7 +18,7 @@
 // (_OBJC_IVAR_$___NSFastEnumerationEnumerator._origObj, read with LDRSW), the enumerated collection; the ivar
 // is not visible to a subclass in another unit's interface, so the offset symbol is read as natively.
 extern const int32_t objectEnumeratorOriginalObjectOffset __asm(
-    "_OBJC_IVAR_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator) "._origObj"
+    OF_SYMBOL("OBJC_IVAR_$_") OF_NAME_STRING(__ONSFastEnumerationEnumerator) "._origObj"
 );
 
 // The superclass method -nextObject sends to super (defined by Objective-C/OCFNSFastEnumerationEnumerator.m,

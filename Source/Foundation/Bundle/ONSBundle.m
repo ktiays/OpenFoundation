@@ -42,8 +42,8 @@ extern id objc_opt_self(id object);
 extern const char *dyld_image_path_containing_address(const void *address);
 extern void
 _dyld_register_for_bulk_image_loads(void (*callback)(unsigned int, const struct mach_header *const[]));
-extern char nativeBundleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSBundle));
-extern char bundleURLClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
+extern char nativeBundleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSBundle));
+extern char bundleURLClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
 
 static Class _NSBundleGetPrincipalClassFromInfoDict(ONSBundle *bundle);
 static void _NSBundleInitializePrincipalClass(Class principalClass);

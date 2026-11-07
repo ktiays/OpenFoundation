@@ -51,9 +51,9 @@ struct __OCFMachPort {
 };
 
 _Static_assert(offsetof(struct __OCFMachPort, port) == 20, "The port name is at 20.");
-_Static_assert(offsetof(struct __OCFMachPort, runLoopSource) == 40, "The run loop source is at 40.");
-_Static_assert(offsetof(struct __OCFMachPort, lock) == 96, "The mach port lock is at 96.");
-_Static_assert(offsetof(struct __OCFMachPort, release) == 112, "The release callback is at 112.");
+OF_ABI_ASSERT(offsetof(struct __OCFMachPort, runLoopSource) == 40, "The run loop source is at 40.");
+OF_ABI_ASSERT(offsetof(struct __OCFMachPort, lock) == 96, "The mach port lock is at 96.");
+OF_ABI_ASSERT(offsetof(struct __OCFMachPort, release) == 112, "The release callback is at 112.");
 
 OF_EXPORT OCFTypeID OCFMachPortGetTypeID(void);
 

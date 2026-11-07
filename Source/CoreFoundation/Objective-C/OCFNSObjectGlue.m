@@ -34,9 +34,9 @@ extern uintptr_t objc_debug_taggedpointer_obfuscator;
 extern const uint8_t objc_debug_tag60_permutations[8];
 
 // The NSDate class symbol, loaded natively through its class reference (off_2227CE2D0).
-extern char dateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
+extern char dateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
 // libobjc's root class, which this image imports.
-extern char nsObjectClass[] __asm("_OBJC_CLASS_$_NSObject");
+extern char nsObjectClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_NSObject"));
 
 // Native _NSIsNSDate, 0x1c029e19c. External.
 // A tagged pointer answers whether its tag is 6 (the inline decoding _NSIsNSNumber uses: the obfuscator, read

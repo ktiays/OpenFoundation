@@ -20,11 +20,11 @@
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 // The shared-cache NSException class and NSRangeException name bindings have medium confidence.
 
-extern char rleArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSRLEArray));
-extern char mutableRLEArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableRLEArray));
-extern char rleStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char rleMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char rleExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char rleArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSRLEArray));
+extern char mutableRLEArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableRLEArray));
+extern char rleStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char rleMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char rleExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // Native ___NSRLEArrayLock. Non-external. Serializes the cached index and location pair.
 static os_unfair_lock __NSRLEArrayLock = OS_UNFAIR_LOCK_INIT;

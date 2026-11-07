@@ -4,6 +4,7 @@
 //
 
 #include "CoreFoundation/Objective-C/OCFNSObject.h"
+#include "CoreFoundation/OFPortHooks.h"
 
 #include "CoreFoundation/Base/OCFUtilities.h"
 #include "CoreFoundation/Objective-C/OCFBridgedClasses.h"
@@ -51,7 +52,7 @@ extern const uint8_t objc_debug_tag60_permutations[8];
 
 // The bridged exception class and the malloc exception name (ONSMallocException, external natively as
 // NSMallocException).
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // dyld_program_sdk_at_least's argument at both native uses: the version set 0x07E30901 (2019.9.1) on every
 // platform (0xFFFFFFFF), MOV X0, #0x7E30901FFFFFFFF.
@@ -335,7 +336,7 @@ id __CFAllocateObject(Class cls, size_t extraBytes) {
 // The root class whose class reference __CFLookUpClass reads through the GOT slot 0x222409078, outside the
 // extracted image; it is bound to NSObject (libobjc's root class) by use: objc_opt_self of it becomes the
 // superclass of the NSString class pair; confidence: medium.
-extern char rootObjectClass[] __asm("_OBJC_CLASS_$_NSObject");
+extern char rootObjectClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_NSObject"));
 
 // Native __CFLookUpClass, 0x1c029ed14. Hidden (was a private external). Evidence:
 // Local/Evidence/cf-core/iphone-simulator-corpus-delta2.json. objc_lookUpClass; when the class is absent,
@@ -400,7 +401,7 @@ extern void *_NSConcreteMallocBlock[32];
 extern void *_NSConcreteStackBlock[32];
 extern void *_NSConcreteWeakBlockVariable[32];
 
-extern char blockClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSBlock));
+extern char blockClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSBlock));
 
 // Native __CFMakeNSBlockClasses' callbacks, 0x2227a9ba0 (__DATA_CONST,__const, 32 bytes): the size 0x20 and
 // three function addresses outside the image, taken to be objc_retain, objc_release and objc_destructInstance
@@ -426,6 +427,7 @@ static const BlockCallbacksRR blockCallbacks = {
 // _NSConcreteWeakBlockVariable by the class each initializes and the alphabetical slot order (confidence:
 // medium). Finally the copied callbacks are installed with _Block_use_RR2.
 void __CFMakeNSBlockClasses(void) {
+    OF_PORT_RETURN(makeBlockClasses, );
     if (objc_lookUpClass("__NSStackBlock__") != Nil) {
         Class superclass = objc_opt_class((id)blockClass);
         class_setSuperclass(objc_lookUpClass("__NSStackBlock__"), superclass);

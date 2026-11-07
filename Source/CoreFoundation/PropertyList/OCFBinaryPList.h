@@ -160,7 +160,7 @@ typedef struct {
     uint8_t buffer[8160];
 } BinaryPlistWriteBuffer;
 
-_Static_assert(sizeof(BinaryPlistWriteBuffer) == 0x2010, "The native write buffer is 8208 bytes.");
+OF_ABI_ASSERT(sizeof(BinaryPlistWriteBuffer) == 0x2010, "The native write buffer is 8208 bytes.");
 
 // Foundation (external there, imported by the native image): a string mapped from backingData at the string
 // object's offset. Parameter roles from the one call site (medium confidence).

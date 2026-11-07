@@ -35,14 +35,15 @@
 // NSCFError
 // (__DATA,__objc_data 0x22e6d7920, Foundation's NSError subclass of the toll-free bridged errors, was a
 // private external; not restored on this branch), NSDictionary, NSException and NSURL (CoreFoundation's).
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char errorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char cfErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCFError));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char urlClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
-extern char errorMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char errorArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char errorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char cfErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCFError));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char urlClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
+extern char errorMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(ONSMutableDictionary));
+extern char errorArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
 
 // Selectors this unit sends to objects of classes outside it (NSString, NSDictionary, NSArray, NSException,
 // NSBundle, NSCoder and NSSet), declared for the message sends only; no protocol object is emitted.

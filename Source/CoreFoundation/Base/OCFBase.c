@@ -6,6 +6,7 @@
 #include <OpenCoreFoundation/Base/OCFBase.h>
 
 #include "CoreFoundation/Base/OCFPlatform.h"
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Objective-C/OCFNSObject.h"
 #include "CoreFoundation/Runtime/OCFRuntime.h"
 #include "CoreFoundation/String/OCFString.h"
@@ -29,8 +30,8 @@
 #define kAllocatorUseContext ((OCFAllocatorRef)(uintptr_t)0x3ab)
 
 // Bridged classes stored in static objects: __NSCFType for the static allocators, NSNull for kCFNull.
-extern char bridgedTypeClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFType));
-extern char bridgedNullClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNull));
+extern char bridgedTypeClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFType));
+extern char bridgedNullClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNull));
 
 static size_t __CFAllocatorCustomSize(void *zone, const void *ptr);
 static void *__CFAllocatorCustomMalloc(void *zone, size_t size);
@@ -166,12 +167,16 @@ static const struct __OCFAllocator __kCFAllocatorMalloc = {
          NULL,
          NULL,
          NULL,
-         (OCFAllocatorAllocateCallBack)(void *)malloc,
-         (OCFAllocatorReallocateCallBack)(void *)realloc,
-         (OCFAllocatorDeallocateCallBack)(void *)free,
+         OF_PORT_FUNCTION(mallocAllocatorAllocate, (OCFAllocatorAllocateCallBack)(void *)malloc),
+         OF_PORT_FUNCTION(mallocAllocatorReallocate, (OCFAllocatorReallocateCallBack)(void *)realloc),
+         OF_PORT_FUNCTION(mallocAllocatorDeallocate, (OCFAllocatorDeallocateCallBack)(void *)free),
          NULL},
-    .typedAllocate = (OCFAllocatorTypedAllocateCallBack)(void *)malloc_type_malloc,
-    .typedReallocate = (OCFAllocatorTypedReallocateCallBack)(void *)malloc_type_realloc,
+    .typedAllocate = OF_PORT_FUNCTION(
+        mallocAllocatorTypedAllocate, (OCFAllocatorTypedAllocateCallBack)(void *)malloc_type_malloc
+    ),
+    .typedReallocate = OF_PORT_FUNCTION(
+        mallocAllocatorTypedReallocate, (OCFAllocatorTypedReallocateCallBack)(void *)malloc_type_realloc
+    ),
 };
 
 static const struct __OCFAllocator __kCFAllocatorMallocZone = {

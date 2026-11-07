@@ -376,7 +376,7 @@ OCFIndex __CFToMacThaiLen(uint32_t flags, const uint16_t *characters, OCFIndex n
 OCFIndex __CFFromMacThaiLen(uint32_t flags, const uint8_t *bytes, OCFIndex numBytes) {
     (void)flags;
     (void)bytes;
-    return numBytes & ~(numBytes >> 63);
+    return numBytes & ~(OF_WORD_SHIFT(numBytes, 63));
 }
 
 // Native __CFConverterDOSThai, 0x2227ab970 (__DATA_CONST,__const, 72 bytes). Hidden (was private external).

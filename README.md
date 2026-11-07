@@ -39,6 +39,18 @@ iOS Device 27.0.1 (24A446), using arm64e reference images. Port TARGETs follow
 the porting rules in AGENTS.md; none is admitted yet. Other TARGET/MATCH pairs
 are refused until their dependencies and behavior are established.
 
+## Platform compatibility
+
+| Platform | Status |
+| --- | --- |
+| iOS Simulator 27.0 (24A434), arm64 | Admitted (`TARGET=iphonesimulator MATCH=iphonesimulator`); Make and Xcode, Debug and Release, both naming modes |
+| iOS Device 27.0.1 (24A446), arm64e | Stage 2 reference only; not a build target |
+| WebAssembly (wasm32, Emscripten) | Experimental port in [`Port/`](Port/README.md), built with its own CMake project on objc4's Emscripten port; not admitted. Strings, numbers, collections, data, exceptions and regular expressions work under Node and in Chrome; run-loop timers and the main dispatch queue are verified under Node; the Swift-implemented NSLocale and Decimal are not translated yet. See the port's [compatibility table](Port/README.md#compatibility) |
+
+The port never changes what an Apple build compiles: `Source/` reaches it only through the hook macros in
+`Source/CoreFoundation/OFPortHooks.h` (each site a row of `Port/hooks.tsv`) and equivalent expressions, and a
+port change lands only when the Release binaries of both naming modes are byte-identical with and without it.
+
 | Path | Purpose |
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | English-only project content, evidence rules, naming, formatting and verification |
@@ -46,6 +58,7 @@ are refused until their dependencies and behavior are established.
 | `Source/CoreFoundation/` | `OpenCoreFoundation.framework` sources and headers |
 | `Source/Foundation/` | `OpenFoundation.framework` sources and headers |
 | `Tests/`, `StandaloneTests/` | Native-reference checks and tests without system Foundation/CoreFoundation |
+| [`Port/`](Port/README.md) | The experimental wasm32 port: its CMake build, hooks, supplied libraries and smoke test |
 | [Documentation](Documentation/README.md) | Method, reference identities, consumer inventory and restoration sequence |
 | `Configuration/` | Shared build defaults, admitted platforms, image pins, restoration ledger and scope |
 | `Local/` (unversioned) | Reference images, IDA databases, evidence and research scratch |

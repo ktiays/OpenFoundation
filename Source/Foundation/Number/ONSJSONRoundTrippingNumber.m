@@ -18,10 +18,10 @@
 // iOS Device 24A446 remains unread. Reading: Foundation/Number/Reading.md, round 2. Manual reference
 // counting.
 
-extern char
-    jsonRoundTrippingNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSJSONRoundTrippingNumber));
-extern char jsonNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char jsonStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
+extern char jsonRoundTrippingNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(_ONSJSONRoundTrippingNumber));
+extern char jsonNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char jsonStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
 
 @implementation _ONSJSONRoundTrippingNumber
 

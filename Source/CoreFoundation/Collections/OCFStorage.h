@@ -45,9 +45,9 @@ typedef struct StorageNode {
     } info;
 } StorageNode;
 
-_Static_assert(sizeof(StorageNode) == 40, "A native CFStorage node is 40 bytes.");
-_Static_assert(__builtin_offsetof(StorageNode, isLeaf) == 13, "The leaf flag is byte 13.");
-_Static_assert(__builtin_offsetof(StorageNode, info.leaf.memory) == 24, "Leaf memory at 24.");
+OF_ABI_ASSERT(sizeof(StorageNode) == 40, "A native CFStorage node is 40 bytes.");
+OF_ABI_ASSERT(__builtin_offsetof(StorageNode, isLeaf) == 13, "The leaf flag is byte 13.");
+OF_ABI_ASSERT(__builtin_offsetof(StorageNode, info.leaf.memory) == 24, "Leaf memory at 24.");
 
 // The CFStorage object (168 bytes after the header, _CFRuntimeCreateInstance with 0xa8): the value size
 // (offset 16), the byte-to-value shift or -1 when the value size is not a power of two (24, 32 bits), the
@@ -68,14 +68,12 @@ struct __OCFStorage {
     StorageNode rootNode;
 };
 
-_Static_assert(sizeof(struct __OCFStorage) == 16 + 168, "The native CFStorage object is 184 bytes.");
-_Static_assert(__builtin_offsetof(struct __OCFStorage, alwaysFrozen) == 0x60, "alwaysFrozen at 0x60.");
-_Static_assert(__builtin_offsetof(struct __OCFStorage, cacheNode) == 0x68, "The cached node at 0x68.");
-_Static_assert(__builtin_offsetof(struct __OCFStorage, cacheLock) == 0x80, "The cache lock at 0x80.");
-_Static_assert(
-    __builtin_offsetof(struct __OCFStorage, maxLeafCapacity) == 0x88, "The leaf capacity at 0x88."
-);
-_Static_assert(__builtin_offsetof(struct __OCFStorage, rootNode) == 0x90, "The root node at 0x90.");
+OF_ABI_ASSERT(sizeof(struct __OCFStorage) == 16 + 168, "The native CFStorage object is 184 bytes.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFStorage, alwaysFrozen) == 0x60, "alwaysFrozen at 0x60.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFStorage, cacheNode) == 0x68, "The cached node at 0x68.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFStorage, cacheLock) == 0x80, "The cache lock at 0x80.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFStorage, maxLeafCapacity) == 0x88, "The leaf capacity at 0x88.");
+OF_ABI_ASSERT(__builtin_offsetof(struct __OCFStorage, rootNode) == 0x90, "The root node at 0x90.");
 
 OF_EXPORT OCFStorageRef OCFStorageCreate(OCFAllocatorRef alloc, OCFIndex valueSizeInBytes);
 OF_EXPORT OCFStorageRef OCFStorageCreateWithSubrange(OCFStorageRef storage, OCFRange range);

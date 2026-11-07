@@ -40,9 +40,9 @@ extern struct mach_header __dso_handle;
 extern id objc_alloc(Class cls);
 
 // The NSException and __NSConstantArrayEnumerator class symbols, sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char
-    constantArrayEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSConstantArrayEnumerator));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char constantArrayEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(__ONSConstantArrayEnumerator));
 
 // The message this unit sends to the enumerator it allocates.
 @protocol ConstantArrayEnumeratorMessages
@@ -129,7 +129,7 @@ extern char
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -142,7 +142,7 @@ extern char
     if ((intptr_t)location >= 0 && count >= location + length) {
         const id *source = _objects + location;
         if (length > 4) {
-            memmove(objects, source, length << 3);
+            memmove(objects, source, length * sizeof(id));
             return;
         }
         for (NSUInteger index = 0; index < length; index++) {

@@ -54,20 +54,22 @@ extern struct mach_header __dso_handle;
 extern id objc_retain(id object);
 
 // The NSException class symbol (off_2227CE300), sent to directly.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
 
 // The __NSOrderedSetI class symbol (loaded through the __SCR___NSOrderedSetI GOT slot) and the offsets of its
 // ivars (from their _OBJC_IVAR_$ symbols), which __NSOrderedSetI_new reads as the native code does: _used (8:
 // a 56-bit count written as a word, a halfword and a byte), _szidx (15: the top six bits of that byte),
 // _stride (15: its low two bits) and _list (16: the objects in order, followed by the index table). All are
 // defined by the @implementation below.
-extern char orderedSetIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSOrderedSetI));
-extern const int32_t orderedSetIUsedOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetI) "._used");
-extern const int32_t
-    orderedSetISizeIndexOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetI) "._szidx");
-extern const int32_t
-    orderedSetIStrideOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetI) "._stride");
-extern const int32_t orderedSetIListOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSOrderedSetI) "._list");
+extern char orderedSetIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSOrderedSetI));
+extern const int32_t orderedSetIUsedOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                     OF_NAME_STRING(__ONSOrderedSetI) "._used");
+extern const int32_t orderedSetISizeIndexOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                          OF_NAME_STRING(__ONSOrderedSetI) "._szidx");
+extern const int32_t orderedSetIStrideOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                       OF_NAME_STRING(__ONSOrderedSetI) "._stride");
+extern const int32_t orderedSetIListOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                     OF_NAME_STRING(__ONSOrderedSetI) "._list");
 
 // The message this unit sends that the shared declarations do not carry; declared for the send only.
 @protocol OrderedSetIMessages
@@ -110,7 +112,7 @@ extern const int32_t orderedSetIListOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(
                 (unsigned long)(count)                                                                       \
             );                                                                                               \
         }                                                                                                    \
-        if (((count) >> 61) != 0) {                                                                          \
+        if (OF_WORD_SHIFT((count), 61) != 0) {                                                               \
             RAISE_LOGGED_EXCEPTION(                                                                          \
                 ONSInvalidArgumentException,                                                                 \
                 0x16,                                                                                        \
@@ -380,7 +382,7 @@ static const uint64_t __NSOrderedSetCapacities[64] = {
         );
     }
     RAISE_OBJECTS_EXCEPTIONS(methodName("getObjects:range:"), objects, length);
-    memmove(objects, &_list[location], length << 3);
+    memmove(objects, &_list[location], length * sizeof(id));
 }
 
 // Native -[__NSOrderedSetI countByEnumeratingWithState:objects:count:], 0x1c0151690. Non-external. The buffer
@@ -585,8 +587,8 @@ id __NSOrderedSetI_new(const id *objects, NSUInteger count, BOOL noRetain) {
     }
     id set = __CFAllocateObject([(Class)orderedSetIClass self], tableSize + kept * sizeof(id));
     uint8_t *used = (uint8_t *)set + orderedSetIUsedOffset;
-    used[6] = (uint8_t)(kept >> 48);
-    *(uint16_t *)(used + 4) = (uint16_t)(kept >> 32);
+    used[6] = (uint8_t)(OF_WORD_SHIFT(kept, 48));
+    *(uint16_t *)(used + 4) = (uint16_t)((uint64_t)kept >> 32);
     *(uint32_t *)used = (uint32_t)kept;
     uint8_t *sizeIndexByte = (uint8_t *)set + orderedSetISizeIndexOffset;
     *sizeIndexByte = (uint8_t)((*sizeIndexByte & 3) | (sizeIndex << 2));

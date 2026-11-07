@@ -51,12 +51,12 @@ extern struct mach_header __dso_handle;
 // objects), NSException (off_2227CE300), NSArray (off_2227CE2A0) and the concrete classes
 // __initWithArrayDontCopyItems compares against (___SCR___NSArrayI, ___SCR___NSArrayM,
 // ___SCR___NSFrozenArrayM).
-extern char placeholderArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderArray));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char arrayIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArrayI));
-extern char arrayMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArrayM));
-extern char frozenArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFrozenArrayM));
+extern char placeholderArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSPlaceholderArray));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char arrayIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSArrayI));
+extern char arrayMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSArrayM));
+extern char frozenArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSFrozenArrayM));
 
 // The messages this unit sends that the shared declarations do not carry; declared for the sends only.
 @protocol PlaceholderArrayMessages
@@ -253,7 +253,7 @@ static id __initWithArrayDontCopyItems(id placeholder, id array) {
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -306,7 +306,7 @@ static id __initWithArrayDontCopyItems(id placeholder, id array) {
 // -doesNotRecognizeSelector: with the selector and then BRK #1; the mutable one answers __NSArrayM_new with
 // no objects and the capacity (a tail call); any other receiver is BRK #1.
 - (id)initWithCapacity:(NSUInteger)capacity {
-    if ((capacity >> 61) != 0) {
+    if ((OF_WORD_SHIFT(capacity, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,

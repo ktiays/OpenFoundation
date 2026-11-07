@@ -45,8 +45,8 @@ typedef struct {
 
 // The NSSet and NSMutableSet class symbols, compared by address with the receiver (through the __SCR_NSSet
 // and __SCR_NSMutableSet GOT slots).
-extern char setClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char mutableSetClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
+extern char setClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char mutableSetClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
 
 // Native __createSet, 0x1c02a3440; defined after +[NSSet setWithObject:], in native address order.
 static id __createSet(id set, id object);
@@ -71,7 +71,7 @@ static id __createSet(id set, id object);
 - (id)allObjects {
     setTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if (count >> 60 != 0) {
+    if (OF_WORD_SHIFT(count, 60) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     size_t size = 0;
@@ -130,7 +130,7 @@ static id __createSet(id set, id object);
             (unsigned long)length
         );
     }
-    if (length >> 61 != 0) {
+    if (OF_WORD_SHIFT(length, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -283,7 +283,7 @@ static id __createSet(id set, id object);
             (unsigned long)count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -314,7 +314,7 @@ static id __createSet(id set, id object);
             (unsigned long)count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -671,7 +671,7 @@ static id __createSet(id set, id object);
     if (count == 0) {
         return [(id<SetUnrestoredMessages>)(id)setArrayClass array];
     }
-    if (count >> 60 != 0) {
+    if (OF_WORD_SHIFT(count, 60) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     id objectsStack[count < 0x101 ? count : 1];
@@ -1029,7 +1029,7 @@ static id __createSet(id set, id object) {
             (unsigned long)count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -1181,7 +1181,7 @@ static id __createSet(id set, id object) {
     }
     NSUInteger count = [self count];
     NSUInteger total = count + 1;
-    if (total >> 60 != 0) {
+    if (OF_WORD_SHIFT(total, 60) != 0) {
         raiseTemporaryBufferTooLarge(total);
     }
     NSUInteger bufferCount = total > 1 ? total : 1;
@@ -1217,7 +1217,7 @@ static id __createSet(id set, id object) {
     }
     NSUInteger count = [self count];
     NSUInteger total = count + arrayCount;
-    if (total >> 60 != 0) {
+    if (OF_WORD_SHIFT(total, 60) != 0) {
         raiseTemporaryBufferTooLarge(total);
     }
     NSUInteger bufferCount = total > 1 ? total : 1;

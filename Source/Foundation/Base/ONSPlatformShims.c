@@ -4,6 +4,7 @@
 //
 
 #include "Foundation/Base/ONSPlatformShims.h"
+#include "CoreFoundation/OFPortHooks.h"
 
 #include <crt_externs.h>
 #include <dispatch/dispatch.h>
@@ -85,10 +86,14 @@ dispatch_queue_t __NSDispatchQueueGetGenericMatchingMain(void) {
 
 // Native __NSLinkedOnOrAfterLuckier, 0x1c0f6be9c.
 bool _NSLinkedOnOrAfterLuckier(void) {
-    return dyld_program_sdk_at_least(0x7E90000FFFFFFFFULL);
+    return OF_PORT_ANSWER(
+        programSDKAtLeastPacked, dyld_program_sdk_at_least(0x7E90000FFFFFFFFULL), 0x7E90000FFFFFFFFULL
+    );
 }
 
 // Native __NSLinkedOnOrAfterCrystalglow, 0x1c0f6bff4.
 bool _NSLinkedOnOrAfterCrystalglow(void) {
-    return dyld_program_sdk_at_least(0x7E80000FFFFFFFFULL);
+    return OF_PORT_ANSWER(
+        programSDKAtLeastPacked, dyld_program_sdk_at_least(0x7E80000FFFFFFFFULL), 0x7E80000FFFFFFFFULL
+    );
 }

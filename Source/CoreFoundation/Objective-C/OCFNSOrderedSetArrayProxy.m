@@ -15,7 +15,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The NSArray class symbol (class reference off_2227CE2A0), sent +allocWithZone: by -copyWithZone:.
-extern char arrayProxyArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
+extern char arrayProxyArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
 
 @implementation __ONSOrderedSetArrayProxy
 

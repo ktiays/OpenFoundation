@@ -19,8 +19,8 @@
 #include <stdlib.h>
 
 // Class objects referenced by direct libobjc class queries in the native capture.
-extern char
-    runtimeONSMutableCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableCharacterSet));
+extern char runtimeONSMutableCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                           OF_NAME_STRING(ONSMutableCharacterSet));
 
 // Inferred organization: the NSCharacterSet methods lie at 0x1c04d89ec-0x1c04d94ef and the
 // NSMutableCharacterSet methods at 0x1c04d9590-0x1c04d9d4f of the iOS Simulator Foundation __text section
@@ -45,18 +45,18 @@ extern char
 // outside the image; they are read as bitmapRepresentation, initWithCoder: and replacementObjectForPortCoder:
 // from their use (confidence: medium for the first, high for the super sends of the methods' own selectors).
 
-extern char swiftCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSSwiftCharacterSet));
-extern char
-    placeholderCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSPlaceholderCharacterSet));
-extern char characterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
-extern char keyedArchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedArchiver));
-extern char keyedUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
-extern char errorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char dictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char dataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char mutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
+extern char swiftCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSSwiftCharacterSet));
+extern char placeholderCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(_ONSPlaceholderCharacterSet));
+extern char characterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
+extern char keyedArchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedArchiver));
+extern char keyedUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char errorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char dictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char dataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char mutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
 
 // The messages the methods send to objects of other classes (the Swift-backed set, the placeholder, coders,
 // data, strings, errors, exceptions and dictionaries), declared for the sends only; no protocol object is
@@ -113,7 +113,7 @@ typedef struct {
     const CharacterSetGlobalBlockDescriptor *descriptor;
 } CharacterSetGlobalBlockLiteral;
 
-_Static_assert(sizeof(CharacterSetGlobalBlockLiteral) == 32, "A global block literal is 32 bytes.");
+OF_ABI_ASSERT(sizeof(CharacterSetGlobalBlockLiteral) == 32, "A global block literal is 32 bytes.");
 
 // Native ___block_descriptor_32_e5_v8?0l, 0x22281c8b8 (__DATA_CONST,__const): {0x50000000, 32, "v8@?0"
 // (0x1c142970b), no layout}. Static: only the literal below uses it.
@@ -129,7 +129,7 @@ __attribute__((visibility("hidden"))) uint8_t foundationSwiftCharacterSetFeature
 // Native ____foundation_swift_characterSet_enabled_block_invoke, 0x1c0fdc9cc.
 // Non-external (was a private external).
 OF_EXTERN void foundationSwiftCharacterSetEnabledInvoke(void *block) __asm(
-    "____foundation_swift_characterSet_enabled_block_invoke"
+    OF_SYMBOL("___foundation_swift_characterSet_enabled_block_invoke")
 );
 
 void foundationSwiftCharacterSetEnabledInvoke(void *block) {
@@ -144,7 +144,7 @@ void foundationSwiftCharacterSetEnabledInvoke(void *block) {
 // Native ___block_literal_global (IDA ___block_literal_global_10), 0x22281c8d8.
 // Shared by the character set and the NSURLUtilities category.
 __attribute__((visibility("hidden"))) const CharacterSetGlobalBlockLiteral
-    foundationSwiftCharacterSetEnabledLiteral __asm("___block_literal_global_10") = {
+    foundationSwiftCharacterSetEnabledLiteral __asm(OF_SYMBOL("__block_literal_global_10")) = {
         _NSConcreteGlobalBlock,
         0x50000000,
         0,
@@ -719,7 +719,8 @@ static Class mutableCharacterSetClassCache;
 // iOS Simulator 24A434, arm64, Foundation UUID 49FCDA5F-A93E-3259-857C-FC75AC2C7B03;
 // confidence: verified. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
-extern char foundationCFCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCFCharacterSet));
+extern char foundationCFCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSCFCharacterSet));
 
 @implementation ONSCFCharacterSet
 

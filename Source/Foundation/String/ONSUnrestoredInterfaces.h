@@ -117,44 +117,50 @@
 #endif
 
 #ifdef __OBJC__
-extern char fileErrorClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char fileNumberClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char fileDictionaryClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char fileURLClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
-extern char fileCheapMutableStringClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCheapMutableString));
-extern char mutableStringExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char pathStoreClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPathStore2));
-extern char pathCheapMutableStringClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCheapMutableString));
-extern char pathFileManagerClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSFileManager));
-extern char pathMutableArrayClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char pathMutableSetClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableSet));
-extern char pathDataClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char pathExceptionClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char placeholderMutableStringExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char placeholderExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char placeholderAttributedStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSAttributedString));
-extern char exceptionClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char arrayClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char mutableArrayClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char localeClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
-extern char placeholderStringClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPlaceholderString));
-extern char characterSetClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
-extern char dataClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
-extern char mutableDataClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
-extern char dictionaryClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char urlClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURL));
-extern char keyedArchiverClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedArchiver));
-extern char errorClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char httpURLResponseClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSHTTPURLResponse));
-extern char urlConnectionClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURLConnection));
-extern char urlRequestClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSURLRequest));
-extern char stringCFAdditionsExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char scannerClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSScanner));
-extern char decimalNumberClassSymbol[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumber));
-extern char encodingsLocalizedStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSLocalizedString));
-extern char encodingsExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char encodingsDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char encodingsMutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
+extern char fileErrorClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char fileNumberClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char fileDictionaryClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char fileURLClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
+extern char fileCheapMutableStringClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSCheapMutableString));
+extern char mutableStringExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char pathStoreClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPathStore2));
+extern char pathCheapMutableStringClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSCheapMutableString));
+extern char pathFileManagerClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSFileManager));
+extern char pathMutableArrayClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char pathMutableSetClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableSet));
+extern char pathDataClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char pathExceptionClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char placeholderMutableStringExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                               OF_NAME_STRING(ONSException));
+extern char placeholderExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char placeholderAttributedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                         OF_NAME_STRING(ONSAttributedString));
+extern char exceptionClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char arrayClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char mutableArrayClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char localeClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
+extern char placeholderStringClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                     OF_NAME_STRING(ONSPlaceholderString));
+extern char characterSetClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
+extern char dataClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
+extern char mutableDataClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
+extern char dictionaryClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char urlClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURL));
+extern char keyedArchiverClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedArchiver));
+extern char errorClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char httpURLResponseClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSHTTPURLResponse));
+extern char urlConnectionClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURLConnection));
+extern char urlRequestClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSURLRequest));
+extern char stringCFAdditionsExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char scannerClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSScanner));
+extern char decimalNumberClassSymbol[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDecimalNumber));
+extern char encodingsLocalizedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(__ONSLocalizedString));
+extern char encodingsExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char encodingsDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char encodingsMutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
 
 @protocol StringForeignMessages
 

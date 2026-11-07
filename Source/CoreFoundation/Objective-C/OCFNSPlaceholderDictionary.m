@@ -24,15 +24,16 @@
 extern id objc_retain(id object);
 
 // The NSDictionary class symbol (class reference off_2227CE2F8), sent +newWithContentsOf:immutable:.
-extern char placeholderDictionaryNSDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
+extern char placeholderDictionaryNSDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                               OF_NAME_STRING(ONSDictionary));
 
 // The __NSDictionaryI, __NSFrozenDictionaryM and __NSDictionaryM class symbols, loaded natively through their
 // GOT slots (___SCR___NSDictionaryI, ___SCR___NSFrozenDictionaryM, ___SCR___NSDictionaryM) and compared with
 // the class of the argument of -initWithDictionary:copyItems:.
-extern char placeholderDictionaryIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSDictionaryI));
-extern char
-    placeholderFrozenDictionaryMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFrozenDictionaryM));
-extern char placeholderDictionaryMClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSDictionaryM));
+extern char placeholderDictionaryIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSDictionaryI));
+extern char placeholderFrozenDictionaryMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(__ONSFrozenDictionaryM));
+extern char placeholderDictionaryMClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSDictionaryM));
 
 // Selectors this unit sends that no included header declares, for the message sends only.
 @protocol PlaceholderDictionaryMessages
@@ -126,7 +127,7 @@ static inline __attribute__((always_inline, noreturn)) void raiseUninitializedPl
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -209,7 +210,7 @@ static inline __attribute__((always_inline, noreturn)) void raiseUninitializedPl
 // placeholder answers __NSDictionaryM_new(NULL, NULL, capacity, 3) (a tail call); the immutable placeholder
 // sends itself -doesNotRecognizeSelector: with the selector, and that or any other receiver traps (BRK #1).
 - (id)initWithCapacity:(NSUInteger)capacity {
-    if ((capacity >> 61) != 0) {
+    if ((OF_WORD_SHIFT(capacity, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

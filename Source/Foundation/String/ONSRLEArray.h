@@ -30,8 +30,8 @@ typedef struct _NSRefCountedRunArray {
     NSRunArrayItem runs[];
 } NSRefCountedRunArray;
 
-_Static_assert(offsetof(NSRefCountedRunArray, runs) == 40, "Native run-array header size.");
-_Static_assert(sizeof(NSRunArrayItem) == 16, "Native run-array item size.");
+OF_ABI_ASSERT(offsetof(NSRefCountedRunArray, runs) == 40, "Native run-array header size.");
+OF_ABI_ASSERT(sizeof(NSRunArrayItem) == 16, "Native run-array item size.");
 
 // Native NSRLEArray, 0x22e6d62f0, external. class_ro_t 0x2228483e8 gives instance start 8,
 // size 16 and the single pointer ivar. Superclass 0x22e6b6088 is NSObject (confidence: medium).

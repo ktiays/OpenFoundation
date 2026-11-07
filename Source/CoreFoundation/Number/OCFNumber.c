@@ -180,8 +180,8 @@ extern uintptr_t objc_debug_taggedpointer_mask;
 extern void _objc_registerTaggedPointerClass(uint16_t tag, Class cls);
 
 // Bridged classes stored in the static objects and registered for tag 3.
-extern char bridgedBooleanClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFBoolean));
-extern char bridgedNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFNumber));
+extern char bridgedBooleanClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFBoolean));
+extern char bridgedNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFNumber));
 
 // The CFNumber object: the value at offset 16, 8 bytes (16 for kCFNumberSInt128Type). Info bits 0-2 (of the
 // six bits 0-5 the native code writes) index __CFNumberCanonicalTypes. A tagged number (tag 3) carries the
@@ -331,7 +331,7 @@ const OCFRuntimeClass __CFNumberClass = {
 };
 
 static bool isTagged(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0;
 }
 
 static uint64_t infoOf(OCFTypeRef cf) {

@@ -16,13 +16,13 @@
 // confidence: verified unless noted. iOS Device divergence: iOS Device 24A446 remains unread.
 // Reading: Source/Foundation/String/FoundationAttributedStorageReading.md.
 
-extern char markdownCreatorDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char
-    markdownCreatorMutableDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableDictionary));
-extern char markdownCreatorErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char markdownCreatorJSONClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSJSONSerialization));
-extern char
-    markdownCreatorAttributeDescriptorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSAttributeDescriptor));
+extern char markdownCreatorDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char markdownCreatorMutableDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                              OF_NAME_STRING(ONSMutableDictionary));
+extern char markdownCreatorErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char markdownCreatorJSONClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSJSONSerialization));
+extern char markdownCreatorAttributeDescriptorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                                OF_NAME_STRING(_ONSAttributeDescriptor));
 
 @protocol MarkdownCreatorMessages <NSObject>
 - (id)initWithString:(id)string attributes:(id)attributes;

@@ -38,8 +38,8 @@ extern BOOL objc_opt_isKindOfClass(id object, Class cls);
 OF_EXTERN void _CFRaiseMemoryException(OCFStringRef reason) __attribute__((noreturn));
 
 // The Foundation classes the Objective-C paths allocate or test (defined in the native CoreFoundation image).
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
 
 // The storage types (info bits 0-1) and the callback kinds (info bits 2-3).
 enum {
@@ -124,11 +124,11 @@ static const void **arrayBucketAtIndex(OCFArrayRef array, OCFIndex idx) {
 }
 
 static bool isObjCArray(OCFTypeRef cf) {
-    return ((uintptr_t)cf >> 63) != 0 || __CF_IS_OBJC(19, cf) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0 || __CF_IS_OBJC(19, cf) != 0;
 }
 
 static OCFAllocatorRef arrayAllocator(OCFTypeRef cf) {
-    if (((uintptr_t)cf >> 63) != 0 || (arrayInfo(cf) & kOCFInfoDefaultAllocator) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)cf, 63)) != 0 || (arrayInfo(cf) & kOCFInfoDefaultAllocator) != 0) {
         return kOCFAllocatorSystemDefault;
     }
     return *(OCFAllocatorRef *)((const uint8_t *)cf - 16);
@@ -165,7 +165,7 @@ const OCFArrayCallBacks *__CFArrayGetCallBacks(OCFArrayRef array) {
     switch (arrayType(array)) {
         case kArrayImmutable:
         case kArrayDeque:
-            return (const OCFArrayCallBacks *)((const uint8_t *)array + 48);
+            return (const OCFArrayCallBacks *)((const uint8_t *)array + sizeof(struct __OCFArray));
         default:
             return NULL;
     }
@@ -1053,11 +1053,11 @@ void OCFArrayAppendArray(OCFMutableArrayRef theArray, OCFArrayRef otherArray, OC
 // bits), else malloc_type_malloc(size), both with type 0x80040B8603338; size / 8 pointers are stored in
 // *outCount before the NULL check, which crashes "failed to create array buffer".
 void *_OCFCreateArrayStorage(size_t numPointers, Boolean zeroed, size_t *outCount) {
-    if ((numPointers >> 61) != 0) {
+    if ((OF_WORD_SHIFT(numPointers, 61)) != 0) {
         crashWithMessage("failed to create array buffer");
     }
     size_t size = malloc_good_size(numPointers << 3);
-    if ((size >> 32) != 0) {
+    if (((uint64_t)size >> 32) != 0) {
         crashWithMessage("size unreasonably big");
     }
     void *storage;
@@ -1066,7 +1066,7 @@ void *_OCFCreateArrayStorage(size_t numPointers, Boolean zeroed, size_t *outCoun
     } else {
         storage = malloc_type_malloc(size, 0x80040B8603338ULL);
     }
-    *outCount = size >> 3;
+    *outCount = size / sizeof(const void *);
     if (storage == NULL) {
         crashWithMessage("failed to create array buffer");
     }

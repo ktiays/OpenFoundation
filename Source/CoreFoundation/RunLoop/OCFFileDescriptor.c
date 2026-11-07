@@ -55,7 +55,7 @@ extern int pselectUnlimited(
     fd_set *errorfds,
     const struct timespec *timeout,
     const sigset_t *sigmask
-) __asm("_pselect$DARWIN_EXTSN");
+) __asm(OF_SYMBOL("pselect$DARWIN_EXTSN"));
 
 // CFFileDescriptorGetTypeID.initOnce (0x22e6d2830, __DATA,__bss, non-external) and ___block_literal_global_3,
 // the global block whose invoke is ___CFFileDescriptorGetTypeID_block_invoke (0x1c019a874): the once that

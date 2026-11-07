@@ -46,7 +46,7 @@ typedef struct {
     uint8_t isInverted;
 } CharacterSetAnnex;
 
-_Static_assert(sizeof(CharacterSetAnnex) == 16, "The annex is a 16-byte allocation.");
+OF_ABI_ASSERT(sizeof(CharacterSetAnnex) == 16, "The annex is a 16-byte allocation.");
 
 struct __OCFCharacterSet {
     OCFRuntimeBase base;
@@ -70,8 +70,8 @@ struct __OCFCharacterSet {
     CharacterSetAnnex *annex;
 };
 
-_Static_assert(sizeof(struct __OCFCharacterSet) == 48, "The character set object is 48 bytes.");
-_Static_assert(offsetof(struct __OCFCharacterSet, annex) == 40, "The annex pointer is at 40.");
+OF_ABI_ASSERT(sizeof(struct __OCFCharacterSet) == 48, "The character set object is 48 bytes.");
+OF_ABI_ASSERT(offsetof(struct __OCFCharacterSet, annex) == 40, "The annex pointer is at 40.");
 
 typedef struct __OCFCharacterSet CharacterSet;
 
@@ -123,9 +123,10 @@ extern bool _os_feature_enabled_impl(const char *domain, const char *feature);
 // (+_newCharacterSetWithCharactersInString:, +_newMutableCharacterSet, +_swiftWhitespaces) and from the
 // alphabetical order of the neighboring identified slots 0x22229c598 (NSProcessInfo, +processInfo) and
 // 0x22229c678 (NSThread, +callStackReturnAddresses); confidence: medium for that binding.
-extern char bridgedCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFCharacterSet));
-extern char swiftCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
-extern char swiftMutableCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableCharacterSet));
+extern char bridgedCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFCharacterSet));
+extern char swiftCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
+extern char swiftMutableCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                      OF_NAME_STRING(ONSMutableCharacterSet));
 
 static void __CFCharacterSetDeallocate(OCFTypeRef cf);
 static Boolean __CFCharacterSetEqual(OCFTypeRef cf1, OCFTypeRef cf2);
@@ -182,7 +183,7 @@ static bool characterSetIsObjC(OCFTypeRef cset) {
     if (foundationSwiftCharacterSetEnabled()) {
         return true;
     }
-    if (((uintptr_t)cset >> 63) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)cset, 63)) != 0) {
         return true;
     }
     return __CF_IS_OBJC(kCharacterSetTypeID, cset) != 0;
@@ -1471,7 +1472,7 @@ OCFCharacterSetRef OCFCharacterSetCreateWithBitmapRepresentation(OCFAllocatorRef
 // object of type 25 (no Swift feature test) answers -invertedSet, retained (objc_retain, a tail call).
 // Otherwise a mutable copy is inverted and its mutable bit (info bit 0) cleared with a compare-and-swap loop.
 OCFCharacterSetRef OCFCharacterSetCreateInvertedSet(OCFAllocatorRef alloc, OCFCharacterSetRef theSet) {
-    if (((uintptr_t)theSet >> 63) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)theSet, 63)) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
         return (OCFCharacterSetRef)objc_retain(
             ((id (*)(id, SEL))objc_msgSend)((id)theSet, sel_getUid("invertedSet"))
         );
@@ -1959,14 +1960,16 @@ testPlane:
 // intersected with the other set and compared with it by __CFCharacterSetEqual.
 // Folds the compiler-outlined piece _CFCharacterSetIsSupersetOfSet.cold.2 (0x1c0306ec4).
 Boolean OCFCharacterSetIsSupersetOfSet(OCFCharacterSetRef theSet, OCFCharacterSetRef theOtherset) {
-    bool setIsObjC = ((uintptr_t)theSet >> 63) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0;
-    bool otherIsObjC =
-        ((uintptr_t)theOtherset >> 63) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theOtherset) != 0;
+    bool setIsObjC =
+        (OF_WORD_SHIFT((uintptr_t)theSet, 63)) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0;
+    bool otherIsObjC = (OF_WORD_SHIFT((uintptr_t)theOtherset, 63)) != 0 ||
+                       __CF_IS_OBJC(kCharacterSetTypeID, theOtherset) != 0;
     OCFCharacterSetRef expandedSet = NULL;
     OCFCharacterSetRef expandedOtherSet = NULL;
     if (setIsObjC) {
         (void)foundationSwiftCharacterSetEnabled();
-        if (((uintptr_t)theSet >> 63) == 0 && (foundationSwiftCharacterSetFeatureEnabled & 1) == 0 &&
+        if ((OF_WORD_SHIFT((uintptr_t)theSet, 63)) == 0 &&
+            (foundationSwiftCharacterSetFeatureEnabled & 1) == 0 &&
             __CF_IS_OBJC(kCharacterSetTypeID, theSet) == 0) {
             goto general;
         }
@@ -1979,7 +1982,8 @@ Boolean OCFCharacterSetIsSupersetOfSet(OCFCharacterSetRef theSet, OCFCharacterSe
     }
     if (otherIsObjC) {
         (void)foundationSwiftCharacterSetEnabled();
-        if (((uintptr_t)theOtherset >> 63) == 0 && (foundationSwiftCharacterSetFeatureEnabled & 1) == 0 &&
+        if ((OF_WORD_SHIFT((uintptr_t)theOtherset, 63)) == 0 &&
+            (foundationSwiftCharacterSetFeatureEnabled & 1) == 0 &&
             __CF_IS_OBJC(kCharacterSetTypeID, theOtherset) == 0) {
             goto general;
         }
@@ -2130,7 +2134,7 @@ Boolean OCFCharacterSetIsSupersetOfSet(OCFCharacterSetRef theSet, OCFCharacterSe
     }
 general:
     if (setIsObjC && otherIsObjC) {
-        if (foundationSwiftCharacterSetEnabled() || ((uintptr_t)theSet >> 63) != 0 ||
+        if (foundationSwiftCharacterSetEnabled() || (OF_WORD_SHIFT((uintptr_t)theSet, 63)) != 0 ||
             __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
             return ((Boolean (*)(id, SEL, OCFCharacterSetRef))objc_msgSend)(
                 (id)theSet, sel_getUid("isSupersetOfSet:"), theOtherset
@@ -2270,10 +2274,11 @@ static Boolean __CFCSetIsEqualBitmap(const uint8_t *bits1, const uint8_t *bits2)
 // combines with the set's bitmap representation instead. A CF set is returned as is.
 static OCFCharacterSetRef expandedOtherSet(OCFCharacterSetRef theOtherSet, bool *useRepresentation) {
     *useRepresentation = false;
-    if (((uintptr_t)theOtherSet >> 63) == 0 && __CF_IS_OBJC(kCharacterSetTypeID, theOtherSet) == 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)theOtherSet, 63)) == 0 &&
+        __CF_IS_OBJC(kCharacterSetTypeID, theOtherSet) == 0) {
         return theOtherSet;
     }
-    bool expand = ((uintptr_t)theOtherSet >> 63) != 0;
+    bool expand = (OF_WORD_SHIFT((uintptr_t)theOtherSet, 63)) != 0;
     if (!expand) {
         (void)foundationSwiftCharacterSetEnabled();
         expand = (foundationSwiftCharacterSetFeatureEnabled & 1) != 0 ||
@@ -2640,7 +2645,7 @@ Boolean OCFCharacterSetHasMemberInPlane(OCFCharacterSetRef theSet, OCFIndex theP
     if ((uint64_t)thePlane > 16) {
         return false;
     }
-    if (foundationSwiftCharacterSetEnabled() || ((uintptr_t)theSet >> 63) != 0 ||
+    if (foundationSwiftCharacterSetEnabled() || (OF_WORD_SHIFT((uintptr_t)theSet, 63)) != 0 ||
         __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
         return ((Boolean (*)(id, SEL, OCFIndex))objc_msgSend)(
             (id)theSet, sel_getUid("hasMemberInPlane:"), thePlane
@@ -3860,7 +3865,7 @@ void _OCFCharacterSetFast(OCFMutableCharacterSetRef theSet) {
 // object of type 25; otherwise by class: builtin 2 (type below 14) or 5, range 3, string 4 without annex
 // planes or annex inversion (else 1), any other class 1.
 OCFIndex _OCFCharacterSetGetKeyedCodingType(OCFCharacterSetRef theSet) {
-    if (((uintptr_t)theSet >> 63) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)theSet, 63)) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, theSet) != 0) {
         return 1;
     }
     const CharacterSet *cset = theSet;
@@ -3913,7 +3918,7 @@ Boolean _OCFCharacterSetIsInverted(OCFCharacterSetRef theSet) {
 // dispatch_once). External. iOS Device divergence: unread.
 void _OCFCharacterSetSetIsInverted(OCFMutableCharacterSetRef set, Boolean flag) {
     (void)foundationSwiftCharacterSetEnabled();
-    if ((uintptr_t)set >> 63 || (foundationSwiftCharacterSetFeatureEnabled & 1) != 0 ||
+    if (OF_WORD_SHIFT((uintptr_t)set, 63) || (foundationSwiftCharacterSetFeatureEnabled & 1) != 0 ||
         __CF_IS_OBJC(kCharacterSetTypeID, set) != 0) {
         ((void (*)(id, SEL, Boolean))objc_msgSend)((id)set, sel_getUid("_setIsInverted:"), flag);
         return;
@@ -3935,7 +3940,7 @@ void OCFCharacterSetInitInlineBuffer(OCFCharacterSetRef cset, OCFCharacterSetInl
     buffer->cset = cset;
     buffer->rangeLimit = 0x10000;
     const CharacterSet *set = cset;
-    if (((uintptr_t)cset >> 63) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, cset) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)cset, 63)) != 0 || __CF_IS_OBJC(kCharacterSetTypeID, cset) != 0) {
         if (objc_opt_respondsToSelector((id)cset, sel_getUid("_fillInlineBuffer:"))) {
             ((void (*)(id, SEL, OCFCharacterSetInlineBuffer *))objc_msgSend)(
                 (id)cset, sel_getUid("_fillInlineBuffer:"), buffer
@@ -3943,7 +3948,8 @@ void OCFCharacterSetInitInlineBuffer(OCFCharacterSetRef cset, OCFCharacterSetInl
             return;
         }
         (void)foundationSwiftCharacterSetEnabled();
-        bool expand = ((uintptr_t)cset >> 63) != 0 || (foundationSwiftCharacterSetFeatureEnabled & 1) != 0 ||
+        bool expand = (OF_WORD_SHIFT((uintptr_t)cset, 63)) != 0 ||
+                      (foundationSwiftCharacterSetFeatureEnabled & 1) != 0 ||
                       __CF_IS_OBJC(kCharacterSetTypeID, cset) != 0;
         set = NULL;
         if (expand) {

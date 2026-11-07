@@ -74,7 +74,7 @@ typedef struct {
     void (*unschedule)(void *stream, OCFRunLoopRef runLoop, OCFRunLoopMode runLoopMode, void *info);
 } StreamCallBacks;
 
-_Static_assert(sizeof(StreamCallBacks) == 136, "The native stream callbacks are 136 bytes.");
+OF_ABI_ASSERT(sizeof(StreamCallBacks) == 136, "The native stream callbacks are 136 bytes.");
 
 // The client context (SDK CFStreamClientContext, spelled OCF) and the client callbacks (SDK CFStream.h).
 typedef struct {
@@ -105,7 +105,7 @@ typedef struct {
     OCFOptionFlags whatToSignal;
 } StreamClient;
 
-_Static_assert(sizeof(StreamClient) == 80, "The native stream client is 80 bytes.");
+OF_ABI_ASSERT(sizeof(StreamClient) == 80, "The native stream client is 80 bytes.");
 
 // CFReadStream (type 38) and CFWriteStream (type 39), 144 bytes. Flag bits 0-4 are the status, bit 5 constant
 // callbacks, bit 6 a callback in progress, bit 7 closing, bit 8 a shared run loop source. At 0x78 an object
@@ -125,7 +125,7 @@ typedef struct {
     uint8_t unread1[7];
 } StreamObject;
 
-_Static_assert(sizeof(StreamObject) == 144, "The native stream object is 144 bytes.");
+OF_ABI_ASSERT(sizeof(StreamObject) == 144, "The native stream object is 144 bytes.");
 
 OF_EXPORT OCFTypeID OCFReadStreamGetTypeID(void);
 OF_EXPORT OCFTypeID OCFWriteStreamGetTypeID(void);
@@ -238,7 +238,7 @@ typedef struct {
     void *streamErrorFromCFError;
 } StreamNetworkSupport;
 
-_Static_assert(sizeof(StreamNetworkSupport) == 96, "The native CFNetwork support table is 96 bytes.");
+OF_ABI_ASSERT(sizeof(StreamNetworkSupport) == 96, "The native CFNetwork support table is 96 bytes.");
 
 OF_EXTERN StreamNetworkSupport CFNetworkSupport;
 

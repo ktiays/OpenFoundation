@@ -35,7 +35,7 @@ extern Class objc_opt_self(id object);
 
 // The concrete date class (__NSDate, the class reference ___SCR___NSDate), restored in
 // Objective-C/OCFNSDate.m.
-extern char concreteDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSDate));
+extern char concreteDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSDate));
 
 // Native initialize.static_init, 0x22e6d3728 (__DATA,__bss). Non-external: the once predicate of
 // +[__NSPlaceholderDate initialize].

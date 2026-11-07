@@ -23,7 +23,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The __NSCFSet class symbol, referenced natively by address (ADRP/ADD of _OBJC_CLASS_$___NSCFSet).
-extern char enumerateCFSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSCFSet));
+extern char enumerateCFSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSCFSet));
 
 // Native __NSSET_IS_CALLING_OUT_TO_A_BLOCK__, 0x1c01960d4. Hidden (was a private external). The block's
 // invoke function receives the object and the stop flag unchanged; the call is not a tail call (the frame

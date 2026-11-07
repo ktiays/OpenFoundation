@@ -19,6 +19,14 @@ FORMAT_SUFFIXES = SOURCE_SUFFIXES | {".h", ".hpp", ".inc"}
 PRODUCTS = ("OpenCoreFoundation", "OpenFoundation")
 
 
+def apple_labels(text):
+    """Source text with each OF_SYMBOL(...) assembler name spelled as it expands on Apple targets, where the user
+    label prefix is "_": OF_SYMBOL("name") becomes "_name" and OF_SYMBOL(OF_NAME_STRING(x)) becomes
+    "_" OF_NAME_STRING(x), the forms the label scanners read."""
+    text = re.sub(r'OF_SYMBOL\(\s*"([^"]*)"\s*\)', r'"_\1"', text)
+    return re.sub(r'OF_SYMBOL\(\s*(OF_NAME_STRING\(\w+\))\s*\)', r'"_" \1', text)
+
+
 def run(arguments, **kwargs):
     return subprocess.run([str(item) for item in arguments], check=True, text=True, **kwargs)
 

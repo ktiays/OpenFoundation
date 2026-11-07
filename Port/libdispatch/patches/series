@@ -1,0 +1,2 @@
+0001-Build-libdispatch-for-Emscripten-wasm32.patch
+0002-Skip-cooperative-root-queues-in-the-internal-workqueue.patch

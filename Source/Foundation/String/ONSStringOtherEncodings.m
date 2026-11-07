@@ -211,7 +211,7 @@ static const char *bytesInEncoding(
         }
     }
     if ([string getBytes:NULL
-                 maxLength:0x7FFFFFFFFFFFFFFE
+                 maxLength:(LONG_MAX - 1)
                 usedLength:&usedLength
                   encoding:encoding
                    options:options

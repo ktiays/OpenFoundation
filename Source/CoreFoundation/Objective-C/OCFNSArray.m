@@ -78,15 +78,16 @@ extern void objc_autoreleasePoolPop(void *context);
 
 // The class symbols the methods compare against or send to directly. NSArray's own symbol is this unit's
 // class, referenced by its assembler name for the comparisons +allocWithZone: makes without messaging.
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char arrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char mutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char setClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char placeholderArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSPlaceholderArray));
-extern char
-    fastEnumerationEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator));
-extern char arrayReverseEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArrayReverseEnumerator));
-extern char arrayReversedClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSArrayReversed));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char arrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char mutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char setClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char placeholderArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSPlaceholderArray));
+extern char fastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(__ONSFastEnumerationEnumerator));
+extern char arrayReverseEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                    OF_NAME_STRING(__ONSArrayReverseEnumerator));
+extern char arrayReversedClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSArrayReversed));
 
 // The messages the methods send to objects of other classes (index sets, sets, enumerators, exceptions),
 // declared for the sends only; no protocol object is emitted.
@@ -217,7 +218,7 @@ static id __createArray(id array, id object) {
 - (id)allObjects {
     arrayTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     size_t capacity = 0;
@@ -343,7 +344,7 @@ static id __createArray(id array, id object) {
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -426,7 +427,7 @@ static id __createArray(id array, id object) {
 - (id)descriptionWithLocale:(id)locale indent:(NSUInteger)level {
     NSUInteger cappedLevel = level < 100 ? level : 100;
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -639,7 +640,7 @@ static id __createArray(id array, id object) {
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -674,7 +675,7 @@ static id __createArray(id array, id object) {
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -1309,7 +1310,7 @@ static id __createArray(id array, id object) {
         );
     }
     NSUInteger indexCount = [indexes count];
-    if ((indexCount >> 60) != 0) {
+    if ((OF_WORD_SHIFT(indexCount, 60)) != 0) {
         raiseTemporaryBufferTooLarge(indexCount);
     }
     size_t capacity = 0;
@@ -1544,7 +1545,7 @@ static id __createArray(id array, id object) {
     if (length == 1) {
         return [ONSArray arrayWithObject:[self objectAtIndex:location]];
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     id *objects = (id *)alloca((length < 0x101 ? length : 1) * sizeof(id));
@@ -1563,7 +1564,7 @@ static id __createArray(id array, id object) {
     OCFIndex *stackIndexes = (OCFIndex *)alloca((length <= 0x1000 ? length : 1) * sizeof(OCFIndex));
     OCFIndex *indexBuffer = stackIndexes;
     if (length > 0x1000) {
-        indexBuffer = (OCFIndex *)malloc_type_malloc(length << 3, 0x100004000313F17ULL);
+        indexBuffer = (OCFIndex *)malloc_type_malloc(length * sizeof(OCFIndex), 0x100004000313F17ULL);
     }
     OCFSortIndexes(
         indexBuffer, (OCFIndex)length, options, ^OCFComparisonResult(OCFIndex first, OCFIndex second) {
@@ -1675,7 +1676,7 @@ static id __createArray(id array, id object) {
     if (length == 0) {
         return [ONSArray array];
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     size_t capacity = 0;
@@ -1748,7 +1749,7 @@ static id __createArray(id array, id object) {
     if (range.location < 0 || (intptr_t)length < 0 || count < location + length) {
         RAISE_RANGE_EXCEPTION("-[NSArray initWithArray:range:copyItems:]", location, length, count);
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     NSUInteger slots = length > 1 ? length : 1;
@@ -1828,7 +1829,7 @@ static id __createArray(id array, id object) {
             va_end(arguments);
             return result;
         }
-        if ((count >> 60) != 0) {
+        if ((OF_WORD_SHIFT(count, 60)) != 0) {
             raiseTemporaryBufferTooLarge(count);
         }
     } else {
@@ -1872,7 +1873,7 @@ static id __createArray(id array, id object) {
         );
     }
     NSUInteger count = [set count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -1941,7 +1942,7 @@ static id __createArray(id array, id object) {
     if (range.location < 0 || (intptr_t)length < 0 || count < location + length) {
         RAISE_RANGE_EXCEPTION("-[NSArray initWithOrderedSet:range:copyItems:]", location, length, count);
     }
-    if ((length >> 60) != 0) {
+    if ((OF_WORD_SHIFT(length, 60)) != 0) {
         raiseTemporaryBufferTooLarge(length);
     }
     NSUInteger slots = length > 1 ? length : 1;
@@ -2056,7 +2057,7 @@ static id __createArray(id array, id object) {
             count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         RAISE_LOGGED_EXCEPTION(
             ONSInvalidArgumentException,
             0x16,
@@ -2118,7 +2119,7 @@ static id __createArray(id array, id object) {
             [result autorelease];
             return result;
         }
-        if ((count >> 60) != 0) {
+        if ((OF_WORD_SHIFT(count, 60)) != 0) {
             raiseTemporaryBufferTooLarge(count);
         }
     } else {
@@ -2230,7 +2231,7 @@ static id __createArray(id array, id object) {
     arrayTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
     NSUInteger total = count + 1;
-    if ((total >> 60) != 0) {
+    if ((OF_WORD_SHIFT(total, 60)) != 0) {
         raiseTemporaryBufferTooLarge(total);
     }
     size_t capacity = 0;
@@ -2266,7 +2267,7 @@ static id __createArray(id array, id object) {
     }
     NSUInteger count = [self count];
     NSUInteger total = count + otherCount;
-    if ((total >> 60) != 0) {
+    if ((OF_WORD_SHIFT(total, 60)) != 0) {
         raiseTemporaryBufferTooLarge(total);
     }
     size_t capacity = 0;
@@ -2300,7 +2301,7 @@ static id __createArray(id array, id object) {
     }
     arrayTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -2352,7 +2353,7 @@ static id __createArray(id array, id object) {
     }
     arrayTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;
@@ -2401,7 +2402,7 @@ static id __createArray(id array, id object) {
     }
     arrayTSANRead(self, __builtin_return_address(0));
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferTooLarge(count);
     }
     NSUInteger slots = count > 1 ? count : 1;

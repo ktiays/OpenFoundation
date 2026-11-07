@@ -131,7 +131,7 @@ OCFBagCreateMutable(OCFAllocatorRef allocator, OCFIndex capacity, const OCFBagCa
 // (immutable)".
 OCFBagRef OCFBagCreateCopy(OCFAllocatorRef allocator, OCFBagRef theBag) {
     BasicHashRef ht;
-    if (((uintptr_t)theBag >> 63) != 0 || __CF_IS_OBJC(4, theBag) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)theBag, 63)) != 0 || __CF_IS_OBJC(4, theBag) != 0) {
         OCFIndex numValues = CFBasicHashGetCount((BasicHashRef)theBag);
         uintptr_t buffer[256];
         memset(buffer, 0, 512);

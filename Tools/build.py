@@ -14,7 +14,7 @@ import plistlib
 import shutil
 import subprocess
 import sys
-from common import (ROOT, PRODUCTS, SOURCE_SUFFIXES, build_directory, check_platform,
+from common import (ROOT, PRODUCTS, SOURCE_SUFFIXES, apple_labels, build_directory, check_platform,
                     defaults, output, run)
 
 
@@ -35,7 +35,7 @@ def lto_preserved(product, name):
     for path in sorted((ROOT / "Source" / module).rglob("*")):
         if path.suffix not in SOURCE_SUFFIXES | {".h"}:
             continue
-        text = path.read_text()
+        text = apple_labels(path.read_text())
         for match in LABEL.finditer(text):
             parts = re.findall(r'"([^"]*)"|OF_NAME_STRING\((\w+)\)', match.group(1))
             label = "".join(literal or name(identifier) for literal, identifier in parts)

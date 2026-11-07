@@ -4,6 +4,7 @@
 //
 
 #include "CoreFoundation/Base/OCFPlatform.h"
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Base/OCFUtilities.h"
 #include "CoreFoundation/Collections/OCFArray.h"
 #include "CoreFoundation/Objective-C/OCFNSObject.h"
@@ -434,7 +435,7 @@ void __CFTSDFinalize(void *table) {
 // iOS Device 24A446: inlined into its callers; unread.
 // Reading: Documentation/Reference/Research/RuntimePrerequisites.md.
 OCFTSDTable *__CFTSDGetTable(bool create) {
-    OCFTSDTable *table = pthread_getspecific(kOCFTSDKey);
+    OCFTSDTable *table = OF_PORT_ANSWER(staticKeyGetSpecific, pthread_getspecific(kOCFTSDKey), kOCFTSDKey);
     if (table == (OCFTSDTable *)0x1000) {
         return NULL;
     }

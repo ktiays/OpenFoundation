@@ -43,7 +43,7 @@
             (unsigned long)count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -692,7 +692,7 @@
             (unsigned long)count
         );
     }
-    if (count >> 61 != 0) {
+    if (OF_WORD_SHIFT(count, 61) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",

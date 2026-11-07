@@ -31,7 +31,7 @@ struct ScannerStringBuffer {
     unsigned short current;
 };
 
-_Static_assert(offsetof(struct ScannerStringBuffer, current) == 104, "Native scanner buffer current offset");
+OF_ABI_ASSERT(offsetof(struct ScannerStringBuffer, current) == 104, "Native scanner buffer current offset");
 
 // Native _NSCheckDecimalSeparator 0x1c05c177c, private external, missing capture.
 extern int _NSCheckDecimalSeparator(

@@ -35,7 +35,7 @@ extern struct mach_header __dso_handle;
 
 // The NSString class (Foundation's; its class reference, the GOT slot 0x22229c638, lies outside the image and
 // is bound by use, the receiver of +stringWithFormat:; confidence: medium).
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
 
 // Selectors this unit sends to objects of classes outside it (NSDictionary, NSMutableDictionary, NSArray and
 // NSString), declared for the message sends only; no protocol object is emitted.

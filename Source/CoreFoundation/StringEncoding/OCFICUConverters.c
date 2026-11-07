@@ -365,10 +365,10 @@ __CFStringEncodingConverterReleaseICUConverter(UConverter *converter, uint32_t f
                 }
                 if (!found) {
                     OCFIndex newCount = count + 10;
-                    size_t size = (size_t)newCount << 3;
+                    size_t size = (size_t)newCount * sizeof(void *);
                     converters = OCFAllocatorAllocateTyped(NULL, (OCFIndex)size, 0x2004093837f09ULL, 0);
                     bzero(converters, size);
-                    memcpy(converters, data->converters, (size_t)data->numSlots << 3);
+                    memcpy(converters, data->converters, (size_t)data->numSlots * sizeof(void *));
                     OCFAllocatorDeallocate(NULL, data->converters);
                     data->converters = converters;
                     slot = data->numSlots;

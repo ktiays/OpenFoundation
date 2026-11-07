@@ -94,7 +94,7 @@ typedef struct {
     uint32_t reserved;
 } ObjectRecord;
 
-_Static_assert(sizeof(ObjectRecord) == 32, "The native object record is 32 bytes.");
+OF_ABI_ASSERT(sizeof(ObjectRecord) == 32, "The native object record is 32 bytes.");
 
 // An observer record (56 bytes): list links, the observer (weak storage under kObserverWeak), the handler,
 // the context word, the generation of the token, the flags and the parent index (an object record, a name
@@ -111,7 +111,7 @@ typedef struct {
     uint32_t reserved;
 } ObserverRecord;
 
-_Static_assert(sizeof(ObserverRecord) == 56, "The native observer record is 56 bytes.");
+OF_ABI_ASSERT(sizeof(ObserverRecord) == 56, "The native observer record is 56 bytes.");
 
 // A record pool: the records, the number in use, the number allocated and the head of the free list.
 typedef struct {
@@ -157,11 +157,11 @@ struct __OCFXNotificationRegistrar {
     uint32_t reserved2;
 };
 
-_Static_assert(sizeof(struct __OCFXNotificationRegistrar) == 0xb0, "The native registrar is 176 bytes.");
-_Static_assert(
+OF_ABI_ASSERT(sizeof(struct __OCFXNotificationRegistrar) == 0xb0, "The native registrar is 176 bytes.");
+OF_ABI_ASSERT(
     __builtin_offsetof(struct __OCFXNotificationRegistrar, namePool) == 0x60, "The name pool is at 0x60."
 );
-_Static_assert(
+OF_ABI_ASSERT(
     __builtin_offsetof(struct __OCFXNotificationRegistrar, observerPool) == 0x90,
     "The observer pool is at 0x90."
 );
@@ -175,7 +175,7 @@ typedef struct {
     OCFTypeRef *overflow;
 } DisposalList;
 
-_Static_assert(sizeof(DisposalList) == 48, "The native disposal list is 48 bytes.");
+OF_ABI_ASSERT(sizeof(DisposalList) == 48, "The native disposal list is 48 bytes.");
 
 // Options: bit 0 sorts the found registrations by token, bit 1 compares names and objects with CFEqual and
 // pools object strings (the distributed and Darwin centers).

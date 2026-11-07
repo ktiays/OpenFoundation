@@ -338,13 +338,13 @@ OCFSetRef __CFPropertyListCreateTopLevelKeyPaths(OCFAllocatorRef allocator, OCFS
     uint64_t atLeastOne = (uint64_t)count > 1 ? (uint64_t)count : 1;
     uint64_t slots = (uint64_t)count < 0x101 ? atLeastOne : 1;
     const void *stackBuffer[slots];
-    bzero(stackBuffer, slots * 8 < 0x200 ? slots * 8 : 0x200);
+    bzero(stackBuffer, slots * sizeof(void *) < 0x200 ? slots * sizeof(void *) : 0x200);
     const void **values = stackBuffer;
     if ((uint64_t)count <= 0x100) {
-        bzero(values, atLeastOne * 8);
+        bzero(values, atLeastOne * sizeof(void *));
     } else {
         values = OCFAllocatorAllocateTyped(
-            kOCFAllocatorSystemDefault, (OCFIndex)(atLeastOne * 8), kTemporaryStorageTypeID, 0
+            kOCFAllocatorSystemDefault, (OCFIndex)(atLeastOne * sizeof(void *)), kTemporaryStorageTypeID, 0
         );
         if (values == NULL) {
             temporaryStorageCrash();
@@ -396,20 +396,20 @@ void __CFPropertyListCreateSplitKeypaths(
     uint64_t atLeastOne = (uint64_t)count > 1 ? (uint64_t)count : 1;
     uint64_t slots = (uint64_t)count < 0x101 ? atLeastOne : 1;
     const void *stackBuffer[slots];
-    bzero(stackBuffer, slots * 8 < 0x200 ? slots * 8 : 0x200);
+    bzero(stackBuffer, slots * sizeof(void *) < 0x200 ? slots * sizeof(void *) : 0x200);
     const void **keys = stackBuffer;
     OCFMutableSetRef these = NULL;
     OCFMutableSetRef next = NULL;
     if ((uint64_t)count >= 0x101) {
         keys = OCFAllocatorAllocateTyped(
-            kOCFAllocatorSystemDefault, (OCFIndex)(atLeastOne * 8), kTemporaryStorageTypeID, 0
+            kOCFAllocatorSystemDefault, (OCFIndex)(atLeastOne * sizeof(void *)), kTemporaryStorageTypeID, 0
         );
         if (keys == NULL) {
             temporaryStorageCrash();
         }
         OCFSetGetValues(currentKeys, keys);
     } else {
-        bzero(keys, atLeastOne * 8);
+        bzero(keys, atLeastOne * sizeof(void *));
         OCFSetGetValues(currentKeys, keys);
         if (count == 0) {
             goto store;
@@ -437,13 +437,16 @@ void __CFPropertyListCreateSplitKeypaths(
         }
         uint64_t remainderSlots = (uint64_t)length < 0x102 ? remaining : 1;
         const void *remainderStackBuffer[remainderSlots];
-        bzero(remainderStackBuffer, remainderSlots * 8 < 0x200 ? remainderSlots * 8 : 0x200);
+        bzero(
+            remainderStackBuffer,
+            remainderSlots * sizeof(void *) < 0x200 ? remainderSlots * sizeof(void *) : 0x200
+        );
         const void **remainder = remainderStackBuffer;
         if ((uint64_t)length <= 0x101) {
-            bzero(remainder, remaining * 8);
+            bzero(remainder, remaining * sizeof(void *));
         } else {
             remainder = OCFAllocatorAllocateTyped(
-                kOCFAllocatorSystemDefault, (OCFIndex)(remaining * 8), kTemporaryStorageTypeID, 0
+                kOCFAllocatorSystemDefault, (OCFIndex)(remaining * sizeof(void *)), kTemporaryStorageTypeID, 0
             );
             if (remainder == NULL) {
                 temporaryStorageCrash();
@@ -1376,7 +1379,7 @@ OCFSetRef _OCFPropertyListCopyTopLevelKeys(
         }
     } else {
         OCFIndex count = OCFDictionaryGetCount(plist);
-        const void **keys = malloc_type_malloc((size_t)count * 8, kTemporaryStorageTypeID);
+        const void **keys = malloc_type_malloc((size_t)count * sizeof(void *), kTemporaryStorageTypeID);
         if (keys == NULL) {
             if (outError != NULL) {
                 *outError =
@@ -1614,7 +1617,7 @@ OCFPropertyListRef OCFPropertyListCreateDeepCopy(
     if (!__CFPropertyListIsValidAux(propertyList, &context)) {
         return NULL;
     }
-    if (((uintptr_t)propertyList >> 63) != 0 &&
+    if ((OF_WORD_SHIFT((uintptr_t)propertyList, 63)) != 0 &&
         mutabilityOption != kOCFPropertyListMutableContainersAndLeaves) {
         return propertyList;
     }
@@ -1691,13 +1694,16 @@ OCFPropertyListRef OCFPropertyListCreateDeepCopy(
     uint64_t total = (uint64_t)count * 2;
     uint64_t slots = total < 0x101 ? total : 1;
     const void *stackBuffer[slots];
-    bzero(stackBuffer, slots * 8 < 0x200 ? slots * 8 : 0x200);
+    bzero(stackBuffer, slots * sizeof(void *) < 0x200 ? slots * sizeof(void *) : 0x200);
     const void **keys = stackBuffer;
     if (total <= 0x100) {
-        bzero(keys, (uint64_t)count * 16);
+        bzero(keys, (uint64_t)count * 2 * sizeof(void *));
     } else {
         keys = OCFAllocatorAllocateTyped(
-            kOCFAllocatorSystemDefault, (OCFIndex)((uint64_t)count * 16), kTemporaryStorageTypeID, 0
+            kOCFAllocatorSystemDefault,
+            (OCFIndex)((uint64_t)count * 2 * sizeof(void *)),
+            kTemporaryStorageTypeID,
+            0
         );
         if (keys == NULL) {
             temporaryStorageCrash();
@@ -1776,13 +1782,16 @@ OCFArrayRef _arrayDeepImmutableCopy(OCFAllocatorRef allocator, OCFArrayRef array
     }
     uint64_t slots = (uint64_t)count < 0x101 ? (uint64_t)count : 1;
     const void *stackBuffer[slots];
-    bzero(stackBuffer, slots * 8 < 0x200 ? slots * 8 : 0x200);
+    bzero(stackBuffer, slots * sizeof(void *) < 0x200 ? slots * sizeof(void *) : 0x200);
     const void **values = stackBuffer;
     if ((uint64_t)count <= 0x100) {
-        bzero(values, (uint64_t)count * 8);
+        bzero(values, (uint64_t)count * sizeof(void *));
     } else {
         values = OCFAllocatorAllocateTyped(
-            kOCFAllocatorSystemDefault, (OCFIndex)((uint64_t)count * 8), kTemporaryStorageTypeID, 0
+            kOCFAllocatorSystemDefault,
+            (OCFIndex)((uint64_t)count * sizeof(void *)),
+            kTemporaryStorageTypeID,
+            0
         );
         if (values == NULL) {
             temporaryStorageCrash();
@@ -1938,14 +1947,15 @@ static void _CFAppendXML0(OCFTypeRef object, uint32_t indentation, OCFMutableDat
             OCFDataAppendBytes(xmlString, (const UInt8 *)">\n", 2);
             uint64_t slots = count < 0x101 ? count : 1;
             const void *stackBuffer[slots];
-            bzero(stackBuffer, slots * 8 < 0x200 ? slots * 8 : 0x200);
+            bzero(stackBuffer, slots * sizeof(void *) < 0x200 ? slots * sizeof(void *) : 0x200);
             const void **keys = stackBuffer;
             OCFAllocatorRef allocator = kOCFAllocatorSystemDefault;
             if (count <= 0x100) {
-                bzero(keys, count * 8);
+                bzero(keys, count * sizeof(void *));
             } else {
-                keys =
-                    OCFAllocatorAllocateTyped(allocator, (OCFIndex)(count * 8), kTemporaryStorageTypeID, 0);
+                keys = OCFAllocatorAllocateTyped(
+                    allocator, (OCFIndex)(count * sizeof(void *)), kTemporaryStorageTypeID, 0
+                );
                 if (keys == NULL) {
                     temporaryStorageCrash();
                 }

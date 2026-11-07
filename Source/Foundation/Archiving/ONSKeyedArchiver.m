@@ -1345,7 +1345,7 @@ _compatEncodeValueOfObjCType(ONSKeyedArchiver *coder, int type, const void *addr
 // Native -[NSKeyedArchiver versionForClassName:], 0x1c055a9dc. Non-external.
 - (NSInteger)versionForClassName:(id)name {
     Class cls = ONSClassFromString(name);
-    return cls != Nil ? [(id)cls version] : INT64_MAX;
+    return cls != Nil ? [(id)cls version] : LONG_MAX;
 }
 
 // Native -[NSKeyedArchiver requiresSecureCoding], 0x1c055aa0c. Non-external.

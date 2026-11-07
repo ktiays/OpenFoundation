@@ -23,7 +23,7 @@ typedef struct {
     id array;
 } OrderedSetMStorage;
 
-_Static_assert(sizeof(OrderedSetMStorage) == 16, "The __NSOrderedSetM storage ivar is 16 bytes.");
+OF_ABI_ASSERT(sizeof(OrderedSetMStorage) == 16, "The __NSOrderedSetM storage ivar is 16 bytes.");
 
 #ifdef __OBJC__
 #import "CoreFoundation/Objective-C/OCFNSMutableOrderedSet.h"

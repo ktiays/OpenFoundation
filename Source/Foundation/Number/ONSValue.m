@@ -4,6 +4,7 @@
 //
 
 #import "Foundation/Number/ONSValue.h"
+#include "CoreFoundation/OFPortHooks.h"
 
 #import "Foundation/Archiving/ONSArchivingPrivate.h"
 #import "Foundation/Number/ONSPlaceholderNumber.h"
@@ -11,6 +12,7 @@
 #import "Foundation/String/ONSStringFromRange.h"
 #import "Foundation/Number/ONSUnrestoredInterfaces.h"
 
+#include "CoreFoundation/OFPortHooks.h"
 #include "CoreFoundation/Base/OCFUtilities.h"
 #include "CoreFoundation/Collections/OCFSet.h"
 #include "CoreFoundation/Number/OCFNumber.h"
@@ -63,18 +65,18 @@ extern const uint8_t objc_debug_tag60_permutations[8];
 extern uintptr_t objc_debug_taggedpointer_mask;
 
 // Class objects the unit loads directly (class references and GOT slots).
-extern char valueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSValue));
-extern char numberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char placeholderValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPlaceholderValue));
-extern char placeholderNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSPlaceholderNumber));
-extern char concreteValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSConcreteValue));
-extern char weakObjectValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSWeakObjectValue));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char exceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char mutableDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableData));
-extern char errorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char keyedArchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedArchiver));
-extern char keyedUnarchiverClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSKeyedUnarchiver));
+extern char valueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSValue));
+extern char numberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char placeholderValueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPlaceholderValue));
+extern char placeholderNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSPlaceholderNumber));
+extern char concreteValueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSConcreteValue));
+extern char weakObjectValueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSWeakObjectValue));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char exceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char mutableDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableData));
+extern char errorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char keyedArchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedArchiver));
+extern char keyedUnarchiverClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSKeyedUnarchiver));
 
 static BOOL matchTypeEncoding(const char *type1, const char *type2, NSUInteger size);
 static OCFHashCode cachedObjCTypeInfoHash(const void *value);
@@ -160,50 +162,58 @@ static __attribute__((always_inline)) inline id encodeTaggedNumber(uintptr_t poi
 // their integer range. The input register width remains S for float and D for double; no widening occurs.
 // They are instruction spellings within the native functions, not additional restored function boundaries.
 static __attribute__((always_inline)) inline int32_t floatToInt32(float value) {
+    OF_PORT_RETURN(floatToInt32, value);
     int32_t result;
-    __asm__ volatile("fcvtzs %w0, %s1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzs %w0, %s1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline uint32_t floatToUInt32(float value) {
+    OF_PORT_RETURN(floatToUInt32, value);
     uint32_t result;
-    __asm__ volatile("fcvtzu %w0, %s1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzu %w0, %s1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline int64_t floatToInt64(float value) {
+    OF_PORT_RETURN(floatToInt64, value);
     int64_t result;
-    __asm__ volatile("fcvtzs %x0, %s1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzs %x0, %s1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline uint64_t floatToUInt64(float value) {
+    OF_PORT_RETURN(floatToUInt64, value);
     uint64_t result;
-    __asm__ volatile("fcvtzu %x0, %s1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzu %x0, %s1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline int32_t doubleToInt32(double value) {
+    OF_PORT_RETURN(doubleToInt32, value);
     int32_t result;
-    __asm__ volatile("fcvtzs %w0, %d1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzs %w0, %d1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline uint32_t doubleToUInt32(double value) {
+    OF_PORT_RETURN(doubleToUInt32, value);
     uint32_t result;
-    __asm__ volatile("fcvtzu %w0, %d1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzu %w0, %d1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline int64_t doubleToInt64(double value) {
+    OF_PORT_RETURN(doubleToInt64, value);
     int64_t result;
-    __asm__ volatile("fcvtzs %x0, %d1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzs %x0, %d1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
 static __attribute__((always_inline)) inline uint64_t doubleToUInt64(double value) {
+    OF_PORT_RETURN(doubleToUInt64, value);
     uint64_t result;
-    __asm__ volatile("fcvtzu %x0, %d1" : "=r"(result) : "w"(value) : "memory");
+    OF_PORT_NATIVE(__asm__ volatile("fcvtzu %x0, %d1" : "=r"(result) : "w"(value) : "memory"));
     return result;
 }
 
@@ -339,7 +349,7 @@ static id _NSNewValue(const void *value, const char *type, struct _NSZone *zone)
         if (set == NULL) {
             os_unfair_lock_unlock(&typeInfoLock);
             OCFSetCallBacks callBacks;
-            memset(&callBacks, 0, 32);
+            memset(&callBacks, 0, offsetof(OCFSetCallBacks, equal));
             callBacks.equal = cachedObjCTypeInfoIsEqual;
             callBacks.hash = cachedObjCTypeInfoHash;
             set = OCFSetCreateMutable(kOCFAllocatorSystemDefault, 0, &callBacks);
@@ -1402,7 +1412,8 @@ static id newDecodedValue(id coder, struct _NSZone *zone) {
 // Native +[NSNumber numberWithUnsignedInteger:], 0x1c05fa8d0. Non-external. Tagged only for values below
 // 2^55; tag bits 0x800000000000001B.
 + (id)numberWithUnsignedInteger:(NSUInteger)value {
-    if ((value >> 55) != 0 || self != (Class)numberClass || (_NSNumberTaggedPointersDisabled & 1) != 0) {
+    if ((OF_WORD_SHIFT(value, 55)) != 0 || self != (Class)numberClass ||
+        (_NSNumberTaggedPointersDisabled & 1) != 0) {
         return objc_autorelease([objc_allocWithZone((Class)self) initWithUnsignedInteger:value]);
     }
     return encodeTaggedNumber(((uintptr_t)value << 7) | UINT64_C(0x800000000000001B));
@@ -1419,7 +1430,8 @@ static id newDecodedValue(id coder, struct _NSZone *zone) {
 
 // Native +[NSNumber numberWithUnsignedLong:], 0x1c05faa10. Non-external. As +numberWithUnsignedInteger:.
 + (id)numberWithUnsignedLong:(unsigned long)value {
-    if ((value >> 55) != 0 || self != (Class)numberClass || (_NSNumberTaggedPointersDisabled & 1) != 0) {
+    if ((OF_WORD_SHIFT(value, 55)) != 0 || self != (Class)numberClass ||
+        (_NSNumberTaggedPointersDisabled & 1) != 0) {
         return objc_autorelease([objc_allocWithZone((Class)self) initWithUnsignedLong:value]);
     }
     return encodeTaggedNumber(((uintptr_t)value << 7) | UINT64_C(0x800000000000001B));
@@ -2031,7 +2043,7 @@ static id newDecodedValue(id coder, struct _NSZone *zone) {
         case 'L':
         case 'S': {
             NSUInteger unsignedInteger = [self unsignedIntegerValue];
-            if ((unsignedInteger >> 63) == 0) {
+            if ((OF_WORD_SHIFT(unsignedInteger, 63)) == 0) {
                 return unsignedInteger * 2654435761U;
             }
             value = (double)unsignedInteger;

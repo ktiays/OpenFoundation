@@ -145,7 +145,7 @@ void __NSDictionaryEnumerate(
         });
     } else {
         NSUInteger words = count * 2;
-        if (((count >> 59) & 0xF) != 0) {
+        if (((OF_WORD_SHIFT(count, 59)) & 0xF) != 0) {
             OCFStringRef reason = OCFStringCreateWithFormat(
                 NULL,
                 NULL,

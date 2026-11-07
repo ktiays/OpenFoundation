@@ -1203,7 +1203,7 @@ OCFRunLoopRunInMode(OCFRunLoopMode mode, OCFTimeInterval seconds, Boolean return
 // timer's lock, the next fire date (0x68) of a valid timer (info bit 3, acquire load), else 0.0.
 OCFAbsoluteTime OCFRunLoopTimerGetNextFireDate(OCFRunLoopTimerRef timer) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         return ((OCFAbsoluteTime (*)(id, SEL))objc_msgSend)((id)timer, sel_getUid("_cffireTime"));
     }
     pthread_mutex_lock(&timer->lock);
@@ -2567,7 +2567,7 @@ void OCFRunLoopTimerSetNextFireDate(OCFRunLoopTimerRef timer, OCFAbsoluteTime fi
     } else {
         OCFIndex cnt = OCFSetGetCount(timer->rlModes);
         const void *modes[cnt > 0 ? cnt : 1];
-        bzero(modes, (size_t)(8 * cnt) < 512 ? (size_t)(8 * cnt) : 512);
+        bzero(modes, (size_t)(sizeof(void *) * cnt) < 512 ? (size_t)(sizeof(void *) * cnt) : 512);
         OCFSetGetValues(timer->rlModes, modes);
         for (OCFIndex idx = 0; idx < cnt; idx++) {
             OCFRetain(modes[idx]);
@@ -2637,7 +2637,7 @@ void OCFRunLoopTimerSetNextFireDate(OCFRunLoopTimerRef timer, OCFAbsoluteTime fi
 // without the lock.
 OCFTimeInterval OCFRunLoopTimerGetInterval(OCFRunLoopTimerRef timer) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         return ((OCFTimeInterval (*)(id, SEL))objc_msgSend)((id)timer, sel_getUid("timeInterval"));
     }
     return timer->interval;
@@ -2650,7 +2650,7 @@ OCFTimeInterval OCFRunLoopTimerGetInterval(OCFRunLoopTimerRef timer) {
 // with the timer unlocked; the release callback then runs on the detached information.
 void OCFRunLoopTimerInvalidate(OCFRunLoopTimerRef timer) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         ((void (*)(id, SEL))objc_msgSend)((id)timer, sel_getUid("invalidate"));
         return;
     }
@@ -2666,7 +2666,7 @@ void OCFRunLoopTimerInvalidate(OCFRunLoopTimerRef timer) {
         if (rl != NULL) {
             OCFIndex cnt = OCFSetGetCount(timer->rlModes);
             const void *modes[cnt > 0 ? cnt : 1];
-            bzero(modes, (size_t)(8 * cnt) < 512 ? (size_t)(8 * cnt) : 512);
+            bzero(modes, (size_t)(sizeof(void *) * cnt) < 512 ? (size_t)(sizeof(void *) * cnt) : 512);
             OCFSetGetValues(timer->rlModes, modes);
             for (OCFIndex idx = 0; idx < cnt; idx++) {
                 OCFRetain(modes[idx]);
@@ -2699,7 +2699,7 @@ void OCFRunLoopTimerInvalidate(OCFRunLoopTimerRef timer) {
 // or bridged object is sent -isValid; otherwise info bit 3 (acquire load).
 Boolean OCFRunLoopTimerIsValid(OCFRunLoopTimerRef timer) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         return ((Boolean (*)(id, SEL))objc_msgSend)((id)timer, sel_getUid("isValid"));
     }
     return (loadInfo(timer) >> 3) & 1;
@@ -2718,7 +2718,7 @@ void OCFRunLoopTimerGetContext(OCFRunLoopTimerRef timer, RunLoopTimerContext *co
 // (0x78), without the lock.
 OCFTimeInterval OCFRunLoopTimerGetTolerance(OCFRunLoopTimerRef timer) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         return ((OCFTimeInterval (*)(id, SEL))objc_msgSend)((id)timer, sel_getUid("tolerance"));
     }
     return timer->tolerance;
@@ -2731,7 +2731,7 @@ OCFTimeInterval OCFRunLoopTimerGetTolerance(OCFRunLoopTimerRef timer) {
 // one is kept). The result is stored at 0x78.
 void OCFRunLoopTimerSetTolerance(OCFRunLoopTimerRef timer, OCFTimeInterval tolerance) {
     checkForFork();
-    if (((uintptr_t)timer >> 63) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
+    if ((OF_WORD_SHIFT((uintptr_t)timer, 63)) != 0 || __CF_IS_OBJC(kRunLoopTimerTypeID, timer) != 0) {
         ((void (*)(id, SEL, OCFTimeInterval))objc_msgSend)((id)timer, sel_getUid("setTolerance:"), tolerance);
         return;
     }
@@ -2965,7 +2965,7 @@ static void __CFRunLoopDoObservers(OCFRunLoopRef rl, RunLoopMode *rlm, OCFRunLoo
             void *info = rlo->context.info;
             void *tracedCallout = (void *)callout;
             if (callout == __CFRunLoopObserverWithHandlerPerform) {
-                tracedCallout = *(void **)((uint8_t *)info + 16);
+                tracedCallout = *(void **)((uint8_t *)info + sizeof(void *) + 2 * sizeof(int));
             }
             OCFIndex order = rlo->order;
             uint64_t traceBits = loadInfo(rlo);
@@ -3417,7 +3417,7 @@ static void __CFRunLoopDoBlocks(OCFRunLoopRef rl, RunLoopMode *rlm, uint32_t kin
         void (^block)(void) = curr->block;
         OCFRelease(curr->mode);
         free(curr);
-        void *invoke = *(void **)((uint8_t *)block + 16);
+        void *invoke = *(void **)((uint8_t *)block + sizeof(void *) + 2 * sizeof(int));
         void *pool = rl->perCalloutARP ? _OCFAutoreleasePoolPush() : NULL;
         kdebug_trace(0x211200E9, idx, 0, kind, (uintptr_t)invoke);
         __CFRUNLOOP_IS_CALLING_OUT_TO_A_BLOCK__(block);
@@ -3787,7 +3787,7 @@ static void timerDebugInfo(
     });
     void *callout = (void *)rlt->callout;
     if (callout == (void *)_runLoopTimerWithBlockContext) {
-        callout = *(void **)((uint8_t *)info + 16);
+        callout = *(void **)((uint8_t *)info + sizeof(void *) + 2 * sizeof(int));
     }
     if (callout == (void *)__CFFireTimer) {
         __CFDescribeTimer(rlt, info, libraryName, 2048, functionName, 2048, functionAddress);
@@ -3943,7 +3943,7 @@ static Boolean __CFRunLoopDoTimer(OCFRunLoopRef rl, RunLoopMode *rlm, OCFRunLoop
     OCFRetain(rlTimer);
     OCFIndex cnt = OCFSetGetCount(rlt->rlModes);
     const void *modes[cnt > 0 ? cnt : 1];
-    bzero(modes, (size_t)(8 * cnt) < 512 ? (size_t)(8 * cnt) : 512);
+    bzero(modes, (size_t)(sizeof(void *) * cnt) < 512 ? (size_t)(sizeof(void *) * cnt) : 512);
     OCFSetGetValues(rlt->rlModes, modes);
     if (cnt < 1) {
         pthread_mutex_unlock(&rlt->lock);

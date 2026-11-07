@@ -20,8 +20,8 @@
 static dispatch_once_t foundationBundleOnce;
 static id foundationBundle;
 extern id objc_opt_self(id object);
-extern char bundleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSBundle));
-extern char stringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
+extern char bundleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSBundle));
+extern char stringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
 
 @protocol FoundationBundleMessages
 + (id)bundleForClass:(Class)cls;

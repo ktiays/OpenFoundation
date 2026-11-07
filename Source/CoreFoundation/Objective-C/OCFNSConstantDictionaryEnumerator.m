@@ -16,12 +16,13 @@
 // The offsets of NSConstantDictionary's _count, _keys and _objects ivars (their external _OBJC_IVAR_$
 // symbols, read with LDRSW), which -nextObject reads; the ivars are not visible outside that class's
 // interface, so the offset symbols are read as natively.
+extern const int32_t constantEnumeratorCountOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                             OF_NAME_STRING(ONSConstantDictionary) "._count");
+extern const int32_t constantEnumeratorKeysOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                                            OF_NAME_STRING(ONSConstantDictionary) "._keys");
 extern const int32_t
-    constantEnumeratorCountOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConstantDictionary) "._count");
-extern const int32_t
-    constantEnumeratorKeysOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConstantDictionary) "._keys");
-extern const int32_t
-    constantEnumeratorObjectsOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(ONSConstantDictionary) "._objects");
+    constantEnumeratorObjectsOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                              OF_NAME_STRING(ONSConstantDictionary) "._objects");
 
 @implementation __ONSConstantDictionaryEnumerator
 

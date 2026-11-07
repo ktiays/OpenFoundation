@@ -59,7 +59,7 @@ dispatch_queue_attr_make_with_overcommit(dispatch_queue_attr_t attr, bool overco
 // imports it; declared under a local name bound to the libxpc symbol.
 extern xpc_connection_t createMachServiceConnection(
     const char *name, dispatch_queue_t targetQueue, uint64_t flags
-) __asm("_xpc_connection_create_mach_service");
+) __asm(OF_SYMBOL("xpc_connection_create_mach_service"));
 
 // The os_log format literals, placed in __TEXT,__oslogstring like the compiler-generated native ones.
 #define OSLOG_STRING __attribute__((section("__TEXT,__oslogstring,cstring_literals")))
@@ -76,7 +76,7 @@ OSLOG_STRING static const char postRateFormat[] =
     "Detected potentially harmful notification post rate of %g notifications per second";
 
 // The notification class of this image (natively __CFNotification; not restored on this branch).
-extern char notificationClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__OCFNotification));
+extern char notificationClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__OCFNotification));
 
 // The center instance (48 bytes): the registrar, the XPC connection and its queue (distributed centers) and
 // the restore state. The info word's bit 0 marks a Darwin center and bit 1 a distributed one.
@@ -95,7 +95,7 @@ struct __OCFNotificationCenter {
     RestoreState *restoreState;
 };
 
-_Static_assert(sizeof(struct __OCFNotificationCenter) == 0x30, "The native center is 48 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFNotificationCenter) == 0x30, "The native center is 48 bytes.");
 
 enum {
     kCenterDarwin = 1,
@@ -808,7 +808,7 @@ void _OCFNotificationCenterInitializeDependentNotificationIfNecessary(OCFStringR
                 OCFMutableSetRef set = _dependentNotifications;
                 if (set == NULL) {
                     OCFSetCallBacks callBacks;
-                    memset(&callBacks, 0, 32);
+                    memset(&callBacks, 0, offsetof(OCFSetCallBacks, equal));
                     callBacks.equal = _dependentNotificationsEqual;
                     callBacks.hash = _dependentNotificationHash;
                     set = OCFSetCreateMutable(kOCFAllocatorSystemDefault, 0, &callBacks);
@@ -821,7 +821,7 @@ void _OCFNotificationCenterInitializeDependentNotificationIfNecessary(OCFStringR
         _unprocessedDependentNotificationLists[slot] = NULL;
     }
     DependentNotification key;
-    memset((char *)&key + 8, 0, 48);
+    memset((char *)&key + sizeof(key.name), 0, sizeof(key) - sizeof(key.name));
     key.name = &name;
     const DependentNotification *record = OCFSetGetValue(_dependentNotifications, &key);
     os_unfair_lock_unlock(&_dependentNotificationLock);

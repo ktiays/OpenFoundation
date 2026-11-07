@@ -22,10 +22,11 @@
 // iOS Device 24A446 remains unread. Reading: Foundation/Number/Reading.md, round 2.
 // The Objective-C units are grouped by the adjacent native decimal-number methods. Manual reference counting.
 
-extern char decimalBaseClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumber));
-extern char decimalPlaceholderClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumberPlaceholder));
-extern char staticDecimalClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(_ONSStatic_NSDecimalNumber));
-extern char decimalScannerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSScanner));
+extern char decimalBaseClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDecimalNumber));
+extern char decimalPlaceholderClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                OF_NAME_STRING(ONSDecimalNumberPlaceholder));
+extern char staticDecimalClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(_ONSStatic_NSDecimalNumber));
+extern char decimalScannerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSScanner));
 
 // Native static records at 0x2227d0ec0, 0x2227d0ee0, and 0x2227d0f30, __DATA_CONST,__const.
 // The payload starts at offset 8 and the mantissa limbs at offset 12.

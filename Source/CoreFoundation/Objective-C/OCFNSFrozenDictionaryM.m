@@ -31,9 +31,8 @@
 extern id objc_retain(id object);
 
 // Class symbols allocated directly (class reference off_2227CE440 and ___SCR___NSDictionaryM).
-extern char frozenFastEnumerationEnumeratorClass[] __asm(
-    "_OBJC_CLASS_$_" OF_NAME_STRING(__ONSFastEnumerationEnumerator)
-);
+extern char frozenFastEnumerationEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                             OF_NAME_STRING(__ONSFastEnumerationEnumerator));
 
 // The deleted marker as an object pointer. frozenDeletedMarker is a local descriptive name.
 static inline id frozenDeletedMarker(void) {
@@ -122,7 +121,7 @@ static inline NSUInteger mdict_countByEnumeratingWithStateObjectsCount(
 // carry "count (%lu) of objects array is ridiculous" (os_log pack buffer 0x16). At most min(count, entries)
 // live entries are copied in slot order, the key before the object.
 - (void)getObjects:(id *)objects andKeys:(id *)keys count:(NSUInteger)count {
-    if (objects != NULL && (count >> 61) != 0) {
+    if (objects != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -131,7 +130,7 @@ static inline NSUInteger mdict_countByEnumeratingWithStateObjectsCount(
             count
         );
     }
-    if (keys != NULL && (count >> 61) != 0) {
+    if (keys != NULL && (OF_WORD_SHIFT(count, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,
@@ -237,7 +236,7 @@ static inline NSUInteger mdict_countByEnumeratingWithStateObjectsCount(
             length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         DICTIONARY_RAISE_WITH_LOG_PACK(
             ONSInvalidArgumentException,
             0x16,

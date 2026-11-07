@@ -35,14 +35,14 @@ extern void objc_release(id object);
 extern id objc_autorelease(id object);
 extern Class objc_opt_class(id object);
 
-extern char regexStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char regexMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char regexCharacterSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSCharacterSet));
-extern char regexErrorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSError));
-extern char regexExceptionClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSException));
-extern char regexDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char regexMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char regexValueClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSValue));
+extern char regexStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char regexMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char regexCharacterSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSCharacterSet));
+extern char regexErrorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSError));
+extern char regexExceptionClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSException));
+extern char regexDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char regexMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char regexValueClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSValue));
 
 // libicucore (supplied; the SDK installs no ICU headers). URegularExpression is opaque; UParseError is ICU's
 // 72-byte parse error (line, offset, 16 characters of pre- and post-context).
@@ -79,7 +79,7 @@ extern int64_t uregex_start64(URegularExpression *regex, int32_t group, int32_t 
 extern int64_t uregex_end64(URegularExpression *regex, int32_t group, int32_t *status);
 extern int8_t uregex_hitEnd(URegularExpression *regex, int32_t *status);
 extern int8_t uregex_requireEnd(URegularExpression *regex, int32_t *status);
-extern void utext_close(ProviderUText *text);
+extern ProviderUText *utext_close(ProviderUText *text);
 
 // The messages the unit sends to objects of other classes, declared for the sends only.
 @protocol RegularExpressionMessages
@@ -121,7 +121,7 @@ extern void utext_close(ProviderUText *text);
 @end
 
 // NSNotFound.
-static const NSUInteger kNotFound = 0x7FFFFFFFFFFFFFFF;
+static const NSUInteger kNotFound = LONG_MAX;
 
 // The context the enumeration hands its ICU callbacks: the block, the anchored limit (the end of the previous
 // match, or NSNotFound), and two flags set by the callbacks: the block asked to stop, and a find passed the

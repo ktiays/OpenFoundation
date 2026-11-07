@@ -101,10 +101,10 @@ id const _ONSAssumedFallbackInflectionAttributeName = (id)&assumedFallbackInflec
 // Native _NSInflectionObserver, 0x22e6fcb60. Non-external zero-fill storage. Setter remains unread.
 id inflectionObserver = nil;
 
-extern char ruleMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char ruleMorphologyClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMorphology));
-extern char
-    inflectionRuleExplicitPublicClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSInflectionRuleExplicit));
+extern char ruleMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char ruleMorphologyClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMorphology));
+extern char inflectionRuleExplicitPublicClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                          OF_NAME_STRING(ONSInflectionRuleExplicit));
 
 @implementation ONSInflectionRule
 

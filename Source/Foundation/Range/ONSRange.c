@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-_Static_assert(sizeof(ONSUInteger) == 8, "The restored unsigned range field must be 64 bits.");
-_Static_assert(sizeof(ONSRange) == 16, "The restored range must occupy two 64-bit fields.");
-_Static_assert(_Alignof(ONSRange) == 8, "The restored range must have 64-bit field alignment.");
+OF_ABI_ASSERT(sizeof(ONSUInteger) == 8, "The restored unsigned range field must be 64 bits.");
+OF_ABI_ASSERT(sizeof(ONSRange) == 16, "The restored range must occupy two 64-bit fields.");
+OF_ABI_ASSERT(_Alignof(ONSRange) == 8, "The restored range must have 64-bit field alignment.");
 _Static_assert(offsetof(ONSRange, location) == 0, "The restored range location must precede length.");
-_Static_assert(offsetof(ONSRange, length) == 8, "The restored range length must be the second field.");
+OF_ABI_ASSERT(offsetof(ONSRange, length) == 8, "The restored range length must be the second field.");
 
 // Native: NSUnionRange, iOS Simulator 27.0 (24A434), arm64, 0x1c05bd644.
 // Foundation UUID: 49FCDA5F-A93E-3259-857C-FC75AC2C7B03. Confidence: verified.

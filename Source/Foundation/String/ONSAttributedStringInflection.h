@@ -77,8 +77,9 @@ OF_EXTERN void _NSInflect(
 // pass the global block at 0x22281c978 to dispatch_once, then load the log at 0x22e776208. These common
 // variables are private externals.
 extern __attribute__((visibility("hidden")))
-dispatch_once_t inflectionLogOnceToken __asm("__NSInflectionLog.onceToken");
-extern __attribute__((visibility("hidden"))) os_log_t inflectionLogObject __asm("__NSInflectionLog.log");
+dispatch_once_t inflectionLogOnceToken __asm(OF_SYMBOL("_NSInflectionLog.onceToken"));
+extern __attribute__((visibility("hidden")))
+os_log_t inflectionLogObject __asm(OF_SYMBOL("_NSInflectionLog.log"));
 OF_EXTERN const uint8_t inflectionLogGlobalBlock[];
 
 static inline os_log_t _NSInflectionLog(void) {
@@ -129,4 +130,4 @@ static inline os_log_t _NSInflectionLog(void) {
 #endif
 
 // Native _NSInflectionObserver, 0x22e6fcb60, non-external; unread setter outside the captured family.
-extern __attribute__((visibility("hidden"))) id inflectionObserver __asm("__NSInflectionObserver");
+extern __attribute__((visibility("hidden"))) id inflectionObserver __asm(OF_SYMBOL("_NSInflectionObserver"));

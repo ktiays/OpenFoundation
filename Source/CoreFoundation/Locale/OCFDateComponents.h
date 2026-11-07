@@ -42,7 +42,7 @@ struct __OCFDateComponents {
     OCFIndex dayOfYear;         // 0xa8, 0x10000
 };
 
-_Static_assert(sizeof(struct __OCFDateComponents) == 0xb0, "A CFDateComponents is 176 bytes.");
+OF_ABI_ASSERT(sizeof(struct __OCFDateComponents) == 0xb0, "A CFDateComponents is 176 bytes.");
 
 // Native CFDateComponentsCreate (0x1c0230128), CFDateComponentsCreateCopy (0x1c0230174),
 // CFDateComponentsCopyCalendar (0x1c0230244), CFDateComponentsSetCalendar (0x1c0230264),

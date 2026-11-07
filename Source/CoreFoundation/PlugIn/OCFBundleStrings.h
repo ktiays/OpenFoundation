@@ -34,7 +34,7 @@ typedef struct {
     uint8_t _padding69[3];        // +69
 } StringsSources;
 
-_Static_assert(sizeof(StringsSources) == 72, "The strings sources are 72 bytes.");
+OF_ABI_ASSERT(sizeof(StringsSources) == 72, "The strings sources are 72 bytes.");
 
 // Public interfaces (SDK CFBundle.h, spelled OCF).
 OF_EXPORT OCFDataRef _OCFBundleGetMappedStringsFile(OCFIndex index);

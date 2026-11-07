@@ -15,7 +15,7 @@
 // assembly in Local/Evidence/cf-core/iphone-simulator-corpus-delta10.json.
 
 // The __NSEnumerator0 class symbol, the singleton's isa.
-extern char enumerator0Class[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSEnumerator0));
+extern char enumerator0Class[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSEnumerator0));
 
 // Native __NSEnumerator0__struct, 0x2227a8428 (__DATA_CONST,__const, 16 bytes). Non-external: the empty
 // enumerator singleton, an object whose isa is __NSEnumerator0, then a zero word.

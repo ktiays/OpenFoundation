@@ -24,14 +24,14 @@
 // Uniqued shared-cache GOT bindings (medium): NSArray 0x22227fa90, NSData 0x22227fab8,
 // NSDate 0x22227fac0, NSDictionary 0x22227fad0, NSException 0x22227fae0, NSSet 0x22227fb68,
 // and NSInvalidArgumentException 0x22227f500.
-extern char localizedStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSLocalizedString));
-extern char localizedMutableStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableString));
-extern char localizedDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char localizedArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char localizedNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSNumber));
-extern char localizedBaseStringClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSString));
-extern char localizedDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
-extern char localizedDataClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSData));
+extern char localizedStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSLocalizedString));
+extern char localizedMutableStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableString));
+extern char localizedDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char localizedArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char localizedNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSNumber));
+extern char localizedBaseStringClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSString));
+extern char localizedDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
+extern char localizedDataClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSData));
 
 @implementation __ONSLocalizedString
 

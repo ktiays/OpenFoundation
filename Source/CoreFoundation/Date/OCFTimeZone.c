@@ -24,8 +24,8 @@
 
 // The classes the handler messages, through the class references 0x2227ce338 (NSLocale) and 0x2227ce3d8
 // (NSTimeZone).
-extern char timeZoneLocaleClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLocale));
-extern char timeZoneClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSTimeZone));
+extern char timeZoneLocaleClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLocale));
+extern char timeZoneClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSTimeZone));
 
 // Native kCFTimeZoneSystemTimeZoneDidChangeNotification, 0x2227a87e0 (__DATA_CONST,__const). External. A
 // constant string of its own name (0x2227b94a0), the name __systemTimeZoneChangedNotification posts. Reading:
@@ -56,7 +56,7 @@ static void _systemTimeZoneChangedNotification(void) {
 
 // The class whose date the function builds (NSDate, an Objective-C class of this image; class reference
 // 0x2227ce2d0).
-extern char timeZoneDateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
+extern char timeZoneDateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
 
 // Native CFTimeZoneGetSecondsFromGMT, 0x1c02ad220. External.
 // Inside an autorelease pool: +[NSDate dateWithTimeIntervalSinceReferenceDate:at], then

@@ -2548,7 +2548,7 @@ bool __OCFBinaryPlistGetTopLevelInfo(
         return false;
     }
     uintptr_t base = (uintptr_t)databytes;
-    if (base > UINT64_C(0xfffffffffffffff6)) {
+    if (base > (UINTPTR_MAX - 9)) {
         return false;
     }
     if (offsetIntSize <= 7 && (offsetTableOffset >> (8 * offsetIntSize)) != 0) {

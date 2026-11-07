@@ -72,7 +72,7 @@ extern void os_unfair_lock_lock_with_options(os_unfair_lock_t lock, uint32_t opt
 // The receiver of +callStackReturnAddresses in __CFErrorSetCallStackReturnAddresses.cold.1 is the class
 // reference at 0x22229C678, outside the extracted image; NSThread, the class answering that class message,
 // is the binding (confidence: medium).
-extern char callStackClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSThread));
+extern char callStackClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSThread));
 
 // The key of the call-stack associated object ("CFErrorCallStacks", one C string; the key is its address).
 static const char callStacksKey[] = "CFErrorCallStacks";
@@ -99,7 +99,7 @@ static const void *_CFErrorCocoaCallBack(OCFErrorRef err, OCFStringRef key);
 // Every accessor of this unit tests for a tagged pointer (bit 63) first and asks __CF_IS_OBJC(27, err) only
 // for an untagged one, once per access.
 static inline bool errorIsObjC(OCFTypeRef err) {
-    return ((uintptr_t)err >> 63) != 0 || __CF_IS_OBJC(kErrorTypeID, err) != 0;
+    return (OF_WORD_SHIFT((uintptr_t)err, 63)) != 0 || __CF_IS_OBJC(kErrorTypeID, err) != 0;
 }
 
 static inline OCFIndex errorCode(OCFErrorRef err) {

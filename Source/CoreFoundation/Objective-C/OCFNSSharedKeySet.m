@@ -32,11 +32,11 @@
 // Class symbols sent to directly (class references off_2227CE3B8, off_2227CE2A0, off_2227CE360, and
 // _OBJC_CLASS_$___NSSKGraph addressed directly); NSException is dictionaryExceptionClass
 // (Objective-C/OCFNSDictionary.h).
-extern char sharedKeySetSetClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSSet));
-extern char sharedKeySetArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSArray));
-extern char sharedKeySetMutableArrayClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSMutableArray));
-extern char sharedKeySetDictionaryClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDictionary));
-extern char sharedKeySetGraphClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSKGraph));
+extern char sharedKeySetSetClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSSet));
+extern char sharedKeySetArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSArray));
+extern char sharedKeySetMutableArrayClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSMutableArray));
+extern char sharedKeySetDictionaryClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDictionary));
+extern char sharedKeySetGraphClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSKGraph));
 
 // Selectors this unit sends that no included header declares (the coders', the collections' and the
 // strings'), declared for the message sends only; the protocol is never adopted and no protocol object is
@@ -199,7 +199,7 @@ static id __archiveIsCorrupt(id reason);
         );
     } else {
         NSUInteger count = [keys count];
-        if ((count >> 60) != 0) {
+        if ((OF_WORD_SHIFT(count, 60)) != 0) {
             raiseTemporaryBufferOverflow(count);
         }
         NSUInteger allocationCount = count > 1 ? count : 1;
@@ -257,7 +257,7 @@ static id __archiveIsCorrupt(id reason);
         _numKey = 0;
         return self;
     }
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferOverflow(count);
     }
     id uniqueStack[count < 0x101 ? count : 1];
@@ -851,7 +851,7 @@ static id __archiveIsCorrupt(id reason) {
         return [(Class)sharedKeySetArrayClass array];
     }
     NSUInteger count = [self count];
-    if ((count >> 60) != 0) {
+    if ((OF_WORD_SHIFT(count, 60)) != 0) {
         raiseTemporaryBufferOverflow(count);
     }
     NSUInteger allocationCount = count > 1 ? count : 1;
@@ -894,7 +894,7 @@ static id __archiveIsCorrupt(id reason) {
 // 32-bit running count); otherwise NSNotFound.
 - (NSUInteger)indexForKey:(id)key {
     if (_numKey == 0) {
-        return 0x7FFFFFFFFFFFFFFF;
+        return LONG_MAX;
     }
     uint64_t hash = [key hash];
     uint32_t offset = 0;
@@ -961,14 +961,14 @@ static id __archiveIsCorrupt(id reason) {
         offset = keyCount + offset;
         keySet = keySet->_subSharedKeySet;
     } while (keySet != nil);
-    return 0x7FFFFFFFFFFFFFFF;
+    return LONG_MAX;
 }
 
 // Native -[NSSharedKeySet keyAtIndex:], 0x1c02da3b4. Non-external. NSNotFound, an empty receiver (_numKey is
 // read first) or a nil receiver answer nil; otherwise the index walks the chain of key sets, each consuming
 // its _numKey keys, and nil past the last.
 - (id)keyAtIndex:(NSUInteger)index {
-    if (index == 0x7FFFFFFFFFFFFFFF || _numKey == 0 || self == nil) {
+    if (index == LONG_MAX || _numKey == 0 || self == nil) {
         return nil;
     }
     ONSSharedKeySet *keySet = self;
@@ -1044,7 +1044,7 @@ static id __archiveIsCorrupt(id reason) {
     NSUInteger enumerated = 0;
     for (id key in selfKeys) {
         enumerated += 1;
-        if ([other indexForKey:key] == 0x7FFFFFFFFFFFFFFF) {
+        if ([other indexForKey:key] == LONG_MAX) {
             return NO;
         }
     }
@@ -1054,7 +1054,7 @@ static id __archiveIsCorrupt(id reason) {
     enumerated = 0;
     for (id key in otherKeys) {
         enumerated += 1;
-        if ([self indexForKey:key] == 0x7FFFFFFFFFFFFFFF) {
+        if ([self indexForKey:key] == LONG_MAX) {
             return NO;
         }
     }

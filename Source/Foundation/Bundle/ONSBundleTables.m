@@ -16,8 +16,8 @@
 
 extern id objc_opt_self(id object);
 extern id objc_opt_new(Class cls);
-extern char bundleTablesClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSBundleTables));
-extern char bundleLockClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSLock));
+extern char bundleTablesClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSBundleTables));
+extern char bundleLockClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSLock));
 
 // Native __MergedGlobals_101 and qword_22E76C960.
 static __ONSBundleTables *tables;

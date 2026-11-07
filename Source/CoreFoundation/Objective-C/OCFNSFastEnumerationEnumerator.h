@@ -23,7 +23,7 @@ typedef struct {
     unsigned long extra[5];
 } FastEnumerationState;
 
-_Static_assert(sizeof(FastEnumerationState) == 64, "The fast enumeration state is 64 bytes.");
+OF_ABI_ASSERT(sizeof(FastEnumerationState) == 64, "The fast enumeration state is 64 bytes.");
 
 // Native class __NSFastEnumerationEnumerator (__DATA,__objc_data 0x22e6cdef0, external), an NSEnumerator
 // subclass; class_ro_t 0x2227c3eb8: instance start 8, size 240; ivars _obj (offset 8), _origObj (16), _index

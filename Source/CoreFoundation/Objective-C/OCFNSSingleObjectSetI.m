@@ -26,14 +26,15 @@
 
 // The __NSSingleObjectSetI class symbol (loaded through the __SCR___NSSingleObjectSetI GOT slot) and the
 // offset of its ivar element (8), defined by this unit's @implementation.
-extern char singleObjectSetIClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSingleObjectSetI));
+extern char singleObjectSetIClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(__ONSSingleObjectSetI));
 extern const int32_t
-    singleObjectSetIElementOffset __asm("_OBJC_IVAR_$_" OF_NAME_STRING(__ONSSingleObjectSetI) ".element");
+    singleObjectSetIElementOffset __asm(OF_SYMBOL("OBJC_IVAR_$_")
+                                            OF_NAME_STRING(__ONSSingleObjectSetI) ".element");
 
 // The __NSSingleObjectEnumerator class symbol, referenced natively by address (ADRP/ADD) and sent
 // +allocWithZone: (objc_allocWithZone); a class of this image not restored on this branch (undefined).
-extern char
-    singleObjectSetEnumeratorClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(__ONSSingleObjectEnumerator));
+extern char singleObjectSetEnumeratorClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_")
+                                                       OF_NAME_STRING(__ONSSingleObjectEnumerator));
 
 // Selectors this unit sends that no included header declares, for the message sends only.
 @protocol SingleObjectSetIMessages
@@ -112,7 +113,7 @@ extern char
             (unsigned long)length
         );
     }
-    if ((length >> 61) != 0) {
+    if ((OF_WORD_SHIFT(length, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",
@@ -162,7 +163,7 @@ extern char
             (unsigned long)count
         );
     }
-    if ((count >> 61) != 0) {
+    if ((OF_WORD_SHIFT(count, 61)) != 0) {
         raiseWithLogPack(
             ONSInvalidArgumentException,
             "*** %s: count (%lu) of objects array is ridiculous",

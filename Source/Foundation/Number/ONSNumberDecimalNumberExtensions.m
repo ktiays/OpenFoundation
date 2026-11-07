@@ -19,8 +19,8 @@
 // Source/Foundation/Number/Reading.md.
 
 // Class objects the method loads directly (GOT slots off_22289F330 and off_22289EDD8).
-extern char scannerClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSScanner));
-extern char decimalNumberClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDecimalNumber));
+extern char scannerClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSScanner));
+extern char decimalNumberClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDecimalNumber));
 
 @implementation ONSNumber (NSDecimalNumberExtensions)
 

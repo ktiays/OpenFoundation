@@ -20,7 +20,7 @@
 // Documentation/Reference/Research/CoreFoundationBridgedClasses.md (not written yet).
 
 // The NSDate class symbol, loaded natively through its class reference (off_2227CE2D0).
-extern char dateClass[] __asm("_OBJC_CLASS_$_" OF_NAME_STRING(ONSDate));
+extern char dateClass[] __asm(OF_SYMBOL("OBJC_CLASS_$_") OF_NAME_STRING(ONSDate));
 
 // Native _timerRetain and _timerRelease; defined below, in native address order.
 static const void *_timerRetain(const void *info);

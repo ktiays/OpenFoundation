@@ -65,7 +65,7 @@ typedef struct {
     BasicHashDescriptionCallback copyKeyDescription;
 } BasicHashCallbacks;
 
-_Static_assert(sizeof(BasicHashCallbacks) == 80, "The native callback block is ten pointers.");
+OF_ABI_ASSERT(sizeof(BasicHashCallbacks) == 80, "The native callback block is ten pointers.");
 
 // A bucket as the lookup functions return it (32 bytes, returned through X8): its index (-1 when no bucket
 // is free), the key and value as stack values, and the count (0 when the key is absent).
@@ -76,7 +76,7 @@ typedef struct {
     uintptr_t count;
 } BasicHashBucket;
 
-_Static_assert(sizeof(BasicHashBucket) == 32, "The native bucket is four words.");
+OF_ABI_ASSERT(sizeof(BasicHashBucket) == 32, "The native bucket is four words.");
 
 // The enumeration callback of CFBasicHashApply: return false to stop.
 typedef Boolean (^BasicHashApplyBlock)(BasicHashBucket bucket);
