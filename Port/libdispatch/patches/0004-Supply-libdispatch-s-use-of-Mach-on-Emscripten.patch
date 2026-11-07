@@ -1,0 +1,613 @@
+Subject: Supply libdispatch's use of Mach on Emscripten
+
+Add mach_emscripten.c, built only for Emscripten against libmach's headers
+(DISPATCH_EMSCRIPTEN_MACH_INCLUDE_DIR), the only file of libdispatch that
+sees Mach headers, so that HAVE_MACH stays unset. It holds:
+
+- The Mach waits of the event backend (patch 0003), forwarded to libmach's
+  watches: libmach_port_watch, libmach_port_watch_arm, libmach_port_unwatch.
+- voucher_mach_msg_set, _clear, _adopt and _revert, which voucher.c defines
+  only with Mach vouchers, in the form libdispatch without them has: no
+  voucher is attached or adopted, and libmach delivers none.
+- The main queue's run-loop handle (patch 0001), as
+  _dispatch_runloop_queue_handle_init makes it with HAVE_MACH: a receive
+  right with a send right and, for the main queue, a queue limit of one, so
+  that pokes (empty messages sent with a zero timeout) coalesce.
+- The receive side of Mach channels. mach.c needs HAVE_MACH (kevent knotes
+  that receive Mach messages into the event buffer, vouchers, thread special
+  reply ports, workgroups and eventlinks); this file supplies the channel
+  interface over a DISPATCH_SOURCE_TYPE_MACH_RECV source with mach.c's event
+  order: dispatch_mach_create(_f) make an inactive channel,
+  dispatch_mach_connect activates it, CONNECTED precedes every other event,
+  each queued message is received with the AV trailer and delivered as
+  MESSAGE_RECEIVED, a receive barrier is followed by BARRIER_COMPLETED, and
+  dispatch_mach_cancel stops reception (a message received meanwhile is
+  destroyed) and delivers DISCONNECTED for the receive right, then CANCELED.
+  dispatch_mach_msg_create and dispatch_mach_msg_get_msg keep mach.c's
+  destructors and sizes. The channel object is a serial queue whose context
+  holds the channel state, a message a dispatch data object. The send side
+  is not supplied: connecting with a send right or a checkin message aborts,
+  and the send, reply, reconnect, no-senders and XPC interfaces stay
+  undefined.
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 5a532bc..679cc0f 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -71,6 +71,18 @@ if(DISPATCH_USE_INTERNAL_WORKQUEUE)
+     event/workqueue.c
+     event/workqueue_internal.h)
+ endif()
++if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
++  # The Mach waits, the run-loop handle and the Mach channels call libmach,
++  # the Mach library the port links; only their file sees its headers, so
++  # that HAVE_MACH stays unset.
++  if(NOT DISPATCH_EMSCRIPTEN_MACH_INCLUDE_DIR)
++    message(FATAL_ERROR "DISPATCH_EMSCRIPTEN_MACH_INCLUDE_DIR must name libmach's headers")
++  endif()
++  target_sources(dispatch PRIVATE
++    mach_emscripten.c)
++  set_source_files_properties(mach_emscripten.c PROPERTIES
++    INCLUDE_DIRECTORIES "${DISPATCH_EMSCRIPTEN_MACH_INCLUDE_DIR}")
++endif()
+ 
+ target_sources(dispatch PRIVATE
+   block.cpp)
+diff --git a/src/mach_emscripten.c b/src/mach_emscripten.c
+new file mode 100644
+index 0000000..c5d1e95
+--- /dev/null
++++ b/src/mach_emscripten.c
+@@ -0,0 +1,552 @@
++/*
++ * Copyright (c) 2026 ktiays. All rights reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++// libdispatch's use of Mach on Emscripten, over libmach, the Mach library the port links: the only file of
++// libdispatch built with Mach headers (libmach's), so that HAVE_MACH stays unset everywhere else. It holds
++// the Mach waits of the event backend, the Mach-message voucher functions, the main queue's run-loop handle
++// and the Mach channels.
++//
++// Mach channels (dispatch_mach_t). mach.c needs HAVE_MACH: kevent knotes that receive Mach messages into the
++// event buffer (EV_UDATA_SPECIFIC, which the Emscripten event backend does not have), vouchers, thread
++// special reply ports and the workgroup and eventlink objects every HAVE_MACH build carries. This file
++// supplies the receive side of the channel interface instead, over libmach and libdispatch's public
++// objects, with mach.c's event order:
++//
++// - A channel is created inactive with its handler and target queue; dispatch_mach_connect() activates it.
++// - DISPATCH_MACH_CONNECTED is delivered before any other event of the channel.
++// - Each message queued on the receive right is received with the trailer mach.c asks for
++//   (DISPATCH_MACH_RCV_OPTIONS: format 0, MACH_RCV_TRAILER_AV) and delivered as
++//   DISPATCH_MACH_MESSAGE_RECEIVED, one message per event of the channel's receive source; the message
++//   object's size includes the trailer, and the object is released when the handler returns. The handler
++//   owns the rights and memory the message carries.
++// - dispatch_mach_cancel() stops reception: messages still queued stay on the port, and a message received
++//   while the channel is being canceled is destroyed undelivered. DISPATCH_MACH_DISCONNECTED (a message
++//   whose local port is the receive right) and then DISPATCH_MACH_CANCELED follow, last. The receive right
++//   stays the caller's.
++// - A receive barrier runs in order with the events and is followed by DISPATCH_MACH_BARRIER_COMPLETED.
++//
++// The channel object is a serial queue, the channel's queue, targeting the queue given at creation; its
++// context holds the channel state. A message object is a dispatch data object holding the message. The
++// send side is not supplied: dispatch_mach_connect() with a send right or a checkin message aborts, and the
++// send, reply, reconnect, no-senders and XPC interfaces are not defined, so a program calling them fails
++// to link.
++
++#include <dispatch/dispatch.h>
++#include <libmach/wait.h>
++#include <mach/mach.h>
++
++#define __DISPATCH_INDIRECT__
++#include "mach_private.h"
++#undef __DISPATCH_INDIRECT__
++
++#include <Block.h>
++#include <pthread.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++typedef struct dispatch_emscripten_mach_channel_s {
++	dispatch_queue_t dmc_queue;
++	void *dmc_handler_ctxt;
++	dispatch_mach_handler_function_t dmc_handler_func;
++	bool dmc_handler_is_block;
++	// Touched on the channel's queue only.
++	bool dmc_connect_handler_called;
++	pthread_mutex_t dmc_lock;
++	// Guarded by dmc_lock.
++	bool dmc_connected;
++	bool dmc_canceled;
++	mach_port_t dmc_receive;
++	dispatch_source_t dmc_source;
++} *dispatch_emscripten_mach_channel_t;
++
++// The storage of a message object, followed by the message for DISPATCH_MACH_MSG_DESTRUCTOR_DEFAULT.
++typedef struct dispatch_emscripten_mach_msg_s {
++	size_t dmsg_size;
++	dispatch_mach_msg_destructor_t dmsg_destructor;
++	mach_msg_header_t *dmsg_msg;
++	_Alignas(16) unsigned char dmsg_buf[];
++} *dispatch_emscripten_mach_msg_t;
++
++__attribute__((__noinline__, __noreturn__))
++static void
++_dispatch_emscripten_mach_crash(const char *message)
++{
++	fprintf(stderr, "BUG IN CLIENT OF LIBDISPATCH: %s\n", message);
++	abort();
++}
++
++#pragma mark Mach waits of the event backend
++
++// Declared by src/event/event_emscripten.c, which sees no Mach header: event 0 waits for a message on a
++// receive right or port set, event 1 for the dead name of a send right.
++int _dispatch_emscripten_mach_watch(uint32_t name, int event,
++		void (*ready)(void *context), void *context);
++void _dispatch_emscripten_mach_watch_arm(uint32_t name, void *context);
++void _dispatch_emscripten_mach_unwatch(uint32_t name, void *context);
++
++int
++_dispatch_emscripten_mach_watch(uint32_t name, int event,
++		void (*ready)(void *context), void *context)
++{
++	return libmach_port_watch(name, event == 0 ? LibmachPortWatchMessage :
++			LibmachPortWatchDeadName, ready, context);
++}
++
++void
++_dispatch_emscripten_mach_watch_arm(uint32_t name, void *context)
++{
++	libmach_port_watch_arm(name, context);
++}
++
++void
++_dispatch_emscripten_mach_unwatch(uint32_t name, void *context)
++{
++	libmach_port_unwatch(name, context);
++}
++
++#pragma mark vouchers
++
++// voucher.c defines these only with Mach vouchers (VOUCHER_USE_MACH_VOUCHER). Without them libdispatch
++// attaches and adopts no voucher (voucher_internal.h, the _voucher_mach_msg_set and _voucher_mach_msg_clear of
++// that configuration), and libmach delivers none: msgh_voucher_port is null on receipt.
++boolean_t
++voucher_mach_msg_set(mach_msg_header_t *msg)
++{
++	(void)msg;
++	return false;
++}
++
++void
++voucher_mach_msg_clear(mach_msg_header_t *msg)
++{
++	(void)msg;
++}
++
++voucher_mach_msg_state_t
++voucher_mach_msg_adopt(mach_msg_header_t *msg)
++{
++	(void)msg;
++	return VOUCHER_MACH_MSG_STATE_UNCHANGED;
++}
++
++void
++voucher_mach_msg_revert(voucher_mach_msg_state_t state)
++{
++	(void)state;
++}
++
++#pragma mark run-loop handle
++
++// Declared by src/queue.c. As _dispatch_runloop_queue_handle_init does with HAVE_MACH: a receive right with
++// a send right, whose queue limit is one message for the main queue, so that pokes coalesce; a poke is an
++// empty message sent without waiting, and a full queue already wakes the run loop.
++uint32_t _dispatch_emscripten_runloop_handle_create(bool main_queue);
++void _dispatch_emscripten_runloop_handle_dispose(uint32_t handle);
++void _dispatch_emscripten_runloop_handle_poke(uint32_t handle);
++
++uint32_t
++_dispatch_emscripten_runloop_handle_create(bool main_queue)
++{
++	mach_port_options_t options = {
++		.flags = MPO_INSERT_SEND_RIGHT | (main_queue ? MPO_QLIMIT : 0),
++		.mpl = {.mpl_qlimit = 1},
++	};
++	mach_port_t name = MACH_PORT_NULL;
++	if (mach_port_construct(mach_task_self(), &options, 0, &name) != KERN_SUCCESS) {
++		_dispatch_emscripten_mach_crash("Could not create a run-loop port");
++	}
++	return name;
++}
++
++void
++_dispatch_emscripten_runloop_handle_dispose(uint32_t handle)
++{
++	(void)mach_port_destruct(mach_task_self(), handle, -1, 0);
++}
++
++void
++_dispatch_emscripten_runloop_handle_poke(uint32_t handle)
++{
++	mach_msg_header_t header = {
++		.msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_COPY_SEND, 0),
++		.msgh_size = sizeof(header),
++		.msgh_remote_port = handle,
++	};
++	(void)mach_msg(&header, MACH_SEND_MSG | MACH_SEND_TIMEOUT, sizeof(header), 0,
++			MACH_PORT_NULL, 0, MACH_PORT_NULL);
++}
++
++static inline dispatch_emscripten_mach_channel_t
++_dispatch_emscripten_mach_channel(dispatch_mach_t dm)
++{
++	return dispatch_get_context((dispatch_queue_t)dm);
++}
++
++#pragma mark dispatch_mach_msg_t
++
++static dispatch_emscripten_mach_msg_t
++_dispatch_emscripten_mach_msg(dispatch_mach_msg_t message)
++{
++	__block void *storage = NULL;
++	dispatch_data_apply((dispatch_data_t)message, ^bool(dispatch_data_t region,
++			size_t offset, const void *buffer, size_t size) {
++		(void)region; (void)offset; (void)size;
++		storage = (void *)buffer;
++		return false;
++	});
++	return storage;
++}
++
++dispatch_mach_msg_t
++dispatch_mach_msg_create(mach_msg_header_t *msg, size_t size,
++		dispatch_mach_msg_destructor_t destructor, mach_msg_header_t **msg_ptr)
++{
++	if (size < sizeof(mach_msg_header_t) || (destructor && !msg)) {
++		_dispatch_emscripten_mach_crash("Empty message");
++	}
++	size_t storage_size = sizeof(struct dispatch_emscripten_mach_msg_s);
++	if (!destructor) {
++		if (__builtin_add_overflow(storage_size, size, &storage_size)) {
++			_dispatch_emscripten_mach_crash("Message size too large");
++		}
++	}
++	dispatch_emscripten_mach_msg_t dmsg = calloc(1, storage_size);
++	if (!dmsg) {
++		_dispatch_emscripten_mach_crash("Out of memory for a message");
++	}
++	dmsg->dmsg_size = size;
++	dmsg->dmsg_destructor = destructor;
++	dispatch_data_t data;
++	if (destructor) {
++		dmsg->dmsg_msg = msg;
++		data = dispatch_data_create(dmsg, storage_size, NULL, ^{
++			if (destructor == DISPATCH_MACH_MSG_DESTRUCTOR_FREE) {
++				free(msg);
++			} else {
++				(void)vm_deallocate(mach_task_self(), (vm_address_t)msg,
++						(vm_size_t)size);
++			}
++			free(dmsg);
++		});
++	} else {
++		dmsg->dmsg_msg = (mach_msg_header_t *)dmsg->dmsg_buf;
++		if (msg) {
++			memcpy(dmsg->dmsg_buf, msg, size);
++		}
++		data = dispatch_data_create(dmsg, storage_size, NULL,
++				DISPATCH_DATA_DESTRUCTOR_FREE);
++	}
++	if (msg_ptr) {
++		*msg_ptr = dmsg->dmsg_msg;
++	}
++	return (dispatch_mach_msg_t)data;
++}
++
++mach_msg_header_t *
++dispatch_mach_msg_get_msg(dispatch_mach_msg_t message, size_t *size_ptr)
++{
++	dispatch_emscripten_mach_msg_t dmsg = _dispatch_emscripten_mach_msg(message);
++	if (size_ptr) {
++		*size_ptr = dmsg->dmsg_size;
++	}
++	return dmsg->dmsg_msg;
++}
++
++#pragma mark dispatch_mach_t
++
++static void
++_dispatch_emscripten_mach_finalize(void *ctxt)
++{
++	dispatch_emscripten_mach_channel_t dmc = ctxt;
++	if (dmc->dmc_handler_is_block) {
++		Block_release(dmc->dmc_handler_ctxt);
++	}
++	pthread_mutex_destroy(&dmc->dmc_lock);
++	free(dmc);
++}
++
++static dispatch_mach_t
++_dispatch_emscripten_mach_create(const char *label, dispatch_queue_t q,
++		void *context, dispatch_mach_handler_function_t handler, bool is_block)
++{
++	dispatch_emscripten_mach_channel_t dmc = calloc(1, sizeof(*dmc));
++	if (!dmc) {
++		_dispatch_emscripten_mach_crash("Out of memory for a channel");
++	}
++	dmc->dmc_handler_ctxt = context;
++	dmc->dmc_handler_func = handler;
++	dmc->dmc_handler_is_block = is_block;
++	pthread_mutex_init(&dmc->dmc_lock, NULL);
++	// Created inactive, as _dispatch_mach_create does; a NULL queue targets the default queue.
++	dispatch_queue_attr_t attr =
++			dispatch_queue_attr_make_initially_inactive(DISPATCH_QUEUE_SERIAL);
++	dmc->dmc_queue = dispatch_queue_create_with_target(label, attr, q);
++	dispatch_set_context(dmc->dmc_queue, dmc);
++	dispatch_set_finalizer_f(dmc->dmc_queue, _dispatch_emscripten_mach_finalize);
++	return (dispatch_mach_t)dmc->dmc_queue;
++}
++
++dispatch_mach_t
++dispatch_mach_create(const char *label, dispatch_queue_t q,
++		dispatch_mach_handler_t handler)
++{
++	return _dispatch_emscripten_mach_create(label, q, Block_copy(handler),
++			NULL, true);
++}
++
++dispatch_mach_t
++dispatch_mach_create_f(const char *label, dispatch_queue_t q, void *context,
++		dispatch_mach_handler_function_t handler)
++{
++	return _dispatch_emscripten_mach_create(label, q, context, handler, false);
++}
++
++// The handler callouts run on the channel's queue.
++static void
++_dispatch_emscripten_mach_callout(dispatch_emscripten_mach_channel_t dmc,
++		dispatch_mach_reason_t reason, dispatch_mach_msg_t dmsg,
++		mach_error_t error)
++{
++	if (dmc->dmc_handler_is_block) {
++		((dispatch_mach_handler_t)dmc->dmc_handler_ctxt)(reason, dmsg, error);
++	} else {
++		dmc->dmc_handler_func(dmc->dmc_handler_ctxt, reason, dmsg, error);
++	}
++}
++
++static void
++_dispatch_emscripten_mach_connect_invoke_if_needed(
++		dispatch_emscripten_mach_channel_t dmc)
++{
++	if (!dmc->dmc_connect_handler_called) {
++		_dispatch_emscripten_mach_callout(dmc, DISPATCH_MACH_CONNECTED, NULL, 0);
++		dmc->dmc_connect_handler_called = true;
++	}
++}
++
++static bool
++_dispatch_emscripten_mach_is_canceled(dispatch_emscripten_mach_channel_t dmc)
++{
++	pthread_mutex_lock(&dmc->dmc_lock);
++	bool canceled = dmc->dmc_canceled;
++	pthread_mutex_unlock(&dmc->dmc_lock);
++	return canceled;
++}
++
++// The receive source's event handler: receives one message, as one kevent delivers one.
++static void
++_dispatch_emscripten_mach_receive(void *ctxt)
++{
++	dispatch_emscripten_mach_channel_t dmc = ctxt;
++	if (_dispatch_emscripten_mach_is_canceled(dmc)) {
++		return;
++	}
++	const mach_msg_option_t options = MACH_RCV_MSG | MACH_RCV_LARGE |
++			MACH_RCV_TIMEOUT |
++			MACH_RCV_TRAILER_ELEMENTS(MACH_RCV_TRAILER_AV) |
++			MACH_RCV_TRAILER_TYPE(MACH_MSG_TRAILER_FORMAT_0) |
++			MACH_RCV_VOUCHER;
++	mach_msg_size_t limit = (mach_msg_size_t)
++			(DISPATCH_MACH_RECEIVE_MAX_INLINE_MESSAGE_SIZE +
++			sizeof(dispatch_mach_trailer_t));
++	bool inline_buffer = true;
++	mach_msg_header_t *hdr = malloc(limit);
++	mach_msg_return_t kr;
++	for (;;) {
++		if (!hdr) {
++			_dispatch_emscripten_mach_crash("Out of memory for a message");
++		}
++		kr = mach_msg(hdr, options, 0, limit, dmc->dmc_receive, 0,
++				MACH_PORT_NULL);
++		if (kr != MACH_RCV_TOO_LARGE) {
++			break;
++		}
++		// Larger than the inline buffer: received again into one of its size.
++		limit = hdr->msgh_size + (mach_msg_size_t)sizeof(dispatch_mach_trailer_t);
++		inline_buffer = false;
++		free(hdr);
++		hdr = malloc(limit);
++	}
++	if (kr != MACH_MSG_SUCCESS) {
++		// Timed out: another receiver took the message; any other failure means the right is gone.
++		free(hdr);
++		return;
++	}
++	size_t size = hdr->msgh_size + sizeof(dispatch_mach_trailer_t);
++	if (_dispatch_emscripten_mach_is_canceled(dmc)) {
++		mach_msg_destroy(hdr);
++		free(hdr);
++		return;
++	}
++	dispatch_mach_msg_t dmsg;
++	if (inline_buffer) {
++		dmsg = dispatch_mach_msg_create(hdr, size,
++				DISPATCH_MACH_MSG_DESTRUCTOR_DEFAULT, NULL);
++		free(hdr);
++	} else {
++		dmsg = dispatch_mach_msg_create(hdr, size,
++				DISPATCH_MACH_MSG_DESTRUCTOR_FREE, NULL);
++	}
++	_dispatch_emscripten_mach_connect_invoke_if_needed(dmc);
++	_dispatch_emscripten_mach_callout(dmc, DISPATCH_MACH_MESSAGE_RECEIVED, dmsg,
++			0);
++	dispatch_release(dmsg);
++}
++
++// The end of cancellation, on the channel's queue: the receive right's disconnection, then the
++// cancellation itself (_dispatch_mach_cancel and _dispatch_mach_cancel_invoke).
++static void
++_dispatch_emscripten_mach_cancel_invoke(void *ctxt)
++{
++	dispatch_emscripten_mach_channel_t dmc = ctxt;
++	pthread_mutex_lock(&dmc->dmc_lock);
++	dispatch_source_t ds = dmc->dmc_source;
++	mach_port_t receive = dmc->dmc_receive;
++	dmc->dmc_source = NULL;
++	pthread_mutex_unlock(&dmc->dmc_lock);
++	if (ds) {
++		dispatch_release(ds);
++	}
++	_dispatch_emscripten_mach_connect_invoke_if_needed(dmc);
++	if (MACH_PORT_VALID(receive)) {
++		mach_msg_header_t *hdr;
++		dispatch_mach_msg_t dmsg = dispatch_mach_msg_create(NULL,
++				sizeof(mach_msg_header_t), DISPATCH_MACH_MSG_DESTRUCTOR_DEFAULT,
++				&hdr);
++		hdr->msgh_local_port = receive;
++		_dispatch_emscripten_mach_callout(dmc, DISPATCH_MACH_DISCONNECTED, dmsg,
++				0);
++		dispatch_release(dmsg);
++	}
++	_dispatch_emscripten_mach_callout(dmc, DISPATCH_MACH_CANCELED, NULL, 0);
++}
++
++void
++dispatch_mach_connect(dispatch_mach_t dm, mach_port_t receive,
++		mach_port_t send, dispatch_mach_msg_t checkin)
++{
++	dispatch_emscripten_mach_channel_t dmc = _dispatch_emscripten_mach_channel(dm);
++	if (MACH_PORT_VALID(send) || checkin) {
++		_dispatch_emscripten_mach_crash("The send side of dispatch_mach channels "
++				"is not supplied on Emscripten");
++	}
++	pthread_mutex_lock(&dmc->dmc_lock);
++	if (dmc->dmc_connected) {
++		pthread_mutex_unlock(&dmc->dmc_lock);
++		_dispatch_emscripten_mach_crash("Channel already connected");
++	}
++	dmc->dmc_connected = true;
++	if (MACH_PORT_VALID(receive)) {
++		dmc->dmc_receive = receive;
++	}
++	bool canceled = dmc->dmc_canceled;
++	dispatch_source_t ds = NULL;
++	if (!canceled && MACH_PORT_VALID(receive)) {
++		ds = dispatch_source_create(DISPATCH_SOURCE_TYPE_MACH_RECV, receive, 0,
++				dmc->dmc_queue);
++		dispatch_set_context(ds, dmc);
++		dispatch_source_set_event_handler_f(ds, _dispatch_emscripten_mach_receive);
++		dispatch_source_set_cancel_handler_f(ds,
++				_dispatch_emscripten_mach_cancel_invoke);
++		dmc->dmc_source = ds;
++	}
++	pthread_mutex_unlock(&dmc->dmc_lock);
++	if (ds) {
++		dispatch_activate(ds);
++	} else if (canceled) {
++		// A channel canceled before it was connected finishes at once; one without a receive right
++		// waits for dispatch_mach_cancel().
++		dispatch_async_f(dmc->dmc_queue, dmc,
++				_dispatch_emscripten_mach_cancel_invoke);
++	}
++	dispatch_activate(dmc->dmc_queue);
++}
++
++void
++dispatch_mach_cancel(dispatch_mach_t dm)
++{
++	dispatch_emscripten_mach_channel_t dmc = _dispatch_emscripten_mach_channel(dm);
++	pthread_mutex_lock(&dmc->dmc_lock);
++	bool first = !dmc->dmc_canceled;
++	dmc->dmc_canceled = true;
++	bool connected = dmc->dmc_connected;
++	dispatch_source_t ds = dmc->dmc_source;
++	if (ds) {
++		dispatch_retain(ds);
++	}
++	pthread_mutex_unlock(&dmc->dmc_lock);
++	if (ds) {
++		// The source's cancel handler finishes the cancellation once reception has stopped.
++		if (first) {
++			dispatch_source_cancel(ds);
++		}
++		dispatch_release(ds);
++	} else if (first && connected) {
++		dispatch_async_f(dmc->dmc_queue, dmc,
++				_dispatch_emscripten_mach_cancel_invoke);
++	}
++}
++
++#pragma mark barriers
++
++typedef struct dispatch_emscripten_mach_barrier_s {
++	dispatch_emscripten_mach_channel_t dmb_channel;
++	void *dmb_ctxt;
++	dispatch_function_t dmb_func;
++} *dispatch_emscripten_mach_barrier_t;
++
++static void
++_dispatch_emscripten_mach_barrier_invoke(void *ctxt)
++{
++	dispatch_emscripten_mach_barrier_t dmb = ctxt;
++	dispatch_emscripten_mach_channel_t dmc = dmb->dmb_channel;
++	_dispatch_emscripten_mach_connect_invoke_if_needed(dmc);
++	dmb->dmb_func(dmb->dmb_ctxt);
++	_dispatch_emscripten_mach_callout(dmc, DISPATCH_MACH_BARRIER_COMPLETED, NULL,
++			0);
++	free(dmb);
++}
++
++void
++dispatch_mach_receive_barrier_f(dispatch_mach_t dm, void *context,
++		dispatch_function_t func)
++{
++	dispatch_emscripten_mach_barrier_t dmb = malloc(sizeof(*dmb));
++	if (!dmb) {
++		_dispatch_emscripten_mach_crash("Out of memory for a barrier");
++	}
++	dmb->dmb_channel = _dispatch_emscripten_mach_channel(dm);
++	dmb->dmb_ctxt = context;
++	dmb->dmb_func = func;
++	dispatch_async_f((dispatch_queue_t)dm, dmb,
++			_dispatch_emscripten_mach_barrier_invoke);
++}
++
++static void
++_dispatch_emscripten_mach_block_invoke_and_release(void *ctxt)
++{
++	dispatch_block_t block = ctxt;
++	block();
++	Block_release(block);
++}
++
++void
++dispatch_mach_receive_barrier(dispatch_mach_t dm, dispatch_block_t barrier)
++{
++	dispatch_mach_receive_barrier_f(dm, Block_copy(barrier),
++			_dispatch_emscripten_mach_block_invoke_and_release);
++}

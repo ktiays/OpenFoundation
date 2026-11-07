@@ -77,6 +77,23 @@ if(NOT EXISTS "${libdispatchBuild}/src/libdispatch.a")
     message(FATAL_ERROR "${libdispatchBuild}/src/libdispatch.a is missing: run Port/libdispatch/build.sh ${libdispatchArguments}")
 endif()
 
+# libmach: Apple's Mach interfaces for the whole process (ports and rights, mach_msg with descriptors,
+# notifications, port sets, the MIG runtime, VM calls and memory entries, mk_timer, the Mach clocks, the task
+# and thread calls and the bootstrap name service), built for wasm32 by its own CMakeLists.txt. The sibling
+# ../libmach of the repository, or of the main checkout when building from a worktree under .worktrees/.
+set(libmachDefault "${root}/../libmach")
+if(NOT EXISTS "${libmachDefault}/CMakeLists.txt" AND EXISTS "${root}/../../../libmach/CMakeLists.txt")
+    set(libmachDefault "${root}/../../../libmach")
+endif()
+set(LIBMACH_ROOT "${libmachDefault}" CACHE PATH "The libmach checkout")
+get_filename_component(LIBMACH_ROOT "${LIBMACH_ROOT}" ABSOLUTE)
+if(NOT EXISTS "${LIBMACH_ROOT}/CMakeLists.txt")
+    message(FATAL_ERROR "${LIBMACH_ROOT}/CMakeLists.txt is missing: set LIBMACH_ROOT to a libmach checkout")
+endif()
+if(NOT TARGET libmach::mach)
+    add_subdirectory("${LIBMACH_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/libmach" EXCLUDE_FROM_ALL)
+endif()
+
 # <OpenCoreFoundation/...> and <OpenFoundation/...> name the source tree directly.
 set(frameworkIncludes "${CMAKE_CURRENT_BINARY_DIR}/FrameworkIncludes")
 file(MAKE_DIRECTORY "${frameworkIncludes}")
@@ -165,14 +182,18 @@ if(OF_SANITIZE_ADDRESS)
     list(APPEND objcOptions "SHELL:-mllvm -asan-globals=0")
 endif()
 
+# Every unit sees libmach's headers (<mach/…>, <servers/bootstrap.h>, <libmach/…>) after the port's own.
 function(configureTarget target)
     target_include_directories(${target} PRIVATE ${includeDirectories})
+    target_link_libraries(${target} PRIVATE libmach::mach)
     target_compile_options(${target} PRIVATE ${commonOptions} "$<$<COMPILE_LANGUAGE:OBJC>:${objcOptions}>")
     set_target_properties(${target} PROPERTIES C_STANDARD 11 C_EXTENSIONS ON OBJC_STANDARD 11)
 endfunction()
 
 add_library(PortSystem STATIC ${portSystemSources})
 configureTarget(PortSystem)
+# Consumers of PortSystem (OpenCoreAnimation's Port::System) get libmach's headers and library through it.
+target_link_libraries(PortSystem PUBLIC libmach::mach)
 
 add_library(OpenCoreFoundation STATIC ${coreFoundationSources} ${portCoreFoundationSources})
 configureTarget(OpenCoreFoundation)
@@ -211,4 +232,26 @@ target_link_libraries(Smoke PRIVATE
     "-Wl,--whole-archive" "${libdispatchBuild}/src/libdispatch.a" "${objc4Build}/libobjc4.a"
     OpenCoreFoundation OpenFoundation PortSystem
     "-Wl,--no-whole-archive"
+)
+
+# The test of libdispatch's Mach sources and channels on libmach (Port/Tests/DispatchMach.c), run under Node
+# (`node DispatchMachTest.js`). Every unit of the port is compiled with objc4's compiler header, so the program
+# links the runtime as Smoke does.
+add_executable(DispatchMachTest EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/Tests/DispatchMach.c")
+configureTarget(DispatchMachTest)
+set_target_properties(DispatchMachTest PROPERTIES SUFFIX ".js" LINKER_LANGUAGE CXX)
+target_link_options(DispatchMachTest PRIVATE
+    -pthread -mtail-call -fwasm-exceptions
+    -sMAIN_MODULE=2 -sALLOW_TABLE_GROWTH=1 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2GB
+    -sEXIT_RUNTIME=1 -sPTHREAD_POOL_SIZE=8
+    "LINKER:--undefined=objc_wasm_init"
+    "LINKER:--export=objc_wasm_forward_invoke"
+    "LINKER:--export=__heap_base"
+    "--js-library=${OBJC4_ROOT}/platform/wasm/library-objc4.js"
+    -sASSERTIONS=0 -sEXCEPTION_STACK_TRACES=0
+    "$<$<BOOL:${OF_SANITIZE_ADDRESS}>:-fsanitize=address>"
+)
+target_link_libraries(DispatchMachTest PRIVATE
+    "-Wl,--whole-archive" "${libdispatchBuild}/src/libdispatch.a" "${objc4Build}/libobjc4.a" "-Wl,--no-whole-archive"
+    PortSystem
 )

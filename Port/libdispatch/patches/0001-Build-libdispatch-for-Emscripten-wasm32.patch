@@ -472,8 +472,8 @@ index 1dba770..bb9c9fc 100644
  DISPATCH_STATIC_GLOBAL(dispatch_once_t _dispatch_main_q_handle_pred);
  
 +#if defined(__EMSCRIPTEN__)
-+// The run-loop handle is a receive right of the in-process Mach library that the port supplies, so that
-+// CoreFoundation waits on it with mach_msg() as on Darwin. The library defines these three functions.
++// The run-loop handle is a receive right of libmach, the Mach library the port links, so that CoreFoundation
++// waits on it with mach_msg() as on Darwin. src/mach_emscripten.c defines these three functions.
 +extern dispatch_runloop_handle_t _dispatch_emscripten_runloop_handle_create(bool main_queue);
 +extern void _dispatch_emscripten_runloop_handle_dispose(dispatch_runloop_handle_t handle);
 +extern void _dispatch_emscripten_runloop_handle_poke(dispatch_runloop_handle_t handle);

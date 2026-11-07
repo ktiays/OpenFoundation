@@ -44,7 +44,9 @@ struct kinfo_proc {
 
 #define P_TRACED 0x00000800
 
-int sysctl(int *name, unsigned int nameLength, void *old, size_t *oldLength, void *new, size_t newLength);
-int sysctlbyname(const char *name, void *old, size_t *oldLength, void *new, size_t newLength);
+int sysctl(
+    int *name, unsigned int nameLength, void *oldValue, size_t *oldLength, void *newValue, size_t newLength
+);
+int sysctlbyname(const char *name, void *oldValue, size_t *oldLength, void *newValue, size_t newLength);
 
 __END_DECLS

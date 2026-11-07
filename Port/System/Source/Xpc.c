@@ -8,6 +8,7 @@
 #include <xpc/xpc.h>
 
 #include <Block.h>
+#include <errno.h>
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,7 @@ const struct _xpc_type_s _xpc_type_null = {"null"};
 const struct _xpc_type_s _xpc_type_error = {"error"};
 const struct _xpc_type_s _xpc_type_connection = {"connection"};
 const struct _xpc_type_s _xpc_type_endpoint = {"endpoint"};
+const struct _xpc_type_s _xpc_type_mach_send = {"mach_send"};
 
 typedef struct XpcObject {
     xpc_type_t type;
@@ -43,6 +45,8 @@ typedef struct XpcObject {
     size_t length;
     uint64_t integer;
     xpc_handler_t handler;
+    // A Mach send value's right.
+    mach_port_t port;
 } XpcObject;
 
 // The error objects are immortal and never compared by content.
@@ -88,6 +92,9 @@ void xpc_release(xpc_object_t value) {
     free(object->bytes);
     if (object->handler != NULL) {
         Block_release(object->handler);
+    }
+    if (object->type == XPC_TYPE_MACH_SEND && MACH_PORT_VALID(object->port)) {
+        mach_port_deallocate(mach_task_self(), object->port);
     }
     free(object);
 }
@@ -315,6 +322,101 @@ const void *xpc_data_get_bytes_ptr(xpc_object_t data) {
 
 size_t xpc_data_get_length(xpc_object_t data) {
     return ((XpcObject *)data)->length;
+}
+
+void xpc_dictionary_set_data(xpc_object_t dictionary, const char *key, const void *bytes, size_t length) {
+    xpc_object_t item = xpc_data_create(bytes, length);
+    xpc_dictionary_set_value(dictionary, key, item);
+    xpc_release(item);
+}
+
+const void *xpc_dictionary_get_data(xpc_object_t dictionary, const char *key, size_t *length) {
+    xpc_object_t item = xpc_dictionary_get_value(dictionary, key);
+    if (item == NULL || xpc_get_type(item) != XPC_TYPE_DATA) {
+        if (length != NULL) {
+            *length = 0;
+        }
+        return NULL;
+    }
+    if (length != NULL) {
+        *length = xpc_data_get_length(item);
+    }
+    return xpc_data_get_bytes_ptr(item);
+}
+
+void xpc_dictionary_set_mach_send(xpc_object_t dictionary, const char *key, mach_port_t port) {
+    xpc_object_t item = xpc_mach_send_create(port);
+    xpc_dictionary_set_value(dictionary, key, item);
+    xpc_release(item);
+}
+
+mach_port_t xpc_dictionary_copy_mach_send(xpc_object_t dictionary, const char *key) {
+    xpc_object_t item = xpc_dictionary_get_value(dictionary, key);
+    if (item == NULL || xpc_get_type(item) != XPC_TYPE_MACH_SEND) {
+        return MACH_PORT_NULL;
+    }
+    return xpc_mach_send_copy_right(item);
+}
+
+xpc_object_t xpc_mach_send_create(mach_port_t port) {
+    return xpc_mach_send_create_with_disposition(port, MACH_MSG_TYPE_COPY_SEND);
+}
+
+xpc_object_t xpc_mach_send_create_with_disposition(mach_port_t port, unsigned int disposition) {
+    if (MACH_PORT_VALID(port)) {
+        kern_return_t result = KERN_SUCCESS;
+        switch (disposition) {
+            case MACH_MSG_TYPE_MOVE_SEND:
+                break;
+            case MACH_MSG_TYPE_COPY_SEND:
+                result = mach_port_mod_refs(mach_task_self(), port, MACH_PORT_RIGHT_SEND, 1);
+                break;
+            case MACH_MSG_TYPE_MAKE_SEND:
+                result = mach_port_insert_right(mach_task_self(), port, port, MACH_MSG_TYPE_MAKE_SEND);
+                break;
+            default:
+                result = KERN_INVALID_VALUE;
+                break;
+        }
+        // libxpc crashes on a right it cannot take; a value without a right stands in for it here.
+        if (result != KERN_SUCCESS) {
+            port = MACH_PORT_DEAD;
+        }
+    }
+    XpcObject *object = createObject(XPC_TYPE_MACH_SEND);
+    object->port = port;
+    return object;
+}
+
+mach_port_t xpc_mach_send_copy_right(xpc_object_t value) {
+    XpcObject *object = value;
+    if (object == NULL || object->type != XPC_TYPE_MACH_SEND || !MACH_PORT_VALID(object->port)) {
+        return object != NULL && object->type == XPC_TYPE_MACH_SEND ? object->port : MACH_PORT_NULL;
+    }
+    if (mach_port_mod_refs(mach_task_self(), object->port, MACH_PORT_RIGHT_SEND, 1) != KERN_SUCCESS) {
+        return MACH_PORT_DEAD;
+    }
+    return object->port;
+}
+
+mach_port_t xpc_mach_send_get_right(xpc_object_t value) {
+    XpcObject *object = value;
+    return object != NULL && object->type == XPC_TYPE_MACH_SEND ? object->port : MACH_PORT_NULL;
+}
+
+int xpc_user_sessions_enabled(void) {
+    return 0;
+}
+
+uid_t xpc_user_sessions_get_foreground_uid(int *error) {
+    if (error != NULL) {
+        *error = ENOTSUP;
+    }
+    return (uid_t)-1;
+}
+
+const char *xpc_strerror(int error) {
+    return strerror(error);
 }
 
 xpc_connection_t

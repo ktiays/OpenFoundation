@@ -12,7 +12,8 @@
 #
 # A second argument "address" builds with AddressSanitizer into .build/wasm/<configuration>-ASan/libdispatch.
 # OBJC4_ROOT names the objc4 checkout whose Emscripten toolchain compiles everything in the process (default:
-# the sibling ../objc4).
+# the sibling ../objc4); LIBMACH_ROOT the libmach checkout whose headers src/mach_emscripten.c includes
+# (default: the sibling ../libmach).
 
 set -euo pipefail
 
@@ -68,11 +69,28 @@ flags="-pthread -fPIC -fblocks -mtail-call -fwasm-exceptions -DOS_OBJECT_USE_OBJ
 if [[ "$sanitizer" == "address" ]]; then
     flags="$flags -fsanitize=address"
 fi
+# libdispatch's use of Mach (patch 0004, src/mach_emscripten.c) compiles against libmach's headers
+# (LIBMACH_ROOT, default: the sibling ../libmach) as OpenFoundation's units see them: objc4's headers and
+# Port/System's Darwin additions first, then libmach's in the order its CMakeLists.txt gives them (its
+# Emscripten overlay, Apple's headers, the Darwin headers musl lacks, <libmach/…>). No other file of
+# libdispatch sees them, so HAVE_MACH stays unset.
+libmach="${LIBMACH_ROOT:-$(cd "$root/.." && pwd)/libmach}"
+if [[ ! -f "$libmach/CMakeLists.txt" ]]; then
+    libmach="$(cd "$root/../../.." 2>/dev/null && pwd)/libmach"
+fi
+if [[ ! -f "$libmach/CMakeLists.txt" ]]; then
+    echo "error: no libmach checkout; set LIBMACH_ROOT" >&2
+    exit 1
+fi
+machIncludes="$objc4/platform/wasm/include;$objc4/platform/android/include;$root/Port/System/include"
+machIncludes="$machIncludes;$libmach/Source/Compatibility/Emscripten"
+machIncludes="$machIncludes;$libmach/Source/Apple/include;$libmach/Source/Compatibility/Darwin;$libmach/Source"
 emcmake cmake -S "$source" -B "$build" -G Ninja \
     -DCMAKE_BUILD_TYPE="$configuration" \
     -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTING=OFF \
     -DENABLE_SWIFT=OFF \
+    "-DDISPATCH_EMSCRIPTEN_MACH_INCLUDE_DIR=$machIncludes" \
     -DCMAKE_C_FLAGS="$flags" \
     -DCMAKE_CXX_FLAGS="$flags" > "$build.configure.log" 2>&1 || {
     tail -30 "$build.configure.log" >&2

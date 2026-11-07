@@ -1,0 +1,337 @@
+Subject: Supply the Mach and memory-pressure sources on Emscripten
+
+Register DISPATCH_SOURCE_TYPE_MACH_RECV and DISPATCH_SOURCE_TYPE_MACH_SEND
+(DISPATCH_MACH_SEND_DEAD) sources in the Emscripten event backend over
+libmach's watches (<libmach/wait.h>), reached through three functions of
+src/mach_emscripten.c (patch 0004), the only file built with Mach headers:
+_dispatch_emscripten_mach_watch, _dispatch_emscripten_mach_watch_arm and
+_dispatch_emscripten_mach_unwatch. A receive source watches its receive
+right or port set for a message; the watch fires once when a message is
+queued and is re-armed when the source is resumed, as Darwin's
+EVFILT_MACHPORT knote with EV_DISPATCH; a send source watches its send
+right for a dead name. libmach calls back with its lock held; the callback
+queues the source's muxnote and wakes the manager thread, which merges the
+event as the kevent backend does (the receive source's data is
+DISPATCH_MACH_RECV_MESSAGE, the send source's DISPATCH_MACH_SEND_DEAD).
+DISPATCH_SOURCE_TYPE_MEMORYPRESSURE registers and never fires: a
+WebAssembly process has no memory pressure signal. The three source types
+are declared available on Emscripten.
+
+diff --git a/dispatch/base.h b/dispatch/base.h
+index 9af229f..f2f9262 100644
+--- a/dispatch/base.h
++++ b/dispatch/base.h
+@@ -162,6 +162,15 @@
+ #define DISPATCH_LINUX_UNAVAILABLE()
+ #endif
+ 
++// The Emscripten port supplies the Mach sources over libmach, the Mach library it links, and a memory
++// pressure source that never fires.
++#if defined(__linux__)
++#define DISPATCH_LINUX_UNAVAILABLE_EMSCRIPTEN_AVAILABLE() \
++		DISPATCH_LINUX_UNAVAILABLE()
++#else
++#define DISPATCH_LINUX_UNAVAILABLE_EMSCRIPTEN_AVAILABLE()
++#endif
++
+ #ifdef __FreeBSD__
+ #define DISPATCH_FREEBSD_UNAVAILABLE() \
+ 		DISPATCH_UNAVAILABLE_MSG( \
+diff --git a/dispatch/source.h b/dispatch/source.h
+index bc4bbf8..54cdba2 100644
+--- a/dispatch/source.h
++++ b/dispatch/source.h
+@@ -120,7 +120,7 @@ DISPATCH_SOURCE_TYPE_DECL_SWIFT(data_replace, DispatchSourceUserDataReplace);
+  * The mask is a mask of desired events from dispatch_source_mach_send_flags_t.
+  */
+ #define DISPATCH_SOURCE_TYPE_MACH_SEND (&_dispatch_source_type_mach_send)
+-API_AVAILABLE(macos(10.6), ios(4.0)) DISPATCH_LINUX_UNAVAILABLE()
++API_AVAILABLE(macos(10.6), ios(4.0)) DISPATCH_LINUX_UNAVAILABLE_EMSCRIPTEN_AVAILABLE()
+ DISPATCH_SOURCE_TYPE_DECL_SWIFT(mach_send, DispatchSourceMachSend);
+ 
+ /*!
+@@ -131,7 +131,7 @@ DISPATCH_SOURCE_TYPE_DECL_SWIFT(mach_send, DispatchSourceMachSend);
+  * but no flags are currently defined (pass zero for now).
+  */
+ #define DISPATCH_SOURCE_TYPE_MACH_RECV (&_dispatch_source_type_mach_recv)
+-API_AVAILABLE(macos(10.6), ios(4.0)) DISPATCH_LINUX_UNAVAILABLE()
++API_AVAILABLE(macos(10.6), ios(4.0)) DISPATCH_LINUX_UNAVAILABLE_EMSCRIPTEN_AVAILABLE()
+ DISPATCH_SOURCE_TYPE_DECL_SWIFT(mach_recv, DispatchSourceMachReceive);
+ 
+ /*!
+@@ -144,7 +144,7 @@ DISPATCH_SOURCE_TYPE_DECL_SWIFT(mach_recv, DispatchSourceMachReceive);
+  */
+ #define DISPATCH_SOURCE_TYPE_MEMORYPRESSURE \
+ 		(&_dispatch_source_type_memorypressure)
+-API_AVAILABLE(macos(10.9), ios(8.0)) DISPATCH_LINUX_UNAVAILABLE()
++API_AVAILABLE(macos(10.9), ios(8.0)) DISPATCH_LINUX_UNAVAILABLE_EMSCRIPTEN_AVAILABLE()
+ DISPATCH_SOURCE_TYPE_DECL_SWIFT(memorypressure, DispatchSourceMemoryPressure);
+ 
+ /*!
+diff --git a/src/event/event_emscripten.c b/src/event/event_emscripten.c
+index d692d58..1e6b82d 100644
+--- a/src/event/event_emscripten.c
++++ b/src/event/event_emscripten.c
+@@ -15,9 +15,18 @@
+  */
+ 
+ // The Emscripten event loop. Emscripten has neither kqueue nor epoll, so the manager thread waits on a
+-// condition variable for a poke or for the earliest armed timer. Timer and custom-data sources work as on
+-// the other backends; descriptor, signal and process sources do not register (their creation succeeds,
+-// their registration fails, as with an unsupported descriptor on the epoll backend).
++// condition variable for a poke, for the earliest armed timer or for a Mach event. Timer and custom-data
++// sources work as on the other backends; descriptor, signal and process sources do not register (their
++// creation succeeds, their registration fails, as with an unsupported descriptor on the epoll backend).
++//
++// Mach sources wait on ports of libmach, the Mach library the port links, through its watches
++// (<libmach/wait.h>, reached through src/mach_emscripten.c): a DISPATCH_SOURCE_TYPE_MACH_RECV source watches
++// its receive right or port set for a message, which fires once when a message is queued and is re-armed
++// when the source is resumed, as Darwin's EVFILT_MACHPORT knote with EV_DISPATCH; a
++// DISPATCH_SOURCE_TYPE_MACH_SEND source (DISPATCH_MACH_SEND_DEAD) watches its send right for a dead name.
++// libmach calls back with its lock held; the callback only queues the source's muxnote and wakes the manager
++// thread, which merges the event as the kevent backend does. A DISPATCH_SOURCE_TYPE_MEMORYPRESSURE source registers and never fires: a WebAssembly process has no
++// memory pressure signal.
+ 
+ #include "internal.h"
+ #if DISPATCH_EVENT_BACKEND_EMSCRIPTEN
+@@ -52,22 +61,198 @@ _dispatch_emscripten_init(void *context DISPATCH_UNUSED)
+ 	dx_push(_dispatch_mgr_q.do_targetq, &_dispatch_mgr_q, 0);
+ }
+ 
++#pragma mark mach and memory pressure
++
++// Filters of the sources this backend supplies beyond timers and custom data (distinct from EVFILT_* and
++// DISPATCH_EVFILT_* of event_config.h).
++#define DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV		(-EVFILT_SYSCOUNT - 7)
++#define DISPATCH_EVFILT_EMSCRIPTEN_MACH_SEND		(-EVFILT_SYSCOUNT - 8)
++#define DISPATCH_EVFILT_EMSCRIPTEN_MEMORYSTATUS	(-EVFILT_SYSCOUNT - 9)
++
++// The pending data of a fired receive source (mach_internal.h, which only HAVE_MACH builds include).
++#define DISPATCH_EMSCRIPTEN_MACH_RECV_MESSAGE 0x2
++
++// The Mach waits of src/mach_emscripten.c, the backend's only dependency on libmach: they forward to
++// libmach's watches (<libmach/wait.h>), which this file, built without Mach headers, does not include. A
++// watch of a receive right or port set calls back once when a message is queued while it is armed; a watch
++// of a send right once when the port's receive right is destroyed. A watch is identified by its port name
++// and context; `ready` runs with libmach's lock held.
++#define DISPATCH_EMSCRIPTEN_MACH_WAIT_MESSAGE	0
++#define DISPATCH_EMSCRIPTEN_MACH_WAIT_DEAD_NAME	1
++extern int _dispatch_emscripten_mach_watch(uint32_t name, int event,
++		void (*ready)(void *context), void *context);
++extern void _dispatch_emscripten_mach_watch_arm(uint32_t name, void *context);
++extern void _dispatch_emscripten_mach_unwatch(uint32_t name, void *context);
++
++// One per registered Mach unote: the waiter's context, linked on the pending list while its event waits
++// for the manager thread.
++typedef struct dispatch_muxnote_s {
++	struct dispatch_muxnote_s *dmn_next;
++	dispatch_unote_t dmn_unote;
++	bool dmn_pending;
++} *dispatch_muxnote_t;
++
++// Guarded by _dispatch_emscripten_lock.
++static dispatch_muxnote_t _dispatch_emscripten_pending_head;
++static dispatch_muxnote_t *_dispatch_emscripten_pending_tail =
++		&_dispatch_emscripten_pending_head;
++
++// Called by the Mach library with its port table locked: queues the muxnote and wakes the manager thread.
++// Registration happens on the manager queue, so the event loop is initialized already.
++static void
++_dispatch_emscripten_muxnote_ready(void *context)
++{
++	dispatch_muxnote_t dmn = context;
++	pthread_mutex_lock(&_dispatch_emscripten_lock);
++	if (!dmn->dmn_pending) {
++		dmn->dmn_pending = true;
++		dmn->dmn_next = NULL;
++		*_dispatch_emscripten_pending_tail = dmn;
++		_dispatch_emscripten_pending_tail = &dmn->dmn_next;
++	}
++	pthread_cond_signal(&_dispatch_emscripten_cond);
++	pthread_mutex_unlock(&_dispatch_emscripten_lock);
++}
++
++// Merges the event of a muxnote taken off the pending list, on the manager thread (as
++// _dispatch_kevent_merge does for EVFILT_MACHPORT and the mach-send notifications).
++static void
++_dispatch_emscripten_muxnote_merge(dispatch_muxnote_t dmn)
++{
++	dispatch_unote_t du = dmn->dmn_unote;
++	uintptr_t data;
++
++	// consumed by dux_merge_evt()
++	_dispatch_retain_unote_owner(du);
++	if (du._du->du_filter == DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV) {
++		_dispatch_unote_state_clear_bit(du, DU_STATE_ARMED);
++		data = DISPATCH_EMSCRIPTEN_MACH_RECV_MESSAGE;
++		os_atomic_store(&du._dr->ds_pending_data, data, relaxed);
++		dux_merge_evt(du._du, EV_ADD|EV_ENABLE|EV_DISPATCH, data, 0);
++	} else {
++		data = DISPATCH_MACH_SEND_DEAD & du._du->du_fflags;
++		if (data) os_atomic_or(&du._dr->ds_pending_data, data, relaxed);
++		dux_merge_evt(du._du, EV_ADD|EV_ENABLE|EV_CLEAR, data, 0);
++	}
++}
++
++const dispatch_source_type_s _dispatch_source_type_mach_recv = {
++	.dst_kind       = "mach_recv",
++	.dst_filter     = DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV,
++	.dst_flags      = EV_DISPATCH,
++	.dst_fflags     = 0,
++	.dst_mask       = 0,
++	.dst_action     = DISPATCH_UNOTE_ACTION_SOURCE_OR_FFLAGS,
++	.dst_size       = sizeof(struct dispatch_source_refs_s),
++
++	.dst_create     = _dispatch_unote_create_with_handle,
++	.dst_merge_evt  = _dispatch_source_merge_evt,
++
++	.dst_allow_empty_mask = true,
++};
++
++const dispatch_source_type_s _dispatch_source_type_mach_send = {
++	.dst_kind       = "mach_send",
++	.dst_filter     = DISPATCH_EVFILT_EMSCRIPTEN_MACH_SEND,
++	.dst_flags      = EV_CLEAR,
++	.dst_mask       = DISPATCH_MACH_SEND_DEAD,
++	.dst_action     = DISPATCH_UNOTE_ACTION_SOURCE_OR_FFLAGS,
++	.dst_size       = sizeof(struct dispatch_source_refs_s),
++
++	.dst_create     = _dispatch_unote_create_with_handle,
++	.dst_merge_evt  = _dispatch_source_merge_evt,
++};
++
++// Registers and never fires (see the top of this file).
++const dispatch_source_type_s _dispatch_source_type_memorypressure = {
++	.dst_kind       = "memorystatus",
++	.dst_filter     = DISPATCH_EVFILT_EMSCRIPTEN_MEMORYSTATUS,
++	.dst_flags      = EV_DISPATCH,
++	.dst_mask       = DISPATCH_MEMORYPRESSURE_NORMAL
++			|DISPATCH_MEMORYPRESSURE_WARN|DISPATCH_MEMORYPRESSURE_CRITICAL,
++	.dst_action     = DISPATCH_UNOTE_ACTION_SOURCE_OR_FFLAGS,
++	.dst_size       = sizeof(struct dispatch_source_refs_s),
++
++	.dst_create     = _dispatch_unote_create_without_handle,
++	.dst_merge_evt  = _dispatch_source_merge_evt,
++};
++
+ #pragma mark dispatch_unote_t
+ 
+ bool
+-_dispatch_unote_register_muxed(dispatch_unote_t du DISPATCH_UNUSED)
++_dispatch_unote_register_muxed(dispatch_unote_t du)
+ {
+-	return false;
++	uint32_t name = (uint32_t)du._du->du_ident;
++	dispatch_muxnote_t dmn;
++	int kr;
++
++	switch (du._du->du_filter) {
++	case DISPATCH_EVFILT_EMSCRIPTEN_MEMORYSTATUS:
++		_dispatch_unote_state_set(du, DISPATCH_WLH_ANON, DU_STATE_ARMED);
++		return true;
++	case DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV:
++	case DISPATCH_EVFILT_EMSCRIPTEN_MACH_SEND:
++		break;
++	default:
++		return false;
++	}
++
++	dmn = _dispatch_calloc(1u, sizeof(struct dispatch_muxnote_s));
++	dmn->dmn_unote = du;
++	_dispatch_unote_get_linkage(du)->du_muxnote = dmn;
++	// The state is armed before the waiter can fire: a fired waiter only queues the muxnote, which this
++	// (the manager) thread merges later.
++	_dispatch_unote_state_set(du, DISPATCH_WLH_ANON, DU_STATE_ARMED);
++	kr = _dispatch_emscripten_mach_watch(name,
++			du._du->du_filter == DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV ?
++			DISPATCH_EMSCRIPTEN_MACH_WAIT_MESSAGE :
++			DISPATCH_EMSCRIPTEN_MACH_WAIT_DEAD_NAME,
++			_dispatch_emscripten_muxnote_ready, dmn);
++	if (kr != 0) {
++		_dispatch_unote_state_set(du, DU_STATE_UNREGISTERED);
++		_dispatch_unote_get_linkage(du)->du_muxnote = NULL;
++		free(dmn);
++		return false;
++	}
++	return true;
+ }
+ 
+ void
+-_dispatch_unote_resume_muxed(dispatch_unote_t du DISPATCH_UNUSED)
++_dispatch_unote_resume_muxed(dispatch_unote_t du)
+ {
++	dispatch_muxnote_t dmn = _dispatch_unote_get_linkage(du)->du_muxnote;
++	dispatch_assert(_dispatch_unote_registered(du));
++	if (du._du->du_filter == DISPATCH_EVFILT_EMSCRIPTEN_MACH_RECV) {
++		// Armed first: re-arming fires at once when a message is queued already.
++		_dispatch_unote_state_set_bit(du, DU_STATE_ARMED);
++		_dispatch_emscripten_mach_watch_arm((uint32_t)du._du->du_ident, dmn);
++	}
+ }
+ 
+ bool
+ _dispatch_unote_unregister_muxed(dispatch_unote_t du)
+ {
++	dispatch_unote_linkage_t dul = _dispatch_unote_get_linkage(du);
++	dispatch_muxnote_t dmn = dul->du_muxnote;
++
++	if (dmn) {
++		// Once the waiter is gone the library calls back no more; a queued event is dropped.
++		_dispatch_emscripten_mach_unwatch((uint32_t)du._du->du_ident, dmn);
++		pthread_mutex_lock(&_dispatch_emscripten_lock);
++		if (dmn->dmn_pending) {
++			dispatch_muxnote_t *link = &_dispatch_emscripten_pending_head;
++			while (*link != dmn) {
++				link = &(*link)->dmn_next;
++			}
++			*link = dmn->dmn_next;
++			if (_dispatch_emscripten_pending_tail == &dmn->dmn_next) {
++				_dispatch_emscripten_pending_tail = link;
++			}
++		}
++		pthread_mutex_unlock(&_dispatch_emscripten_lock);
++		dul->du_muxnote = NULL;
++		free(dmn);
++	}
+ 	_dispatch_unote_state_set(du, DU_STATE_UNREGISTERED);
+ 	return true;
+ }
+@@ -139,6 +324,7 @@ _dispatch_event_loop_drain(uint32_t flags)
+ {
+ 	bool fired[DISPATCH_CLOCK_COUNT] = { };
+ 	bool any = false;
++	dispatch_muxnote_t pending = NULL;
+ 
+ 	dispatch_once_f(&_dispatch_emscripten_init_pred, NULL,
+ 			_dispatch_emscripten_init);
+@@ -163,6 +349,16 @@ _dispatch_event_loop_drain(uint32_t flags)
+ 			_dispatch_emscripten_poked = false;
+ 			any = true;
+ 		}
++		if (_dispatch_emscripten_pending_head) {
++			pending = _dispatch_emscripten_pending_head;
++			_dispatch_emscripten_pending_head = NULL;
++			_dispatch_emscripten_pending_tail =
++					&_dispatch_emscripten_pending_head;
++			for (dispatch_muxnote_t dmn = pending; dmn; dmn = dmn->dmn_next) {
++				dmn->dmn_pending = false;
++			}
++			any = true;
++		}
+ 		if (any || (flags & KEVENT_FLAG_IMMEDIATE)) {
+ 			break;
+ 		}
+@@ -186,6 +382,13 @@ _dispatch_event_loop_drain(uint32_t flags)
+ 			_dispatch_event_merge_timer((dispatch_clock_t)clock);
+ 		}
+ 	}
++	// Muxnotes are unregistered only on this thread, so the detached list stays valid; a waiter fires again
++	// only once its source is resumed, which also happens on this thread.
++	while (pending) {
++		dispatch_muxnote_t dmn = pending;
++		pending = dmn->dmn_next;
++		_dispatch_emscripten_muxnote_merge(dmn);
++	}
+ }
+ 
+ void

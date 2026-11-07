@@ -17,17 +17,26 @@
 //
 // - Constants of families that are not restored yet; their string values are their own names (values not
 // read).
+// - CFDataGetBytes, which consumers call (OpenCoreGraphics, OpenCoreAnimation) and no restored source defines: the
+//   bytes of the range copied from CFDataGetBytePtr. Spelled with its native name, as no restored declaration
+//   names it.
+// - CFAttributedStringCreate, which no restored source defines (OpenCoreAnimation's OCATextLayer calls it): a
+//   mutable attributed string given the string and the attributes over its whole length, returned as an immutable
+//   copy, from the restored CFAttributedString functions. Native name, as above.
 
 #include "CoreFoundation/Base/OCFBase.h"
 #include "CoreFoundation/Collections/OCFArray.h"
+#include "CoreFoundation/Collections/OCFData.h"
 #include "CoreFoundation/Collections/OCFDictionary.h"
 #include "CoreFoundation/Number/OCFNumber.h"
+#include "CoreFoundation/String/OCFAttributedString.h"
 #include "CoreFoundation/Notification/OCFNotificationCenter.h"
 #include "CoreFoundation/String/OCFString.h"
 #include "CoreFoundation/URL/OCFURL.h"
 
 #include <os/lock.h>
 #include <stdlib.h>
+#include <string.h>
 
 // A constant string usable in a static initializer (OF_STR is a statement expression).
 #define PORT_CONSTANT_STRING(literal) ((OCFStringRef)__builtin___CFStringMakeConstantString("" literal ""))
@@ -358,7 +367,33 @@ Boolean _CFURLWriteBookmarkDataToFile(
     return false;
 }
 
+#pragma mark - CFData
+
+void CFDataGetBytes(OCFDataRef theData, OCFRange range, UInt8 *buffer) {
+    if (range.length <= 0) {
+        return;
+    }
+    memmove(buffer, OCFDataGetBytePtr(theData) + range.location, (size_t)range.length);
+}
+
+#pragma mark - CFAttributedString
+
+OCFAttributedStringRef CFAttributedStringCreate(OCFAllocatorRef alloc, OCFStringRef str, OCFDictionaryRef attributes) {
+    OCFMutableAttributedStringRef mutableString = OCFAttributedStringCreateMutable(alloc, 0);
+    OCFAttributedStringReplaceString(mutableString, (OCFRange){0, 0}, str);
+    OCFIndex length = OCFAttributedStringGetLength(mutableString);
+    if (attributes != NULL && length > 0) {
+        OCFAttributedStringSetAttributes(mutableString, (OCFRange){0, length}, attributes, true);
+    }
+    OCFAttributedStringRef result = OCFAttributedStringCreateCopy(alloc, mutableString);
+    OCFRelease(mutableString);
+    return result;
+}
+
 #pragma mark - Constants of unrestored families
+
+// kCFErrorDescriptionKey: the error description family is not restored (its value not read).
+const OCFStringRef kCFErrorDescriptionKey = PORT_CONSTANT_STRING("kCFErrorDescriptionKey");
 
 const OCFStringRef _kOCFStringFormatMetadataArgumentNumberKey =
     PORT_CONSTANT_STRING("_kCFStringFormatMetadataArgumentNumberKey");

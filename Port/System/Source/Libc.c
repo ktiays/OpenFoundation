@@ -14,6 +14,7 @@
 #include <sched.h>
 #include <sys/random.h>
 #include <sys/select.h>
+#include <time.h>
 
 // musl declares these GNU additions only under _GNU_SOURCE.
 int pthread_getattr_np(pthread_t thread, pthread_attr_t *attributes);
@@ -262,9 +263,13 @@ void *pthread_get_stackaddr_np(pthread_t thread) {
     return (char *)address + size;
 }
 
-int pthread_setname_np(const char *name) {
+int portSetCurrentThreadName(const char *name) {
     (void)name;
     return 0;
+}
+
+int pthread_setname_np(const char *name) {
+    return portSetCurrentThreadName(name);
 }
 
 bool dlopen_preflight(const char *path) {
@@ -328,6 +333,78 @@ double __exp10(double value) {
 
 float __exp10f(float value) {
     return powf(10.0f, value);
+}
+
+struct __float2 __sincosf_stret(float value) {
+    struct __float2 result = {sinf(value), cosf(value)};
+    return result;
+}
+
+struct __double2 __sincos_stret(double value) {
+    struct __double2 result = {sin(value), cos(value)};
+    return result;
+}
+
+// A top-down merge sort through one scratch buffer: equal elements keep their order.
+static void mergeRange(
+    unsigned char *base, unsigned char *scratch, size_t count, size_t width, int (*compare)(const void *, const void *)
+) {
+    if (count < 2) {
+        return;
+    }
+    size_t middle = count / 2;
+    mergeRange(base, scratch, middle, width, compare);
+    mergeRange(base + middle * width, scratch, count - middle, width, compare);
+    if (compare(base + (middle - 1) * width, base + middle * width) <= 0) {
+        return;
+    }
+    memcpy(scratch, base, middle * width);
+    size_t left = 0;
+    size_t right = middle;
+    size_t out = 0;
+    while (left < middle && right < count) {
+        if (compare(base + right * width, scratch + left * width) < 0) {
+            memmove(base + out * width, base + right * width, width);
+            right++;
+        } else {
+            memcpy(base + out * width, scratch + left * width, width);
+            left++;
+        }
+        out++;
+    }
+    memcpy(base + out * width, scratch + left * width, (middle - left) * width);
+}
+
+int mergesort(void *base, size_t count, size_t width, int (*compare)(const void *, const void *)) {
+    if (width < sizeof(void *) / 2) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (count < 2) {
+        return 0;
+    }
+    unsigned char *scratch = malloc((count / 2) * width);
+    if (scratch == NULL) {
+        errno = ENOMEM;
+        return -1;
+    }
+    mergeRange(base, scratch, count, width, compare);
+    free(scratch);
+    return 0;
+}
+
+int pthread_cond_timedwait_relative_np(
+    pthread_cond_t *condition, pthread_mutex_t *mutex, const struct timespec *relativeTime
+) {
+    struct timespec deadline;
+    clock_gettime(CLOCK_REALTIME, &deadline);
+    deadline.tv_sec += relativeTime->tv_sec;
+    deadline.tv_nsec += relativeTime->tv_nsec;
+    while (deadline.tv_nsec >= 1000000000L) {
+        deadline.tv_sec += 1;
+        deadline.tv_nsec -= 1000000000L;
+    }
+    return pthread_cond_timedwait(condition, mutex, &deadline);
 }
 
 int __darwin_check_fd_set_overflow(int descriptor, const void *set, int unlimitedSelect) {

@@ -9,6 +9,7 @@
 // allocator, with Darwin's zone structure so that zone-based allocators call through it as on Darwin.
 
 #include <PortDarwin.h>
+#include <mach/mach_types.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -44,6 +45,10 @@ struct _malloc_zone_t {
     bool (*claimed_address)(struct _malloc_zone_t *zone, void *pointer);
 };
 
+// Zones created at run time draw from the same allocator as the default zone (a zone's memory is freed by
+// whichever zone frees it, and malloc_zone_from_ptr answers the default zone); each has its own name.
+malloc_zone_t *malloc_create_zone(vm_size_t startSize, unsigned flags);
+void malloc_destroy_zone(malloc_zone_t *zone);
 malloc_zone_t *malloc_default_zone(void);
 malloc_zone_t *malloc_zone_from_ptr(const void *pointer);
 void *malloc_zone_malloc(malloc_zone_t *zone, size_t size);

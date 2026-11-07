@@ -78,6 +78,26 @@ malloc_zone_t *malloc_default_zone(void) {
     return &gDefaultZone;
 }
 
+malloc_zone_t *malloc_create_zone(vm_size_t startSize, unsigned flags) {
+    (void)startSize;
+    (void)flags;
+    malloc_zone_t *zone = malloc(sizeof(malloc_zone_t));
+    if (zone == NULL) {
+        return NULL;
+    }
+    *zone = gDefaultZone;
+    zone->zone_name = NULL;
+    return zone;
+}
+
+// Darwin frees every block of the zone with it; blocks here belong to the shared allocator, so only the zone
+// record goes.
+void malloc_destroy_zone(malloc_zone_t *zone) {
+    if (zone != NULL && zone != &gDefaultZone) {
+        free(zone);
+    }
+}
+
 malloc_zone_t *malloc_zone_from_ptr(const void *pointer) {
     return pointer != NULL ? &gDefaultZone : NULL;
 }

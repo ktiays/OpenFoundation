@@ -89,7 +89,15 @@ unsigned int pthread_mach_thread_np(pthread_t thread);
 pthread_t pthread_from_mach_thread_np(unsigned int port);
 size_t pthread_get_stacksize_np(pthread_t thread);
 void *pthread_get_stackaddr_np(pthread_t thread);
+#if defined(__cplusplus) && defined(_GNU_SOURCE)
+// C++ under em++ (which defines _GNU_SOURCE): Emscripten's <pthread.h> declares the glibc form
+// pthread_setname_np(pthread_t, const char *), so Darwin's one-argument form is an overload that reaches the
+// port's definition under its own name; no C++ object refers to the C symbol with Darwin's signature.
+int portSetCurrentThreadName(const char *name);
+#else
 int pthread_setname_np(const char *name);
+int portSetCurrentThreadName(const char *name);
+#endif
 #ifndef PTHREAD_ERRORCHECK_MUTEX_INITIALIZER
 #define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 #endif
@@ -151,13 +159,43 @@ void *bsearch_b(
     const void *key, const void *base, size_t count, size_t width, int (^compare)(const void *, const void *)
 );
 void qsort_b(void *base, size_t count, size_t width, int (^compare)(const void *, const void *));
+// Darwin's stable sort (<stdlib.h>): 0, or -1 with errno EINVAL for an element narrower than
+// sizeof(void *) / 2, or ENOMEM.
+int mergesort(void *base, size_t count, size_t width, int (*compare)(const void *, const void *));
+// A wait on a condition bounded by a time relative to now (libpthread).
+struct timespec;
+int pthread_cond_timedwait_relative_np(
+    pthread_cond_t *condition, pthread_mutex_t *mutex, const struct timespec *relativeTime
+);
 void pthread_yield_np(void);
 int pthread_getname_np(pthread_t thread, char *name, size_t length);
 unsigned long __maskrune(int32_t character, unsigned long mask);
 double __exp10(double value);
 float __exp10f(float value);
+
+// Darwin libm's sine and cosine of one argument in one call (<math.h>). The port computes them as sin() and
+// cos() (sinf() and cosf()) of Emscripten's libm, so each value is bit for bit what the separate calls give
+// on wasm. Darwin's own __sincos_stret and __sincosf_stret are a separate implementation, whose results
+// differ from Darwin's sin() and cos() by up to one ulp for some arguments; those bits are not reproduced
+// (no libm the port runs reproduces Darwin's).
+struct __float2 {
+    float __sinval;
+    float __cosval;
+};
+struct __double2 {
+    double __sinval;
+    double __cosval;
+};
+struct __float2 __sincosf_stret(float value);
+struct __double2 __sincos_stret(double value);
 int __darwin_check_fd_set_overflow(int descriptor, const void *set, int unlimitedSelect);
 
 #ifdef __cplusplus
+}
+#endif
+
+#if defined(__cplusplus) && defined(_GNU_SOURCE)
+inline int pthread_setname_np(const char *name) {
+    return portSetCurrentThreadName(name);
 }
 #endif

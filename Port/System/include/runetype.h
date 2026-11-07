@@ -43,4 +43,14 @@ extern _RuneLocale _DefaultRuneLocale;
 
 unsigned long __maskrune(int32_t character, unsigned long mask);
 
+// Darwin's class tests of <_ctype.h>, which its <ctype.h> declares and the restored sources call.
+static __inline int __istype(int32_t character, unsigned long mask) {
+    return (character >= 0 && character < 0x80) ? !!(_DefaultRuneLocale.__runetype[character] & mask)
+                                                : !!__maskrune(character, mask);
+}
+
+static __inline int32_t __isctype(int32_t character, unsigned long mask) {
+    return (character < 0 || character >= 256) ? 0 : !!(_DefaultRuneLocale.__runetype[character] & mask);
+}
+
 __END_DECLS

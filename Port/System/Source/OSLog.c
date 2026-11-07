@@ -8,6 +8,7 @@
 
 #include <os/activity.h>
 #include <os/log.h>
+#include <os/signpost.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,4 +162,37 @@ bool os_variant_has_internal_content(const char *subsystem) {
 bool os_variant_allows_internal_security_policies(const char *subsystem) {
     (void)subsystem;
     return false;
+}
+
+void _os_signpost_emit_with_name_impl(
+    void *dso,
+    os_log_t log,
+    os_signpost_type_t type,
+    os_signpost_id_t spid,
+    const char *name,
+    const char *format,
+    uint8_t *buffer,
+    uint32_t size
+) {
+    (void)dso;
+    (void)log;
+    (void)type;
+    (void)spid;
+    (void)name;
+    (void)format;
+    (void)buffer;
+    (void)size;
+}
+
+void _os_signpost_emit_unreliably_with_name_impl(
+    void *dso,
+    os_log_t log,
+    os_signpost_type_t type,
+    os_signpost_id_t spid,
+    const char *name,
+    const char *format,
+    uint8_t *buffer,
+    uint32_t size
+) {
+    _os_signpost_emit_with_name_impl(dso, log, type, spid, name, format, buffer, size);
 }

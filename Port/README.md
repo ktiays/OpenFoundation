@@ -33,6 +33,7 @@ both naming modes (checked 2026-11-07 against `main` before the port landed).
 | Constant number literals (`@1`, `@1.5`, `@1.5f`) | Working; the floating-point classes are port implementations |
 | Exceptions (`@throw`, `@catch`, `@finally`, NSException from restored methods) | Working |
 | Run loops and dispatch | Timers and the main queue under Node; a browser's main thread cannot block, so its run loop must be driven from the event loop (not built) |
+| Dispatch Mach sources and channels | `DISPATCH_SOURCE_TYPE_MACH_RECV`, `DISPATCH_SOURCE_TYPE_MACH_SEND` (dead names) and the receive side of `dispatch_mach_t` over libmach; `DISPATCH_SOURCE_TYPE_MEMORYPRESSURE` registers and never fires (no memory pressure signal in WebAssembly); the channels' send side, replies and `dispatch_mig_server` are not supplied (they fail to link) |
 | Tagged pointer objects | None on wasm32 (objc4 enables them only with 64-bit pointers); CF's tagged-string paths answer their native fallbacks |
 | `NSLocale` (Swift-implemented), and what reaches it (`+[NSLocale systemLocale]`, NSJSONSerialization writing) | Not translated yet |
 | `NSDecimalNumber`, decimal scanning (Swift-implemented Decimal) | Trimmed, pending translation |
@@ -46,14 +47,18 @@ both naming modes (checked 2026-11-07 against `main` before the port landed).
 | `Trim.tsv` | The restored sources the port leaves out, with the reason and the replacement |
 | `hooks.tsv` | Every hook site in `Source/` and why a library could not serve |
 | `libdispatch/` | Apple's libdispatch-1542.100.32 (Apache 2.0), pinned by tag and commit, its patch series and build script |
-| `System/` | Darwin's libSystem additions for Emscripten: in-process Mach (ports, port sets, `mach_msg`, `mk_timer`), `os_unfair_lock`, os_log, notify, XPC values, malloc zones, dyld and process queries, libc additions |
+| `System/` | Darwin's libSystem additions for Emscripten: `os_unfair_lock`, os_log and signposts, notify, XPC values, malloc zones, dyld and process queries, libc additions. Mach (ports and rights, `mach_msg` with descriptors, notifications, port sets, the MIG runtime, VM calls and memory entries, `mk_timer`, the clocks, the bootstrap name service) is libmach's, which `CMakeLists.txt` adds and `PortSystem` links |
 | `CoreFoundation/`, `Foundation/` | Definitions in place of trimmed, Swift-implemented or unrestored native code |
 | `Tests/Smoke.m` | A smoke test run under Node |
+| `Tests/DispatchMach.c` | libdispatch's Mach sources and channels on libmach (`DispatchMachTest`) |
 
 ## Building
 
 Needs the objc4 checkout (the sibling `../objc4`, or `OBJC4_ROOT`) with its Emscripten toolchain and the threads
-runtime built (`scripts/prepare-wasm-toolchain.py`, `scripts/build-wasm.sh <Debug|Release> threads`).
+runtime built (`scripts/prepare-wasm-toolchain.py`, `scripts/build-wasm.sh <Debug|Release> threads`), and the
+libmach checkout (the sibling `../libmach`, or `LIBMACH_ROOT` for both the CMake build and
+`Port/libdispatch/build.sh`), whose `CMakeLists.txt` the build adds. libmach's own tests run in its checkout
+(`scripts/test-wasm.sh`).
 
 ```sh
 Port/libdispatch/build.sh Release
@@ -61,6 +66,8 @@ source ../objc4/build/wasm-toolchain/env.sh
 emcmake cmake -S Port -B .build/wasm/Release/OpenFoundation -G Ninja -DCMAKE_BUILD_TYPE=Release
 ninja -C .build/wasm/Release/OpenFoundation Smoke
 node .build/wasm/Release/OpenFoundation/Smoke.js
+ninja -C .build/wasm/Release/OpenFoundation DispatchMachTest
+node .build/wasm/Release/OpenFoundation/DispatchMachTest.js
 ```
 
 A Debug build of OpenFoundation can link objc4's Release runtime with `-DOBJC4_CONFIGURATION=Release`.
@@ -76,16 +83,27 @@ Objective-C metadata globals stay unpoisoned because objc4 walks them as arrays)
   libdispatch record as the main thread, so the main run loop drains the main dispatch queue. A browser does not
   let that thread block: Emscripten turns its futex waits into spins, so `CFRunLoopRunInMode` with a timeout
   spins there instead of sleeping. Node allows the wait.
-- libdispatch's run-loop handle is a port of the in-process Mach library, so the restored CFRunLoop waits on
-  it unchanged. libdispatch's Emscripten event backend handles timers and custom sources; descriptor and
-  signal sources do not register.
+- Mach is libmach's: Apple's headers and XNU's behaviour within one process (its
+  `Documentation/Reference/WebAssembly.md` lists what wasm32 simplifies). Every unit sees its headers after
+  Port/System's own, and `PortSystem` links it, so a consumer of `PortSystem` gets both.
+- libdispatch's run-loop handle is a libmach receive right (patch 0004, `src/mach_emscripten.c`), so the restored
+  CFRunLoop waits on it unchanged. libdispatch's Emscripten event backend handles timers, custom sources and Mach
+  sources; descriptor and signal sources do not register.
+- `src/mach_emscripten.c` (patch 0004) is the only file of libdispatch built with Mach headers (libmach's), so
+  HAVE_MACH stays unset. It forwards the event backend's Mach waits (patch 0003) to libmach's port watches
+  (`<libmach/wait.h>`): a watch of a receive right or port set is called back once per armed wait when a message
+  is queued, a watch of a send right when its port dies. It defines `voucher_mach_msg_*` in the form libdispatch
+  has without Mach vouchers, and the receive side of Mach channels over a receive source with the public
+  dispatch objects, since libdispatch's `mach.c` needs HAVE_MACH (kevent message delivery, vouchers, special
+  reply ports); they keep `mach.c`'s event order (CONNECTED first; DISCONNECTED, then CANCELED, last).
 - `NSInteger` is `long` (`NS_BUILD_32_LIKE_64`) and `BOOL` is `bool`, as the arm64 restoration declares them.
 - Dispatch objects are C objects (`OS_OBJECT_USE_OBJC=0`), as objc4 is built.
 - Every `_os_feature_enabled_impl` flag is off, so the native code takes its non-Swift paths.
 - ICU is Emscripten's port (68.2, stub data) with ICU's renaming force-included.
 - The libraries link whole in Darwin's initialization order, libdispatch, libobjc, CoreFoundation, Foundation,
   because constructors of one priority run in link order; Foundation's initialization runs from a constructor of
-  the OpenFoundation archive.
+  the OpenFoundation archive. libmach links after them, not whole, and initializes before all of them (its
+  constructor has the earliest priority, as libSystem initializes Mach first).
 - Indirect calls must match the callee's type exactly (wasm `call_indirect`), unlike arm64; a native function
   stored under another function type goes through a hook (`autoreleasePoolPopHook`).
 
